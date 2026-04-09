@@ -8,10 +8,8 @@ body {
     background-color: #141414;
     color: #ffffff;
     font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-    line-height: 1.6;
 }
 
-/* Header */
 header {
     background: rgba(0, 0, 0, 0.95);
     padding: 20px 50px;
@@ -20,205 +18,32 @@ header {
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 100;
 }
 
 .logo {
     font-size: 2.8rem;
     font-weight: bold;
     color: #E50914;
-    text-decoration: none;
 }
 
 nav a {
     color: #fff;
     margin-left: 30px;
     text-decoration: none;
-    font-size: 1.1rem;
 }
 
-nav a:hover {
-    color: #E50914;
-}
-
-/* Hero Section */
-.hero {
-    height: 80vh;
-    min-height: 600px;
-    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)), 
-                url('https://picsum.photos/id/1015/1920/1080') center/cover no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.hero-content h1 {
-    font-size: 3.8rem;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-}
-
-.hero-content p {
-    font-size: 1.5rem;
-    max-width: 720px;
-    margin: 0 auto 30px;
-    color: #ddd;
-}
-
-/* Buttons */
-.btn {
-    padding: 14px 40px;
-    font-size: 1.2rem;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s;
-}
-
-.primary {
-    background-color: #E50914;
-    color: white;
-}
-
-.primary:hover {
-    background-color: #f40612;
-    transform: scale(1.05);
-}
-
-/* What to Expect Section */
-.what-to-expect {
-    padding: 80px 50px;
-    text-align: center;
-}
-
-h2 {
-    font-size: 2.3rem;
-    margin-bottom: 50px;
-    color: #E50914;
-    text-align: center;
-}
-
-.features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    justify-content: center;
-}
-
-.feature-card {
-    background: #2f2f2f;
-    padding: 35px 30px;
-    border-radius: 10px;
-    min-width: 240px;
-    font-size: 1.35rem;
-    transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-    background: #E50914;
-    transform: translateY(-8px);
-    color: white;
-}
-
-/* Plans Section */
-.plans-section {
-    padding: 80px 50px;
-    background: #1a1a1a;
-}
-
-.plans-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.plan-card {
-    background: #2f2f2f;
-    border-radius: 12px;
-    padding: 35px 30px;
-    text-align: center;
-    transition: all 0.4s ease;
-}
-
-.plan-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 15px 30px rgba(229, 9, 20, 0.3);
-}
-
-.plan-card.popular {
-    border: 4px solid #E50914;
-    position: relative;
-}
-
-.plan-card.popular::before {
-    content: "MOST POPULAR";
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #E50914;
-    color: white;
-    padding: 6px 25px;
-    border-radius: 30px;
-    font-size: 0.95rem;
-    font-weight: bold;
-}
-
-.plan-card.blue-plan {
-    border: 4px solid #0A84FF;
-}
-
-.price {
-    font-size: 2.4rem;
-    margin: 25px 0;
-    color: #E50914;
-}
-
-.price span {
-    font-size: 1.1rem;
-    color: #ccc;
-}
-
-.price small {
-    display: block;
-    font-size: 1rem;
-    color: #bbb;
-    margin-top: 5px;
-}
-
-ul {
-    list-style: none;
-    text-align: left;
-    margin: 30px 0;
-}
-
-ul li {
-    padding: 10px 0;
-    border-bottom: 1px solid #444;
-    font-size: 1.05rem;
-}
-
-.box-office-note {
-    margin-top: 60px;
-    text-align: center;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 1.1rem;
-    color: #ccc;
-}
-
-/* Auth Container (for signin.html) */
 .auth-container {
     max-width: 420px;
-    margin: 100px auto;
+    margin: 120px auto;
     background: #2f2f2f;
     padding: 50px 40px;
     border-radius: 12px;
     text-align: center;
+}
+
+.auth-container h2 {
+    margin-bottom: 30px;
+    color: #E50914;
 }
 
 .auth-container input {
@@ -235,7 +60,7 @@ ul li {
 .auth-container button {
     width: 100%;
     padding: 16px;
-    margin: 20px 0;
+    margin: 25px 0 10px;
     background: #E50914;
     color: white;
     border: none;
@@ -259,17 +84,32 @@ ul li {
     text-decoration: underline;
 }
 
-/* Footer */
-footer {
-    text-align: center;
-    padding: 50px 20px;
-    color: #777;
-    font-size: 0.95rem;
+#message {
+    color: #ff6b6b;
+    min-height: 24px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    header { padding: 15px 20px; }
-    .hero-content h1 { font-size: 2.8rem; }
-    .hero-content p { font-size: 1.2rem; }
+/* Extra styles for index.html (preview page) */
+.hero, .what-to-expect, .plans-section {
+    padding: 60px 50px;
 }
+
+h2 {
+    color: #E50914;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background: #E50914;
+    color: white;
+    padding: 14px 40px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.plan-card {
+    background: #2f2f2f;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    }
