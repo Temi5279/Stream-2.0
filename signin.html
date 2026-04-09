@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>str▶eam - Sign In</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">str▶eam</div>
+    </header>
+
+    <div class="auth-container">
+        <h2 id="formTitle">Sign In to str▶eam</h2>
+        
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        
+        <button id="authBtn">Sign In</button>
+        <p id="toggleText">Don't have an account? <span id="toggleLink">Sign Up</span></p>
+        <p id="message" style="color:red;"></p>
+    </div>
+
+    <script>
+        const firebaseConfig = { /* same config as above - copy it here too */ 
+          apiKey: "AIzaSyBfkqkhk0z8xuritMgzf4Bhf_N2Na-Co-Y",
+          authDomain: "stream-2o.firebaseapp.com",
+          projectId: "stream-2o",
+          storageBucket: "stream-2o.firebasestorage.app",
+          messagingSenderId: "6845983758",
+          appId: "1:6845983758:web:f0016e044e8aadb192e05f",
+          measurementId: "G-EZSCM2ZX7W"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        let isLogin = true;
+
+        document.getElementById('toggleLink').addEventListener('click', () => {
+            isLogin = !isLogin;
+            document.getElementById('formTitle').textContent = isLogin ? 'Sign In to str▶eam' : 'Create Account';
+            document.getElementById('authBtn').textContent = isLogin ? 'Sign In' : 'Sign Up';
+            document.getElementById('toggleText').innerHTML = isLogin 
+                ? `Don't have an account? <span id="toggleLink">Sign Up</span>` 
+                : `Already have an account? <span id="toggleLink">Sign In</span>`;
+        });
+
+        document.getElementById('authBtn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const message = document.getElementById('message');
+
+            if (!email || !password) {
+                message.textContent = "Please fill all fields";
+                return;
+            }
+
+            if (isLogin) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => window.location.href = 'index.html')
+                    .catch(err => message.textContent = err.message);
+            } else {
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(() => window.location.href = 'index.html')
+                    .catch(err => message.textContent = err.message);
+            }
+        });
+    </script>
+</body>
+  </html>
