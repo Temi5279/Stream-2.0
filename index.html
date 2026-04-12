@@ -3,49 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>str▶eam | Your Universe of Entertainment</title>
+    <title>str▶eam | Unlimited Entertainment</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Modern Enhancements */
+        :root {
+            --primary-blue: #0064ff; 
+            --disney-dark: #040714;
+            --text-white: #f9f9f9;
+        }
+
+        body {
+            background-color: var(--disney-dark);
+            color: var(--text-white);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Centered Logo Header */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 0;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .logo span { color: white; }
+
+        .btn-login-container {
+            position: absolute;
+            right: 5%;
+        }
+
+        .btn-login {
+            background: white;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* Hero Section */
         .hero {
-            height: 80vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
-            padding: 0 5%;
-            background: radial-gradient(circle at center, #001f4d 0%, #040714 100%);
+            padding: 20px 5% 60px;
         }
 
-        .illustration-img {
+        .hero img {
             width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
-            border-radius: 20px;
+            max-width: 450px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
 
-        /* Side-Scrolling Plans */
-        .plans-scroll-wrapper {
-            display: flex;
-            overflow-x: auto;
-            gap: 20px;
-            padding: 40px 5%;
-            scrollbar-width: none; /* Firefox */
-        }
-        .plans-scroll-wrapper::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .hero h1 { font-size: 3.5rem; margin: 0; font-weight: 900; line-height: 1.1; }
+        .hero p { color: #ccc; font-size: 1.2rem; margin-top: 15px; }
 
-        .plan-card {
-            min-width: 300px; /* Ensures they don't shrink */
-            flex-shrink: 0;
-        }
-
+        /* Feature Grid */
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px 5%;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 40px 5%;
         }
 
         .feature-item {
@@ -53,113 +87,208 @@
             padding: 30px;
             border-radius: 20px;
             text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .feature-item img {
             width: 100%;
             height: 200px;
-            object-fit: cover;
-            border-radius: 15px;
+            object-fit: contain;
             margin-bottom: 20px;
         }
 
+        /* Sideways Scrolling Plans */
+        .plans-scroll-wrapper {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 40px 5%;
+            scrollbar-width: none;
+        }
+        .plans-scroll-wrapper::-webkit-scrollbar { display: none; }
+
+        .plan-card {
+            min-width: 280px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .plan-card:hover { transform: translateY(-10px); border-color: var(--primary-blue); }
+
+        .ultra-plan { border: 2px solid #e50914; background: rgba(229, 9, 20, 0.05); }
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e50914;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .blue-plan { border: 2px solid var(--primary-blue); background: linear-gradient(145deg, rgba(0, 100, 255, 0.1), transparent); }
+
+        .price { font-size: 1.8rem; font-weight: bold; margin: 15px 0; }
+        .currency { font-size: 0.9rem; color: #888; }
+
+        .btn-select {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Modernized Footer */
+        footer {
+            padding: 60px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .footer-links a {
+            color: #777;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .footer-links a:hover { color: white; }
+
         details {
             background: rgba(255,255,255,0.05);
-            margin-bottom: 10px;
-            border-radius: 10px;
-            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         summary { cursor: pointer; font-weight: bold; list-style: none; display: flex; justify-content: space-between; }
-        summary::after { content: '+'; color: var(--primary-blue); }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="logo">str<span>▶</span>eam</div>
-        <a href="signin.html" class="btn-login" style="text-decoration:none; background:white; color:black; padding:8px 20px; border-radius:5px; font-weight:bold;">Sign In</a>
+        <div class="btn-login-container">
+            <a href="signin.html" class="btn-login">Sign In</a>
+        </div>
     </nav>
 
     <header class="hero">
-        <img src="https://img.freepik.com/free-vector/gradient-3d-character-illustration_23-2149118544.jpg" alt="Enjoy" class="illustration-img">
-        <h1 style="font-size: 3rem; font-weight: 900;">Unlimited Series & Movies</h1>
-        <p style="font-size: 1.2rem; color: #ccc;">A universe of stories, all in your pocket.</p>
-        <button onclick="scrollToPlans()" class="btn-select" style="width:250px; margin-top:30px;">Choose Your Plan</button>
+        <img src="poster-main.jpg" alt="Featured Content">
+        <h1>Unlimited Series & Movies</h1>
+        <p>A universe of stories, all in your pocket.</p>
+        <button onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})" class="btn-select" style="width:280px; margin-top:30px; font-size:1.1rem;">Choose Your Plan</button>
     </header>
 
     <section class="feature-grid">
         <div class="feature-item">
-            <img src="https://img.freepik.com/free-vector/diverse-people-working-their-devices_23-2148303350.jpg" alt="Watch Anywhere">
-            <h3>Watch Anywhere, Anytime</h3>
-            <p>At the airport, at home, or during a break at work. Your stream follows you.</p>
+            <img src="locations.jpg" alt="Locations">
+            <h3>Watch Anywhere</h3>
+            <p>Home, work, or the airport. Take your stream global.</p>
         </div>
-
         <div class="feature-item">
-            <img src="https://img.freepik.com/free-vector/man-downloading-data-mobile-phone_23-2148293756.jpg" alt="Download">
+            <img src="download-icon.jpg" alt="Download">
             <h3>Download & Go</h3>
-            <p>Save your favorites for offline viewing on the plane or the bus.</p>
+            <p>Save data and watch offline on any mobile device.</p>
         </div>
-        
         <div class="feature-item">
-            <img src="https://img.freepik.com/free-vector/video-streaming-concept-illustration_114360-6435.jpg" alt="No Ads">
-            <h3>Ad-Free Experience</h3>
-            <p>No interruptions. Just pure entertainment, exactly the way it was meant to be seen.</p>
+            <img src="devices.jpg" alt="Devices">
+            <h3>All Devices</h3>
+            <p>Support for Phones, Tablets, Laptops and TVs.</p>
+        </div>
+        <div class="feature-item">
+            <img src="no-ads.jpg" alt="No Ads">
+            <h3>Zero Ads</h3>
+            <p>No interruptions. Just the stories you love.</p>
         </div>
     </section>
 
-    <h2 style="text-align:center; margin-top:50px;">Pick a Plan</h2>
-    <p style="text-align:center; color:#888;">Swipe to see more options &rarr;</p>
-    
+    <h2 style="text-align:center; margin-top:60px;">Select Your Plan</h2>
     <div class="plans-scroll-wrapper" id="plans">
+        
         <div class="plan-card" onclick="selectPlan('Basic', 1000)">
             <h3>Stream Basic</h3>
             <div class="price">NGN 1000 <span class="currency">/ $2.99</span></div>
-            <ul><li>No Ads</li><li>2 Devices</li><li>Up to 480p</li></ul>
+            <ul style="padding:0; list-style:none; color:#aaa; font-size:0.9rem; line-height:1.8;">
+                <li><i class="fas fa-check"></i> 2 Devices</li>
+                <li><i class="fas fa-check"></i> 480p Quality</li>
+            </ul>
             <button class="btn-select">Select</button>
         </div>
 
         <div class="plan-card" onclick="selectPlan('Premium', 2000)">
             <h3>Stream Premium</h3>
             <div class="price">NGN 2000 <span class="currency">/ $4.99</span></div>
-            <ul><li>Live TV (480p)</li><li>4 Devices</li><li>Up to 720p</li></ul>
+            <ul style="padding:0; list-style:none; color:#aaa; font-size:0.9rem; line-height:1.8;">
+                <li><i class="fas fa-check"></i> 4 Devices</li>
+                <li><i class="fas fa-check"></i> 720p HD Quality</li>
+            </ul>
             <button class="btn-select">Select</button>
         </div>
 
-        <div class="plan-card" onclick="selectPlan('Ultra', 4500)">
+        <div class="plan-card ultra-plan" onclick="selectPlan('Ultra', 4500)">
+            <div class="popular-badge">Most Popular</div>
             <h3>Stream Ultra</h3>
             <div class="price">NGN 4500 <span class="currency">/ $6.99</span></div>
-            <ul><li>Immediate Access</li><li>6 Devices</li><li>Live TV (HD) | 1080p</li></ul>
+            <ul style="padding:0; list-style:none; color:#aaa; font-size:0.9rem; line-height:1.8;">
+                <li><i class="fas fa-check"></i> 6 Devices</li>
+                <li><i class="fas fa-check"></i> 1080p Full HD</li>
+            </ul>
             <button class="btn-select">Select</button>
         </div>
 
         <div class="plan-card blue-plan" onclick="selectPlan('Blue', 20000)">
             <h3>Stream Blue 💎</h3>
             <div class="price">NGN 20000 <span class="currency">/ $39.99</span></div>
-            <ul><li>10 Devices total</li><li>Global Live TV & 4K</li><li>Loyalty Tokens</li></ul>
+            <ul style="padding:0; list-style:none; color:#aaa; font-size:0.9rem; line-height:1.8;">
+                <li><i class="fas fa-check"></i> 10 Devices</li>
+                <li><i class="fas fa-check"></i> 4K + Loyalty Tokens</li>
+            </ul>
             <button class="btn-select">Get Blue</button>
+        </div>
+
+        <div class="plan-card" style="border-style:dashed;" onclick="document.getElementById('boxCheck').click()">
+            <h3>Box Office 🎟️</h3>
+            <div class="price">Pay Per Movie</div>
+            <p style="font-size:0.8rem; color:#888;">Theatre releases in 4K. Add to any plan above.</p>
+            <label style="cursor:pointer; font-weight:bold;">
+                <input type="checkbox" id="boxCheck"> Add to my plan
+            </label>
         </div>
     </div>
 
-    <div class="box-office-section" style="margin: 0 5%;">
-        <h3>🎟️ Add Box Office?</h3>
-        <p>Theatre releases in 4K. Pay per movie or use tokens.</p>
-        <label><input type="checkbox" id="addBoxOffice"> Add to my plan</label>
-        <p style="font-size: 0.8rem; margin-top:10px; opacity:0.6;">*Box Office is an add-on and not a standalone plan.</p>
-    </div>
-
-    <section style="padding: 50px 5%;">
-        <h2 style="text-align:center; margin-bottom:30px;">FAQ</h2>
+    <section style="padding: 60px 5%;">
+        <h2 style="text-align:center; margin-bottom:40px;">FAQ</h2>
         <details>
-            <summary>What is the Box Office plan?</summary>
-            <p>It's an add-on for theatre-released movies in 4K. You can pay per movie or use tokens earned in Stream Blue.</p>
+            <summary>What is Box Office? <span>+</span></summary>
+            <p style="color:#888; margin-top:10px;">Access to the latest cinema releases. Rent individually or use tokens from the Blue plan.</p>
         </details>
         <details>
-            <summary>How do Loyalty Tokens work?</summary>
-            <p>Blue members earn tokens for staying subscribed. Use them for Box Office movies or plan upgrades.</p>
-        </details>
-        <details>
-            <summary>Which devices are supported?</summary>
-            <p>You can stream on your phone, tablet, laptop, and smart TV.</p>
+            <summary>How do Loyalty Tokens work? <span>+</span></summary>
+            <p style="color:#888; margin-top:10px;">Earn tokens every month with Stream Blue to unlock movies and plan discounts.</p>
         </details>
     </section>
 
@@ -167,24 +296,21 @@
         <div class="footer-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
+            <a href="#">Help Center</a>
+            <a href="#">Supported Devices</a>
             <a href="#">Legal</a>
-            <a href="#">Blog</a>
         </div>
-        <p style="margin-top:20px;">&copy; 2026 str▶eam. All Rights Reserved.</p>
+        <p style="color:#555; font-size:0.8rem;">&copy; 2026 str▶eam. All Rights Reserved.</p>
     </footer>
 
     <script>
         function selectPlan(name, price) {
-            const hasBoxOffice = document.getElementById('addBoxOffice').checked;
-            const total = hasBoxOffice ? price + " + Box Office" : price;
+            const boxOffice = document.getElementById('boxCheck').checked;
             localStorage.setItem('selectedPlan', name);
-            localStorage.setItem('totalPrice', total);
+            localStorage.setItem('price', price);
+            localStorage.setItem('withBoxOffice', boxOffice);
             window.location.href = 'signup.html';
-        }
-
-        function scrollToPlans() {
-            document.getElementById('plans').scrollIntoView({behavior: 'smooth'});
         }
     </script>
 </body>
-                </html>
+    </html>
