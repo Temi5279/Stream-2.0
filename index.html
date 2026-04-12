@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>str▶eam | Unlimited Entertainment</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">str<span>▶</span>eam</div>
+        <button onclick="showLogin()" class="btn-login">Sign In</button>
+    </nav>
+
+    <header class="hero">
+        <h1>Unlimited Entertainment Awaits</h1>
+        <p>Stream latest movies, series, and Live TV anywhere.</p>
+        <button onclick="scrollToPlans()" class="btn-main">Choose Your Plan</button>
+    </header>
+
+    <section id="plans" class="plans-container">
+        <div class="plan-card" onclick="selectPlan('Basic', 1000)">
+            <h3>Stream Basic</h3>
+            <div class="price">NGN 1000 <span class="currency">/ $2.99</span></div>
+            <ul>
+                <li>No Ads</li>
+                <li>2 Devices</li>
+                <li>Up to 480p</li>
+            </ul>
+            <button class="btn-select">Select</button>
+        </div>
+
+        <div class="plan-card" onclick="selectPlan('Premium', 2000)">
+            <h3>Stream Premium</h3>
+            <div class="price">NGN 2000 <span class="currency">/ $4.99</span></div>
+            <ul>
+                <li>Live TV (480p)</li>
+                <li>4 Devices</li>
+                <li>Up to 720p</li>
+            </ul>
+            <button class="btn-select">Select</button>
+        </div>
+
+        <div class="plan-card" onclick="selectPlan('Ultra', 4500)">
+            <h3>Stream Ultra</h3>
+            <div class="price">NGN 4500 <span class="currency">/ $6.99</span></div>
+            <ul>
+                <li>Immediate Access</li>
+                <li>6 Devices</li>
+                <li>Live TV (HD) | 1080p</li>
+            </ul>
+            <button class="btn-select">Select</button>
+        </div>
+
+        <div class="plan-card blue-plan" onclick="selectPlan('Blue', 20000)">
+            <h3>Stream Blue 💎</h3>
+            <p><small>Quarterly Plan</small></p>
+            <div class="price">NGN 20000 <span class="currency">/ $39.99</span></div>
+            <ul>
+                <li>10 Devices total</li>
+                <li>Backstage Pass & Director's Cut</li>
+                <li>Global Live TV & 4K</li>
+                <li>Loyalty Tokens</li>
+            </ul>
+            <button class="btn-select">Get Blue</button>
+        </div>
+    </section>
+
+    <div class="box-office-section">
+        <h3>🎟️ Add Box Office?</h3>
+        <p>Theatre releases in 4K. Pay per movie or use tokens.</p>
+        <label>
+            <input type="checkbox" id="addBoxOffice"> Add to my plan
+        </label>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Legal</a>
+            <a href="#">Blog</a>
+            <a href="#">How we use other media</a>
+        </div>
+        <p>&copy; 2026 str▶eam</p>
+    </footer>
+
+    <script>
+        function selectPlan(name, price) {
+            const hasBoxOffice = document.getElementById('addBoxOffice').checked;
+            const total = hasBoxOffice ? price + " + Box Office Fee" : price;
+            // Store plan in local storage to use on signup page
+            localStorage.setItem('selectedPlan', name);
+            localStorage.setItem('totalPrice', total);
+            
+            // Go to signup
+            window.location.href = 'signup.html';
+        }
+
+        function scrollToPlans() {
+            document.getElementById('plans').scrollIntoView({behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>
