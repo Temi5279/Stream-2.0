@@ -3,133 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | str▶eam</title>
+    <title>Create Account | str▶eam</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: radial-gradient(circle at top, #1a1d29, #040714);
-        }
-        .signup-container {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 40px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 400px;
-            text-align: left;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .signup-container h2 { margin-bottom: 10px; font-size: 1.8rem; }
-        .plan-summary {
-            background: rgba(0, 100, 255, 0.2);
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            border-left: 4px solid var(--primary-blue);
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #31343e;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            box-sizing: border-box;
-        }
-        .btn-finish {
-            background: var(--primary-blue);
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            text-transform: uppercase;
-        }
-        .switch-auth {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-        .switch-auth a { color: white; text-decoration: none; font-weight: bold; }
+        body { background-color: #040714; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .auth-container { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 15px; width: 100%; max-width: 450px; text-align: center; }
+        .plan-summary { background: rgba(0, 100, 255, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #0064ff; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="signup-container">
-        <div class="logo" style="text-align: center; margin-bottom: 20px;">str<span>▶</span>eam</div>
-        <h2>Create Account</h2>
-        
-        <div id="planDisplay" class="plan-summary">
-            </div>
-
+    <div class="auth-container">
+        <div class="logo" style="margin-bottom: 10px;">str<span>▶</span>eam</div>
+        <div id="displayPlan" class="plan-summary">Selected Plan: Loading...</div>
+        <h2 style="color: white;">Finish Setting Up</h2>
         <form id="signupForm">
-            <input type="text" id="fullName" placeholder="Full Name" required>
-            <input type="email" id="email" placeholder="Email Address" required>
-            <input type="password" id="password" placeholder="Create Password" required>
-            
-            <p style="font-size: 0.7rem; color: #888; margin-top: 10px;">
-                By clicking "Agree & Continue", you agree to our Terms of Service and Privacy Policy.
+            <input type="text" id="fullName" placeholder="Full Name" required style="width:100%; padding:15px; margin:10px 0; background:#31343e; color:white; border:none; border-radius:5px;">
+            <input type="email" id="email" placeholder="Email" required style="width:100%; padding:15px; margin:10px 0; background:#31343e; color:white; border:none; border-radius:5px;">
+            <input type="password" id="password" placeholder="Create Password" required style="width:100%; padding:15px; margin:10px 0; background:#31343e; color:white; border:none; border-radius:5px;">
+            <p style="font-size: 0.8rem; color: #888; text-align: left; margin: 15px 0;">
+                By clicking "Agree & Continue", you agree to the updated 2026 Subscriber Agreement.
             </p>
-            
-            <button type="submit" class="btn-finish">Agree & Continue</button>
+            <button type="submit" class="btn-select">Agree & Continue</button>
         </form>
-
-        <div class="switch-auth">
-            Already have an account? <a href="signin.html">Sign In</a>
-        </div>
     </div>
 
     <script type="module">
-        // Import your firebase config
-        import { auth, db } from './firebase-config.js';
-        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 1. Get the plan details from the previous page (Local Storage)
-        const selectedPlan = localStorage.getItem('selectedPlan') || 'Basic';
-        const totalPrice = localStorage.getItem('totalPrice') || '1000';
-        
-        document.getElementById('planDisplay').innerHTML = `
-            <strong>Selected:</strong> Stream ${selectedPlan} <br>
-            <strong>Total Due:</strong> NGN ${totalPrice} (Trial Mode: Free)
-        `;
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfkqkhk0z8xuritMgzf4Bhf_N2Na-Co-Y",
+            authDomain: "stream-2o.firebaseapp.com",
+            projectId: "stream-2o",
+            storageBucket: "stream-2o.firebasestorage.app",
+            messagingSenderId: "6845983758",
+            appId: "1:6845983758:web:f0016e044e8aadb192e05f"
+        };
 
-        // 2. Handle Sign Up
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Show the plan the user picked on index.html
+        const selectedPlan = localStorage.getItem('selectedPlan') || "Basic";
+        document.getElementById('displayPlan').innerText = "Selected Plan: " + selectedPlan;
+
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerText = "Processing..."; // Visual feedback it's loading
             
             const name = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const pass = document.getElementById('password').value;
 
             try {
-                // Create user in Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // Save user profile & plan to Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    fullName: name,
-                    email: email,
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", res.user.uid), {
+                    name: name,
                     plan: selectedPlan,
                     joinedDate: new Date().toISOString()
                 });
-
-                // Success! Redirect to the main app
-                alert("Account created successfully!");
-                window.location.href = 'stream-home.html'; 
-
+                window.location.href = 'stream-home.html';
             } catch (error) {
-                alert("Error: " + error.message);
+                btn.innerText = "Agree & Continue";
+                alert("Sign Up Error: " + error.message);
             }
         });
     </script>
