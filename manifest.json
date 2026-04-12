@@ -1,0 +1,22 @@
+{
+  "short_name": "str▶eam",
+  "name": "str▶eam: Premium Live TV & Movies",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/index.html",
+  "background_color": "#040714",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#0064ff",
+  "description": "Stream worldwide Live TV and Movies with str▶eam."
+}
