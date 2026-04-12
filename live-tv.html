@@ -3,196 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live TV | str▶eam</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>str▶eam - Global Live TV</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#040714">
+
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        :root {
-            --primary-blue: #0064ff;
-            --disney-dark: #040714;
-            --live-red: #ff0000;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #040714; color: white; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 2.5em; letter-spacing: -1px; }
+        .header h1 span { color: #0064ff; }
+        
+        /* Premium Player Container */
+        .player-wrapper { width: 100%; max-width: 960px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .video-js { width: 100%; aspect-ratio: 16/9; }
+        
+        /* Netflix-style Control Customization */
+        .vjs-theme-netflix .vjs-big-play-button { background-color: #0064ff; border-radius: 50%; }
+        .vjs-play-progress { background-color: #0064ff !important; }
 
-        body { background: var(--disney-dark); color: white; margin: 0; font-family: 'Inter', sans-serif; padding-bottom: 80px; }
-
-        /* Custom Premium Player */
-        .video-wrapper {
-            width: 100%;
-            background: #000;
-            aspect-ratio: 16/9;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        video { width: 100%; height: 100%; outline: none; }
-
-        /* Channel Section */
-        .content-padding { padding: 20px; }
-
-        .live-indicator {
-            display: inline-flex;
-            align-items: center;
-            background: var(--live-red);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .channel-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            transition: 0.3s;
-        }
-
-        .channel-card.active { border-color: var(--primary-blue); background: rgba(0, 100, 255, 0.1); }
-
-        .channel-logo {
-            width: 40px;
-            height: 40px;
-            background: #1a1d29;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* Schedule List */
-        .schedule-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .time { color: var(--primary-blue); font-weight: bold; font-size: 0.9rem; min-width: 60px; }
-        .show-title { font-size: 0.95rem; font-weight: 500; }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: #1a1d29;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 1000;
-        }
-
-        .nav-item { text-align: center; color: #888; text-decoration: none; font-size: 0.7rem; }
-        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-        .nav-item.active { color: white; }
+        /* Channel Selection Grid */
+        .grid-container { max-width: 960px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .channel-card { background: #12172d; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+        .channel-card:hover { border-color: #0064ff; background: #1a2245; transform: translateY(-5px); }
+        .channel-card h3 { margin: 10px 0 5px 0; font-size: 1.1em; }
+        .tag { font-size: 0.7em; background: #0064ff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="video-wrapper">
-        <video id="mainPlayer" controls poster="poster-main.jpg"></video>
+    <div class="header">
+        <h1>str<span>▶eam</span></h1>
+        <p>Premium Global Broadcasting</p>
     </div>
 
-    <div class="content-padding">
-        <div class="live-indicator">● LIVE</div>
-        <h1 id="playingTitle" style="margin: 0; font-size: 1.5rem;">Select a Station</h1>
-        <p id="playingDesc" style="color: #888; font-size: 0.9rem;">Tap a channel below to start streaming.</p>
-
-        <h3 style="margin-top: 30px;">Channels</h3>
-        <div class="channel-grid">
-            <div class="channel-card" onclick="changeChannel('https://ntvpublic.akamaized.net/hls/live/2026549/NTV-Public/master.m3u8', 'NASA TV', 'Space Exploration & Science')">
-                <div class="channel-logo">🚀</div>
-                <div style="font-weight: bold;">NASA TV</div>
-            </div>
-
-            <div class="channel-card" onclick="changeChannel('https://nhkwlive-ojp.akamaized.net/hls/live/2000394/nhkwlive-ojp-en/index.m3u8', 'NHK World', 'Japanese Global News')">
-                <div class="channel-logo">🌏</div>
-                <div style="font-weight: bold;">NHK World</div>
-            </div>
-
-            <div class="channel-card" onclick="changeChannel('https://live-hls-web-aje.akamaized.net/hls/live/2036571/aje/index.m3u8', 'Al Jazeera', 'International News')">
-                <div class="channel-logo">📰</div>
-                <div style="font-weight: bold;">Al Jazeera</div>
-            </div>
-
-            <div class="channel-card" onclick="changeChannel('https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8', 'France 24', 'European News 24/7')">
-                <div class="channel-logo">🇫🇷</div>
-                <div style="font-weight: bold;">France 24</div>
-            </div>
-        </div>
-
-        <h3 style="margin-top: 40px;">Coming Up Next</h3>
-        <div id="schedule">
-            <div class="schedule-row">
-                <div class="time">09:00</div>
-                <div class="show-title">Morning Global Report</div>
-            </div>
-            <div class="schedule-row">
-                <div class="time">10:30</div>
-                <div class="show-title">Documentary: The Deep Blue</div>
-            </div>
-            <div class="schedule-row">
-                <div class="time">12:00</div>
-                <div class="show-title">Live: World Economic Forum</div>
-            </div>
-        </div>
+    <div class="player-wrapper">
+        <video id="mainPlayer" class="video-js vjs-big-play-centered vjs-theme-netflix" controls preload="auto">
+            <p class="vjs-no-js">Enable JavaScript to experience str▶eam.</p>
+        </video>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="stream-home.html" class="nav-item"><i class="fas fa-home"></i>HOME</a>
-        <a href="live-tv.html" class="nav-item active"><i class="fas fa-tv"></i>LIVE TV</a>
-        <a href="#" class="nav-item"><i class="fas fa-compass"></i>DISCOVER</a>
-        <a href="#" class="nav-item"><i class="fas fa-download"></i>DOWNLOADS</a>
-        <a href="#" class="nav-item"><i class="fas fa-user"></i>MY STREAM</a>
-    </nav>
+    <div class="grid-container" id="channelGrid">
+        </div>
 
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
-        const video = document.getElementById('mainPlayer');
-        const title = document.getElementById('playingTitle');
-        const desc = document.getElementById('playingDesc');
-
-        function changeChannel(url, name, description) {
-            title.innerText = name;
-            desc.innerText = description;
-            
-            // Highlight active card
-            document.querySelectorAll('.channel-card').forEach(card => card.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-                video.play();
-            }
+        // 1. PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
 
-        // Load first channel on start
-        window.onload = () => {
-            changeChannel('https://ntvpublic.akamaized.net/hls/live/2026549/NTV-Public/master.m3u8', 'NASA TV', 'Space Exploration & Science');
-        };
+        // 2. Setup Player
+        var player = videojs('mainPlayer');
+
+        // 3. Updated Channel List with your provided links
+        const channels = [
+            { 
+                name: "Al Jazeera", 
+                url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8", 
+                type: "News" 
+            },
+            { 
+                name: "FIFA Plus", 
+                url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8", 
+                type: "Sports" 
+            },
+            { 
+                name: "NASA TV Public", 
+                url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8", 
+                type: "Science" 
+            },
+            { 
+                name: "NASA Media", 
+                url: "https://nasa-i.akamaihd.net/hls/live/253566/NASA-NTV2-Media/master.m3u8", 
+                type: "Science" 
+            },
+            { 
+                name: "ISS Live Earth", 
+                url: "http://d2ai41bknpka2u.cloudfront.net/live/iss.stream_source/chunklist.m3u8", 
+                type: "Live Space" 
+            },
+            { 
+                name: "Red Bull TV", 
+                url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8", 
+                type: "Extreme Sports" 
+            }
+        ];
+
+        // 4. Function to change channel
+        function switchChannel(link) {
+            player.src({
+                src: link,
+                type: 'application/x-mpegURL'
+            });
+            player.play();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 5. Build the UI
+        const grid = document.getElementById('channelGrid');
+        channels.forEach(ch => {
+            let card = document.createElement('div');
+            card.className = 'channel-card';
+            card.innerHTML = `<span class="tag">${ch.type}</span><h3>${ch.name}</h3>`;
+            card.onclick = () => switchChannel(ch.url);
+            grid.appendChild(card);
+        });
+
+        // Start with Al Jazeera by default
+        switchChannel(channels[0].url);
     </script>
 </body>
-                </html>
+</html>
