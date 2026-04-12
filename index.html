@@ -3,77 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>str▶eam | Unlimited Entertainment</title>
+    <title>str▶eam | Your Universe of Entertainment</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Modern Enhancements */
+        .hero {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 5%;
+            background: radial-gradient(circle at center, #001f4d 0%, #040714 100%);
+        }
+
+        .illustration-img {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+        /* Side-Scrolling Plans */
+        .plans-scroll-wrapper {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 40px 5%;
+            scrollbar-width: none; /* Firefox */
+        }
+        .plans-scroll-wrapper::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        .plan-card {
+            min-width: 300px; /* Ensures they don't shrink */
+            flex-shrink: 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px 5%;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .feature-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        details {
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 10px;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        summary { cursor: pointer; font-weight: bold; list-style: none; display: flex; justify-content: space-between; }
+        summary::after { content: '+'; color: var(--primary-blue); }
+    </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="logo">str<span>▶</span>eam</div>
-        <button onclick="showLogin()" class="btn-login">Sign In</button>
+        <a href="signin.html" class="btn-login" style="text-decoration:none; background:white; color:black; padding:8px 20px; border-radius:5px; font-weight:bold;">Sign In</a>
     </nav>
 
     <header class="hero">
-        <h1>Unlimited Entertainment Awaits</h1>
-        <p>Stream latest movies, series, and Live TV anywhere.</p>
-        <button onclick="scrollToPlans()" class="btn-main">Choose Your Plan</button>
+        <img src="https://img.freepik.com/free-vector/gradient-3d-character-illustration_23-2149118544.jpg" alt="Enjoy" class="illustration-img">
+        <h1 style="font-size: 3rem; font-weight: 900;">Unlimited Series & Movies</h1>
+        <p style="font-size: 1.2rem; color: #ccc;">A universe of stories, all in your pocket.</p>
+        <button onclick="scrollToPlans()" class="btn-select" style="width:250px; margin-top:30px;">Choose Your Plan</button>
     </header>
 
-    <section id="plans" class="plans-container">
+    <section class="feature-grid">
+        <div class="feature-item">
+            <img src="https://img.freepik.com/free-vector/diverse-people-working-their-devices_23-2148303350.jpg" alt="Watch Anywhere">
+            <h3>Watch Anywhere, Anytime</h3>
+            <p>At the airport, at home, or during a break at work. Your stream follows you.</p>
+        </div>
+
+        <div class="feature-item">
+            <img src="https://img.freepik.com/free-vector/man-downloading-data-mobile-phone_23-2148293756.jpg" alt="Download">
+            <h3>Download & Go</h3>
+            <p>Save your favorites for offline viewing on the plane or the bus.</p>
+        </div>
+        
+        <div class="feature-item">
+            <img src="https://img.freepik.com/free-vector/video-streaming-concept-illustration_114360-6435.jpg" alt="No Ads">
+            <h3>Ad-Free Experience</h3>
+            <p>No interruptions. Just pure entertainment, exactly the way it was meant to be seen.</p>
+        </div>
+    </section>
+
+    <h2 style="text-align:center; margin-top:50px;">Pick a Plan</h2>
+    <p style="text-align:center; color:#888;">Swipe to see more options &rarr;</p>
+    
+    <div class="plans-scroll-wrapper" id="plans">
         <div class="plan-card" onclick="selectPlan('Basic', 1000)">
             <h3>Stream Basic</h3>
             <div class="price">NGN 1000 <span class="currency">/ $2.99</span></div>
-            <ul>
-                <li>No Ads</li>
-                <li>2 Devices</li>
-                <li>Up to 480p</li>
-            </ul>
+            <ul><li>No Ads</li><li>2 Devices</li><li>Up to 480p</li></ul>
             <button class="btn-select">Select</button>
         </div>
 
         <div class="plan-card" onclick="selectPlan('Premium', 2000)">
             <h3>Stream Premium</h3>
             <div class="price">NGN 2000 <span class="currency">/ $4.99</span></div>
-            <ul>
-                <li>Live TV (480p)</li>
-                <li>4 Devices</li>
-                <li>Up to 720p</li>
-            </ul>
+            <ul><li>Live TV (480p)</li><li>4 Devices</li><li>Up to 720p</li></ul>
             <button class="btn-select">Select</button>
         </div>
 
         <div class="plan-card" onclick="selectPlan('Ultra', 4500)">
             <h3>Stream Ultra</h3>
             <div class="price">NGN 4500 <span class="currency">/ $6.99</span></div>
-            <ul>
-                <li>Immediate Access</li>
-                <li>6 Devices</li>
-                <li>Live TV (HD) | 1080p</li>
-            </ul>
+            <ul><li>Immediate Access</li><li>6 Devices</li><li>Live TV (HD) | 1080p</li></ul>
             <button class="btn-select">Select</button>
         </div>
 
         <div class="plan-card blue-plan" onclick="selectPlan('Blue', 20000)">
             <h3>Stream Blue 💎</h3>
-            <p><small>Quarterly Plan</small></p>
             <div class="price">NGN 20000 <span class="currency">/ $39.99</span></div>
-            <ul>
-                <li>10 Devices total</li>
-                <li>Backstage Pass & Director's Cut</li>
-                <li>Global Live TV & 4K</li>
-                <li>Loyalty Tokens</li>
-            </ul>
+            <ul><li>10 Devices total</li><li>Global Live TV & 4K</li><li>Loyalty Tokens</li></ul>
             <button class="btn-select">Get Blue</button>
         </div>
-    </section>
+    </div>
 
-    <div class="box-office-section">
+    <div class="box-office-section" style="margin: 0 5%;">
         <h3>🎟️ Add Box Office?</h3>
         <p>Theatre releases in 4K. Pay per movie or use tokens.</p>
-        <label>
-            <input type="checkbox" id="addBoxOffice"> Add to my plan
-        </label>
+        <label><input type="checkbox" id="addBoxOffice"> Add to my plan</label>
+        <p style="font-size: 0.8rem; margin-top:10px; opacity:0.6;">*Box Office is an add-on and not a standalone plan.</p>
     </div>
+
+    <section style="padding: 50px 5%;">
+        <h2 style="text-align:center; margin-bottom:30px;">FAQ</h2>
+        <details>
+            <summary>What is the Box Office plan?</summary>
+            <p>It's an add-on for theatre-released movies in 4K. You can pay per movie or use tokens earned in Stream Blue.</p>
+        </details>
+        <details>
+            <summary>How do Loyalty Tokens work?</summary>
+            <p>Blue members earn tokens for staying subscribed. Use them for Box Office movies or plan upgrades.</p>
+        </details>
+        <details>
+            <summary>Which devices are supported?</summary>
+            <p>You can stream on your phone, tablet, laptop, and smart TV.</p>
+        </details>
+    </section>
 
     <footer>
         <div class="footer-links">
@@ -81,20 +169,16 @@
             <a href="#">Terms of Service</a>
             <a href="#">Legal</a>
             <a href="#">Blog</a>
-            <a href="#">How we use other media</a>
         </div>
-        <p>&copy; 2026 str▶eam</p>
+        <p style="margin-top:20px;">&copy; 2026 str▶eam. All Rights Reserved.</p>
     </footer>
 
     <script>
         function selectPlan(name, price) {
             const hasBoxOffice = document.getElementById('addBoxOffice').checked;
-            const total = hasBoxOffice ? price + " + Box Office Fee" : price;
-            // Store plan in local storage to use on signup page
+            const total = hasBoxOffice ? price + " + Box Office" : price;
             localStorage.setItem('selectedPlan', name);
             localStorage.setItem('totalPrice', total);
-            
-            // Go to signup
             window.location.href = 'signup.html';
         }
 
@@ -103,4 +187,4 @@
         }
     </script>
 </body>
-</html>
+                </html>
