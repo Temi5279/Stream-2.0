@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>str▶eam - My Profile</title>
+    <style>
+        :root { --brand-blue: #0064ff; --bg-dark: #040714; --glass: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; margin: 0; padding-bottom: 100px; }
+
+        /* NAV BAR (Matching your Home/Live TV) */
+        .nav-container { background: rgba(4, 7, 20, 0.7); backdrop-filter: blur(20px); z-index: 1000; border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 10px 0; border-radius: 20px 20px 0 0; }
+        @media (min-width: 1024px) { .nav-container { position: sticky; top: 20px; width: fit-content; margin: 0 auto; border-radius: 50px; padding: 12px 40px; } }
+        .nav-link { color: rgba(255, 255, 255, 0.5); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; }
+        .nav-link.active { color: var(--brand-blue); text-shadow: 0 0 10px var(--brand-blue); }
+        .icon { width: 24px; height: 24px; fill: currentColor; }
+
+        /* PROFILE SECTION */
+        .profile-header { text-align: center; padding: 50px 20px; animation: fadeIn 0.8s ease; }
+        .avatar-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 20px; }
+        #user-photo { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--brand-blue); box-shadow: 0 0 20px var(--brand-blue); }
+        .change-photo-btn { position: absolute; bottom: 0; right: 0; background: var(--brand-blue); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; color: white; font-weight: bold; }
+
+        .info-card { background: var(--glass); backdrop-filter: blur(10px); max-width: 500px; margin: 0 auto 20px; padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 0.8em; color: #888; margin-bottom: 5px; }
+        input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; font-size: 1em; box-sizing: border-box; }
+        
+        .btn-save { width: 100%; background: var(--brand-blue); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-save:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+        /* PROFILE SWITCHER (Netflix Style) */
+        .switcher-title { text-align: center; margin-top: 40px; color: #888; text-transform: uppercase; font-size: 0.9em; letter-spacing: 2px; }
+        .profile-list { display: flex; justify-content: center; gap: 20px; padding: 20px; }
+        .p-item { cursor: pointer; text-align: center; transition: 0.3s; opacity: 0.6; }
+        .p-item:hover, .p-item.active { opacity: 1; transform: scale(1.1); }
+        .p-item img { width: 60px; height: 60px; border-radius: 8px; margin-bottom: 5px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            <img id="user-photo" src="https://via.placeholder.com/150" alt="Avatar">
+            <button class="change-photo-btn" onclick="document.getElementById('file-input').click()">+</button>
+            <input type="file" id="file-input" style="display:none" accept="image/*">
+        </div>
+        <h2 id="display-name-header">Loading...</h2>
+    </div>
+
+    <div class="info-card">
+        <div class="input-group">
+            <label>DISPLAY NAME</label>
+            <input type="text" id="name-input" placeholder="Enter name">
+        </div>
+        <div class="input-group">
+            <label>EMAIL ADDRESS</label>
+            <input type="email" id="email-input" readonly style="opacity: 0.5; cursor: not-allowed;">
+        </div>
+        <button class="btn-save" onclick="updateProfile()">Update Profile</button>
+        <button style="background:transparent; color:#ff4444; margin-top:15px;" class="btn-save" onclick="forgotPassword()">Reset Password</button>
+    </div>
+
+    <p class="switcher-title">Who's watching?</p>
+    <div class="profile-list">
+        <div class="p-item active"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"><br>Me</div>
+        <div class="p-item"><img src="https://ih0.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg"><br>Kids</div>
+        <div class="p-item" style="font-size: 2em; line-height: 60px;">+</div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-items">
+            <a href="stream-home.html" class="nav-link">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="live-tv.html" class="nav-link">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+                <span>Live TV</span>
+            </a>
+            <a href="profile.html" class="nav-link active">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Profile</span>
+            </a>
+        </div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, updateProfile as fbUpdateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // USE YOUR FIREBASE CONFIG HERE
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 1. PULL REAL DATA ON LOAD
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('display-name-header').innerText = user.displayName || "New Streamer";
+                document.getElementById('name-input').value = user.displayName || "";
+                document.getElementById('email-input').value = user.email;
+                if (user.photoURL) document.getElementById('user-photo').src = user.photoURL;
+            } else {
+                window.location.href = "login.html"; // Redirect if not logged in
+            }
+        });
+
+        // 2. UPDATE PROFILE LOGIC
+        window.updateProfile = async () => {
+            const newName = document.getElementById('name-input').value;
+            try {
+                await fbUpdateProfile(auth.currentUser, { displayName: newName });
+                alert("Profile Updated!");
+                location.reload();
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        // 3. RESET PASSWORD
+        window.forgotPassword = async () => {
+            try {
+                await sendPasswordResetEmail(auth, auth.currentUser.email);
+                alert("Reset link sent to your email!");
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+    </script>
+</body>
+      </html>
