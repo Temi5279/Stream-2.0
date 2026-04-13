@@ -3,100 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>str▶eam - Global Live TV</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#040714">
-
+    <title>str▶eam - Live TV</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #040714; color: white; margin: 0; padding: 20px; padding-bottom: 80px; }
+        :root { --brand-blue: #0064ff; --bg-dark: #040714; --card-bg: #12172d; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); color: white; margin: 0; padding: 20px; padding-bottom: 90px; }
         
-        /* THE ALL-BLUE LOGO */
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 2.5em; letter-spacing: -1px; color: #0064ff; } /* Both str and eam are blue now */
-        .header p { color: #a9a9a9; margin-top: 5px; }
+        /* THE DYNAMIC NAVIGATION */
+        .nav-container { background: var(--bg-dark); z-index: 1000; border: 1px solid #1a2245; }
         
-        .player-wrapper { width: 100%; max-width: 960px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .video-js { width: 100%; aspect-ratio: 16/9; }
-        
-        .grid-container { max-width: 960px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .channel-card { background: #12172d; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
-        .channel-card:hover { border-color: #0064ff; background: #1a2245; transform: translateY(-5px); }
-        .tag { font-size: 0.7em; background: #0064ff; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
-
-        /* BOTTOM NAVIGATION */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #040714; display: flex; justify-content: space-around;
-            padding: 15px 0; border-top: 1px solid #1a2245; z-index: 1000;
-        }
-        .nav-item { color: #a9a9a9; text-decoration: none; font-size: 0.75em; text-align: center; flex: 1; }
-        .nav-item.active { color: #0064ff; }
-        .nav-icon { font-size: 1.5em; display: block; margin-bottom: 4px; }
-
-        /* TV MODE HIDING */
-        @media (min-width: 1025px) {
-            .bottom-nav { display: none; }
+        /* Desktop/TV: Nav at the TOP */
+        @media (min-width: 1024px) {
+            .nav-container { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 10px 40px; margin-bottom: 30px; }
+            .nav-items { display: flex; gap: 30px; }
             body { padding-bottom: 20px; }
+            .logo { font-size: 1.8em; color: var(--brand-blue); font-weight: bold; }
         }
+
+        /* Mobile: Nav at the BOTTOM */
+        @media (max-width: 1023px) {
+            .nav-container { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 15px 0; }
+            .logo { display: none; }
+            .nav-items { display: flex; width: 100%; justify-content: space-around; }
+        }
+
+        .nav-link { color: #a9a9a9; text-decoration: none; font-size: 0.9em; text-align: center; cursor: pointer; }
+        .nav-link.active { color: var(--brand-blue); font-weight: bold; }
+
+        /* Search & Categories */
+        .search-box { width: 100%; max-width: 500px; margin: 20px auto; display: block; padding: 12px; border-radius: 25px; border: none; background: var(--card-bg); color: white; outline: none; border: 1px solid #333; }
+        .filter-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; max-width: 960px; margin: 0 auto; }
+        .filter-btn { background: var(--card-bg); border: 1px solid #333; color: white; padding: 8px 16px; border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        .filter-btn.active { background: var(--brand-blue); border-color: var(--brand-blue); }
+
+        /* Player & Grid */
+        .player-wrapper { width: 100%; max-width: 960px; margin: 0 auto; border-radius: 12px; overflow: hidden; }
+        .video-js { width: 100%; aspect-ratio: 16/9; }
+        .grid-container { max-width: 960px; margin: 20px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .channel-card { background: var(--card-bg); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; font-size: 0.9em; transition: 0.3s; }
+        .channel-card:hover { border: 1px solid var(--brand-blue); transform: scale(1.05); }
     </style>
 </head>
-<body id="mainBody">
+<body>
 
-    <div class="header">
-        <h1>str<span>▶eam</span></h1>
-        <p>Premium Global Broadcasting</p>
-    </div>
+    <nav class="nav-container">
+        <div class="logo">str▶eam</div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="live-tv.html" class="nav-link active">Live TV</a>
+            <a class="nav-link" id="dlLink">Downloads</a>
+            <a class="nav-link">Profile</a>
+        </div>
+    </nav>
 
     <div class="player-wrapper">
         <video id="mainPlayer" class="video-js vjs-big-play-centered" controls preload="auto"></video>
     </div>
 
-    <div class="grid-container" id="channelGrid"></div>
+    <input type="text" id="searchInput" class="search-box" placeholder="Search channels (e.g. News, Football)...">
 
-    <nav class="bottom-nav" id="bottomNav">
-        <a href="index.html" class="nav-item"> <span class="nav-icon">🏠</span> Home </a>
-        <a href="live-tv.html" class="nav-item active"> <span class="nav-icon">📺</span> Live TV </a>
-        <a href="#" class="nav-item" id="downloadTab"> <span class="nav-icon">📥</span> Downloads </a>
-        <a href="#" class="nav-item"> <span class="nav-icon">👤</span> Profile </a>
-    </nav>
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterCategory('All')">All</button>
+        <button class="filter-btn" onclick="filterCategory('Sports')">Sports</button>
+        <button class="filter-btn" onclick="filterCategory('News')">News</button>
+        <button class="filter-btn" onclick="filterCategory('Kids')">Kids</button>
+        <button class="filter-btn" onclick="filterCategory('Entertainment')">Entertainment</button>
+    </div>
+
+    <div class="grid-container" id="channelGrid"></div>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
-        var player = videojs('mainPlayer');
-
-        // UPDATED SECURE LINKS
-        const channels = [
-            { name: "Al Jazeera", url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8", type: "News" },
-            { name: "FIFA Plus", url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8", type: "Sports" },
-            { name: "NASA TV", url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8", type: "Science" },
-            { name: "Red Bull TV", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8", type: "Extreme" },
-            { name: "Sky News", url: "https://skynews-skynews-main-1-gb.samsung.wurl.com/manifest/playlist.m3u8", type: "News" }
+        const player = videojs('mainPlayer');
+        let allChannels = [
+            { name: "FIFA Plus", url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8", cat: "Sports" },
+            { name: "Red Bull TV", url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8", cat: "Sports" },
+            { name: "Al Jazeera", url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8", cat: "News" },
+            { name: "NASA Public", url: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8", cat: "Science" },
+            { name: "ABC News", url: "https://content.uplynk.com/channel/332e0ad828134c74a198cda5e028b1d7.m3u8", cat: "News" },
+            { name: "CBeebies (Kids)", url: "https://tve-live-hls.getaj.net/kids/index.m3u8", cat: "Kids" }
         ];
 
-        function switchChannel(link) {
-            player.src({ src: link, type: 'application/x-mpegURL' });
-            player.play();
-            if (window.innerWidth < 1024) window.scrollTo({ top: 0, behavior: 'smooth' });
+        function renderChannels(list) {
+            const grid = document.getElementById('channelGrid');
+            grid.innerHTML = '';
+            list.forEach(ch => {
+                let div = document.createElement('div');
+                div.className = 'channel-card';
+                div.innerHTML = `<strong>${ch.name}</strong><br><small>${ch.cat}</small>`;
+                div.onclick = () => {
+                    player.src({ src: ch.url, type: 'application/x-mpegURL' });
+                    player.play();
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                };
+                grid.appendChild(div);
+            });
         }
 
-        const grid = document.getElementById('channelGrid');
-        channels.forEach(ch => {
-            let card = document.createElement('div');
-            card.className = 'channel-card';
-            card.innerHTML = `<span class="tag">${ch.type}</span><h3>${ch.name}</h3>`;
-            card.onclick = () => switchChannel(ch.url);
-            grid.appendChild(card);
+        // Search Function
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(val) || ch.cat.toLowerCase().includes(val));
+            renderChannels(filtered);
         });
 
-        // HIDE DOWNLOADS IF NOT PWA
-        const isPWA = window.matchMedia('(display-mode: standalone)').matches;
-        if (!isPWA) {
-            document.getElementById('downloadTab').style.display = 'none';
+        // Category Filter
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            if(cat === 'All') return renderChannels(allChannels);
+            const filtered = allChannels.filter(ch => ch.cat === cat);
+            renderChannels(filtered);
         }
 
-        switchChannel(channels[0].url);
+        // PWA Download Protection
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+        if (!isPWA) document.getElementById('dlLink').style.display = 'none';
+
+        // Initial Load
+        renderChannels(allChannels);
+        player.src({ src: allChannels[0].url, type: 'application/x-mpegURL' });
     </script>
 </body>
-</html>
+                                                                                              </html>
