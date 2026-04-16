@@ -7,48 +7,46 @@
     <style>
         :root { --brand-blue: #0064ff; --bg-dark: #040714; --glass: rgba(255, 255, 255, 0.1); }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; margin: 0; text-align: center; }
+        
+        /* UNIFIED NAV CODE (SAME AS ABOVE) */
+        .nav-container { background: rgba(4, 7, 20, 0.8); backdrop-filter: blur(20px); z-index: 1000; border: 1px solid rgba(255,255,255,0.1); }
+        @media (min-width: 600px) { .nav-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: fit-content; border-radius: 50px; padding: 10px 40px; display: flex; gap: 30px; } }
+        @media (max-width: 599px) { .nav-container { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 12px 0; border-radius: 20px 20px 0 0; } body { padding-bottom: 80px; } }
+        .nav-link { color: rgba(255,255,255,0.5); text-decoration: none; padding: 5px 15px; border-radius: 20px; }
+        .nav-link.active { color: var(--brand-blue); font-weight: bold; }
         :focus { outline: none; border: 3px solid var(--brand-blue) !important; transform: scale(1.05); background: rgba(0, 100, 255, 0.1); }
-        
-        .search-box { width: 80%; max-width: 600px; padding: 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); background: var(--glass); color: white; font-size: 1.2em; margin-top: 100px; backdrop-filter: blur(10px); }
-        
-        .genre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 50px; }
-        .genre-card { height: 120px; border-radius: 15px; background: linear-gradient(45deg, #12172d, #0064ff); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3em; cursor: pointer; transition: 0.3s; }
 
-        /* REUSABLE NAV */
-        .nav-container { background: rgba(4, 7, 20, 0.7); backdrop-filter: blur(20px); position: sticky; top: 20px; width: fit-content; margin: 0 auto; border-radius: 50px; padding: 12px 40px; display: flex; gap: 40px; }
-        .nav-link { color: rgba(255,255,255,0.5); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 10px; padding: 5px; }
-        .nav-link.active { color: var(--brand-blue); }
-        .icon { width: 24px; height: 24px; fill: currentColor; }
+        .search-box { width: 85%; max-width: 600px; padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); background: var(--glass); color: white; font-size: 1.1em; margin-top: 100px; }
+        .genre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; padding: 30px; }
+        .genre-card { height: 90px; border-radius: 12px; background: linear-gradient(45deg, #12172d, #0064ff); display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.3s; }
     </style>
 </head>
 <body>
     <nav class="nav-container">
-        <a href="stream-home.html" class="nav-link">Home</a>
-        <a href="live-tv.html" class="nav-link">Live TV</a>
-        <a href="discover.html" class="nav-link active">Discover</a>
-        <a href="profile.html" class="nav-link">Profile</a>
+        <a href="index.html" class="nav-link" tabindex="1">Home</a>
+        <a href="live-tv.html" class="nav-link" tabindex="2">Live TV</a>
+        <a href="discover.html" class="nav-link active" tabindex="3">Discover</a>
+        <a href="profile.html" class="nav-link" tabindex="4">Profile</a>
     </nav>
 
-    <input type="text" class="search-box" placeholder="Search movies, actors, genres..." tabindex="1">
+    <input type="text" class="search-box" placeholder="Search movies, actors..." tabindex="5">
 
     <div class="genre-grid">
-        <div class="genre-card" tabindex="2">ACTION</div>
-        <div class="genre-card" tabindex="3">HORROR</div>
-        <div class="genre-card" tabindex="4">COMEDY</div>
-        <div class="genre-card" tabindex="5">SCI-FI</div>
-        <div class="genre-card" tabindex="6">CLASSICS</div>
-        <div class="genre-card" tabindex="7">THRILLER</div>
+        <div class="genre-card" tabindex="6">ACTION</div>
+        <div class="genre-card" tabindex="7">HORROR</div>
+        <div class="genre-card" tabindex="8">COMEDY</div>
+        <div class="genre-card" tabindex="9">SCI-FI</div>
     </div>
 
     <script>
         document.addEventListener('keydown', (e) => {
-            const focusable = Array.from(document.querySelectorAll('a, input, .genre-card'));
-            let index = focusable.indexOf(document.activeElement);
-            if (e.key === "ArrowRight") index = (index + 1) % focusable.length;
-            if (e.key === "ArrowLeft") index = (index - 1 + focusable.length) % focusable.length;
-            if (e.key === "ArrowDown") index = (index + 3) % focusable.length;
-            if (e.key === "ArrowUp") index = (index - 3 + focusable.length) % focusable.length;
-            focusable[index]?.focus();
+            const items = Array.from(document.querySelectorAll('[tabindex]'));
+            let current = items.indexOf(document.activeElement);
+            if (e.key === "ArrowRight") current = (current + 1) % items.length;
+            if (e.key === "ArrowLeft") current = (current - 1 + items.length) % items.length;
+            if (e.key === "ArrowDown") current = (current + 2) % items.length;
+            if (e.key === "ArrowUp") current = (current - 2 + items.length) % items.length;
+            items[current]?.focus();
         });
     </script>
 </body>
