@@ -3,43 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>str▶eam - My Profile</title>
+    <title>str▶eam - Profile</title>
     <style>
         :root { --brand-blue: #0064ff; --bg-dark: #040714; --glass: rgba(255, 255, 255, 0.1); }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; text-align: center; padding-bottom: 100px; }
-        
-        .profile-card { background: var(--glass); backdrop-filter: blur(15px); max-width: 400px; margin: 50px auto; padding: 40px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
-        #userPic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--brand-blue); margin-bottom: 20px; object-fit: cover; }
-        
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; background: var(--brand-blue); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: white; text-align: center; }
+        :focus { border: 3px solid var(--brand-blue) !important; transform: scale(1.05); }
 
-        .nav-container { background: rgba(4, 7, 20, 0.7); backdrop-filter: blur(20px); position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 10px 0; border-radius: 20px 20px 0 0; }
-        @media (min-width: 1024px) { .nav-container { position: sticky; top: 20px; width: fit-content; margin: 0 auto; border-radius: 50px; padding: 12px 40px; } }
-        .nav-link { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8em; }
+        .profile-container { max-width: 500px; margin: 80px auto; padding: 40px; background: var(--glass); border-radius: 30px; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--brand-blue); margin-bottom: 20px; }
+        .btn { width: 100%; padding: 15px; margin-top: 15px; border-radius: 10px; border: none; background: var(--brand-blue); color: white; font-weight: bold; cursor: pointer; }
+
+        /* CONSISTENT NAV */
+        .nav-container { background: rgba(4, 7, 20, 0.7); backdrop-filter: blur(20px); position: sticky; top: 20px; width: fit-content; margin: 0 auto; border-radius: 50px; padding: 12px 40px; display: flex; gap: 40px; }
+        .nav-link { color: rgba(255,255,255,0.5); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; border-radius: 10px; padding: 5px; }
         .nav-link.active { color: var(--brand-blue); }
     </style>
 </head>
 <body>
-
-    <div class="profile-card">
-        <img id="userPic" src="https://via.placeholder.com/150">
-        <h2 id="headerName">Loading...</h2>
-        <input type="text" id="nameInput" placeholder="Update Name">
-        <input type="email" id="emailInput" readonly style="opacity:0.5;">
-        <button class="btn" id="updateBtn">Save Changes</button>
-        <button class="btn" style="background:transparent; color:#ff4444;" id="resetBtn">Reset Password</button>
-    </div>
-
     <nav class="nav-container">
         <a href="stream-home.html" class="nav-link">Home</a>
         <a href="live-tv.html" class="nav-link">Live TV</a>
+        <a href="discover.html" class="nav-link">Discover</a>
         <a href="profile.html" class="nav-link active">Profile</a>
     </nav>
 
+    <div class="profile-container">
+        <img src="https://via.placeholder.com/150" class="avatar" id="userPic">
+        <h2 id="userName">User Name</h2>
+        <input type="text" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; background:#000; color:#fff;" id="nameInput" tabindex="1">
+        <button class="btn" tabindex="2">Update Name</button>
+        <button class="btn" style="background:#ff4444;" tabindex="3">Logout</button>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBfkqkhk0z8xuritMgzf4Bhf_N2Na-Co-Y",
@@ -47,8 +45,7 @@
             projectId: "stream-2o",
             storageBucket: "stream-2o.firebasestorage.app",
             messagingSenderId: "6845983758",
-            appId: "1:6845983758:web:f0016e044e8aadb192e05f",
-            measurementId: "G-EZSCM2ZX7W"
+            appId: "1:6845983758:web:f0016e044e8aadb192e05f"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -56,25 +53,10 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('headerName').innerText = user.displayName || "New Streamer";
-                document.getElementById('nameInput').value = user.displayName || "";
-                document.getElementById('emailInput').value = user.email;
+                document.getElementById('userName').innerText = user.displayName || "Streamer";
                 if(user.photoURL) document.getElementById('userPic').src = user.photoURL;
-            } else {
-                window.location.href = "index.html";
             }
         });
-
-        document.getElementById('updateBtn').onclick = async () => {
-            await updateProfile(auth.currentUser, { displayName: document.getElementById('nameInput').value });
-            alert("Updated!");
-            location.reload();
-        };
-
-        document.getElementById('resetBtn').onclick = async () => {
-            await sendPasswordResetEmail(auth, auth.currentUser.email);
-            alert("Reset email sent!");
-        };
     </script>
 </body>
 </html>
