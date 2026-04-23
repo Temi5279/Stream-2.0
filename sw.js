@@ -1,21 +1,7 @@
-const CACHE_NAME = 'stream-v1';
-const assets = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/manifest.json'
-];
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(assets))
-  );
+self.addEventListener('install', (e) => {
+  console.log('str▶eam Service Worker Installed');
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
-  );
+self.addEventListener('fetch', (e) => {
+  // This is empty for now, but required for PWA status
 });
