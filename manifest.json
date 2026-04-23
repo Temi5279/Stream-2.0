@@ -1,22 +1,21 @@
 {
+  "name": "str▶eam",
   "short_name": "str▶eam",
-  "name": "str▶eam: Premium Live TV & Movies",
+  "start_url": "/stream-home.html",
+  "display": "standalone",
+  "background_color": "#040714",
+  "theme_color": "#0064ff",
+  "orientation": "any",
   "icons": [
     {
-      "src": "icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "https://via.placeholder.com/192/0064ff/ffffff?text=S",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "icon-512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "https://via.placeholder.com/512/0064ff/ffffff?text=stream",
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  ],
-  "start_url": "/index.html",
-  "background_color": "#040714",
-  "display": "standalone",
-  "scope": "/",
-  "theme_color": "#0064ff",
-  "description": "Stream worldwide Live TV and Movies with str▶eam."
+  ]
 }
