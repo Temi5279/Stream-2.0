@@ -1,147 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>str▶eam - Live TV</title>
-    <style>
-        :root { 
-            --brand-blue: #0064ff; 
-            --bg-dark: #040714; 
-            --glass: rgba(255, 255, 255, 0.15); 
-        }
-        
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg-dark); 
-            color: white; 
-            margin: 0; 
-            overflow-x: hidden; 
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* REMOTE FOCUS STYLE */
-        :focus { 
-            outline: none; 
-            border: 3px solid var(--brand-blue) !important; 
-            transform: scale(1.03); 
-            box-shadow: 0 0 25px var(--brand-blue); 
-            z-index: 10; 
-            background: rgba(0, 100, 255, 0.2); 
-        }
-
-        /* NAVIGATION CONTAINER */
-        .nav-container { 
-            background: rgba(4, 7, 20, 0.9); 
-            backdrop-filter: blur(20px); 
-            z-index: 1000; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            display: flex;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link { 
-            color: rgba(255,255,255,0.5); 
-            text-decoration: none; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 4px; 
-            transition: 0.3s; 
-            border-radius: 10px; 
-            padding: 8px; 
-        }
-        
-        .nav-link.active { 
-            color: var(--brand-blue); 
-            text-shadow: 0 0 10px var(--brand-blue); 
-        }
-        
-        .icon { width: 24px; height: 24px; fill: currentColor; }
-        .tv-logo { display: none; } 
-
-        /* MAIN LAYOUT WRAPPER */
-        .main-layout {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-
-        /* IMMERSIVE LIVE STREAM STAGE CONTAINER */
-        .player-stage {
-            width: 100%;
-            height: 50vh;
-            background: #000;
-            position: relative;
-        }
-
-        .player-stage iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .channel-billboard {
-            padding: 15px 30px;
-            background: linear-gradient(to bottom, rgba(4,7,20,0), var(--bg-dark));
-        }
-
-        .channel-title { font-size: 1.8em; margin: 0; font-weight: 800; }
-        .channel-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; color: #ff3b30; font-weight: bold; text-transform: uppercase; margin-top: 5px;}
-        .status-dot { width: 8px; height: 8px; background: #ff3b30; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #ff3b30; }
-
-        /* HORIZONTAL LIVE TRACK STATION MATRIX */
-        .row-title { padding-left: 30px; font-size: 1.3em; margin-top: 25px; font-weight: 700; color: rgba(255,255,255,0.8); }
-        .station-grid { display: flex; gap: 20px; padding: 10px 30px 40px 30px; overflow-x: auto; scrollbar-width: none; }
-        .station-grid::-webkit-scrollbar { display: none; }
-
-        .station-card {
-            min-width: 180px;
-            height: 100px;
-            background: var(--glass);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 15px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255,255,255,0.05);
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .station-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 1;
-        }
-
-        .station-name { font-weight: bold; font-size: 0.95em; position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        /* =======================================================
-           1. MOBILE / PHONE MATRIX STYLES
-           ======================================================= */
-        @media (max-width: 599px) {
-            .nav-container { 
-                position: fixed; 
-                bottom: 0; 
-                left: 0; 
-                right: 0; 
-                justify-content: space-around; 
-                padding: 10px 0; 
-                border-radius: 20px 20px 0 0; 
-            }
-            .main-layout { padding-bottom: 90px; }
-            .player-stage { height: 30vh; }
-        }
+<html         }
 
         /* =======================================================
            2. LAPTOP MATRIX STYLES (Sidebar view)
@@ -260,25 +118,7 @@
                     document.getElementById('currentPlayerTitle').innerText = station.name;
                     
                     // URL logic pointing to live syndication endpoints
-                    const liveUrl = `https://www.youtube.com/embed/live_stream?channel=${station.channelId}&autoplay=1`;
-                    document.getElementById('livePlayer').src = liveUrl;
-                });
-
-                container.appendChild(card);
-            });
-        }
-
-        // Initialize Directories
-        loadCategory(stations.sports, 'sportsContainer');
-        loadCategory(stations.news, 'newsContainer');
-
-        // KEYBOARD / REMOTE SELECTION INTERACTION ENGINE
-        document.addEventListener('keydown', (e) => {
-            const focusable = Array.from(document.querySelectorAll('a, .station-card'));
-            let index = focusable.indexOf(document.activeElement);
-            
-            if (e.key === "ArrowRight") {
-                index = (index + 1) % focusable.length;
+dex = (index + 1) % focusable.length;
                 e.preventDefault();
             }
             if (e.key === "ArrowLeft") {
@@ -304,4 +144,5 @@
         });
     </script>
 </body>
-        </html>
+    </html>
+    
