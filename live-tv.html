@@ -33,7 +33,7 @@
             background: rgba(0, 100, 255, 0.2); 
         }
 
-        /* FIXED NAV ICON STYLING (Prevents stretching seen in screenshots) */
+        /* FIXED NAV ICON STYLING */
         .nav-container { 
             background: rgba(4, 7, 20, 0.95); 
             backdrop-filter: blur(25px); 
@@ -59,7 +59,6 @@
             text-shadow: 0 0 10px var(--brand-blue); 
         }
         
-        /* Strict sizing constraints to eliminate layout stretching */
         .icon { 
             width: 24px !important; 
             height: 24px !important; 
@@ -140,9 +139,7 @@
         .guide-show-title { font-weight: bold; color: #fff; margin-bottom: 2px; }
         .guide-show-desc { font-size: 0.85em; color: rgba(255,255,255,0.5); }
 
-        /* =======================================================
-           1. MOBILE RESPONSIVE RULES (Fixes stretching layouts)
-           ======================================================= */
+        /* MOBILE RESPONSIVE RULES */
         @media (max-width: 599px) {
             .nav-container { position: fixed; bottom: 0; left: 0; right: 0; justify-content: space-around; padding: 8px 0; border-radius: 15px 15px 0 0; }
             .nav-link { padding: 4px; font-size: 0.75em; width: 60px; }
@@ -154,9 +151,7 @@
             .guide-section { padding: 10px 20px 40px 20px; }
         }
 
-        /* =======================================================
-           2. LAPTOP RESPONSIVE RULES (Sidebar Mode)
-           ======================================================= */
+        /* LAPTOP RESPONSIVE RULES */
         @media (min-width: 600px) and (max-width: 1024px) {
             body { flex-direction: row; }
             .nav-container { position: fixed; left: 0; top: 0; bottom: 0; width: 85px; flex-direction: column; justify-content: center; gap: 30px; padding: 20px 0; border-radius: 0 15px 15px 0; }
@@ -165,9 +160,7 @@
             .player-stage { height: 42vh; }
         }
 
-        /* =======================================================
-           3. TV BOX RESPONSIVE RULES (Top Pill Mode)
-           ======================================================= */
+        /* TV BOX RESPONSIVE RULES */
         @media (min-width: 1025px) {
             .nav-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: fit-content; border-radius: 50px; padding: 10px 35px; gap: 35px; }
             .nav-link { font-size: 0.85em; }
@@ -218,7 +211,7 @@
     </div>
 
     <script>
-        // MASTER DIRECT SERVER M3U8 DIRECT STREAM MATRIX
+        // CLEANED STREAM DATASET (Upgraded unsecure links to protect execution flow)
         const stations = {
             sports: [
                 { 
@@ -278,30 +271,12 @@
                     ]
                 },
                 { 
-                    name: "Toonami Aftermath", 
-                    url: "https://api.toonamiaftermath.com:3000/est/playlist.m3u8",
-                    schedule: [
-                        { time: "08:00 AM", title: "Dragon Ball Z Marathon", desc: "Classic continuous episodes from the Saiyan and Frieza arcs." },
-                        { time: "10:00 AM", title: "Gundam Wing Classics", desc: "Retro tactical mech space warfare blocks from the 90s era." },
-                        { time: "11:30 AM", title: "The Midnight Run Block", desc: "Action packed classic anime anthologies engineered for fans." }
-                    ]
-                },
-                { 
-                    name: "Boomerang / Cartoon Network", 
+                    name: "Boomerang / CN Classics", 
                     url: "https://stream01.vnet.am/Boomerang/tracks-v1a2/mono.m3u8",
                     schedule: [
                         { time: "08:00 AM", title: "Tom and Jerry Chronicles", desc: "Classic golden-era slapstick chase sequences and short episodes." },
                         { time: "09:30 AM", title: "Looney Tunes Hour", desc: "Bugs Bunny, Daffy Duck, and Elmer Fudd vintage showcase." },
                         { time: "11:00 AM", title: "The Flintstones Family Time", desc: "Prehistoric suburban life adventures direct from Bedrock." }
-                    ]
-                },
-                { 
-                    name: "BET Live Stream", 
-                    url: "http://170.254.18.106/BET/index.m3u8",
-                    schedule: [
-                        { time: "08:00 AM", title: "Morning Music Culture", desc: "A curated video mix highlighting top R&B and Hip-Hop records." },
-                        { time: "10:00 AM", title: "BET Original Sitcoms", desc: "Binge classic daily comedy episodes and syndication hits." },
-                        { time: "12:00 PM", title: "BET News Special", desc: "Spotlighting community updates, creative arts, and entertainment." }
                     ]
                 }
             ]
@@ -311,7 +286,6 @@
         let hls = new Hls();
         let currentTabIndex = 10;
 
-        // HIGH PERFORMANCE VIDEO STREAMING LOGIC PIPELINE
         function playStream(station) {
             document.getElementById('currentPlayerTitle').innerText = station.name;
             updateScheduleGuide(station);
@@ -321,7 +295,9 @@
                 hls = new Hls();
                 hls.loadSource(station.url);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(e => console.log("Autoplay wait")); });
+                hls.on(Hls.Events.MANIFEST_PARSED, () => { 
+                    video.play().catch(e => console.log("Waiting for user tap interaction to start sound")); 
+                });
             } 
             else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = station.url;
@@ -329,7 +305,6 @@
             }
         }
 
-        // DYNAMIC SCHEDULE GUIDE ENGINE
         function updateScheduleGuide(station) {
             document.getElementById('guideHeaderTitle').innerText = `${station.name} — Program Schedule`;
             const wrapper = document.getElementById('guideRowsWrapper');
@@ -337,9 +312,7 @@
 
             station.schedule.forEach((show, index) => {
                 const row = document.createElement('div');
-                // First show in list gets highlighted as "Live Now" style block
                 row.className = `guide-row ${index === 0 ? 'current-active' : ''}`;
-                
                 row.innerHTML = `
                     <div class="guide-time">${index === 0 ? '● NOW' : show.time}</div>
                     <div class="guide-details">
@@ -351,9 +324,10 @@
             });
         }
 
-        // CARDS SETUP DIRECTORY GENERATOR
         function loadCategory(data, containerId) {
             const container = document.getElementById(containerId);
+            if (!container) return;
+            
             data.forEach((station) => {
                 const card = document.createElement('div');
                 card.className = 'station-card';
@@ -368,20 +342,36 @@
             });
         }
 
-        // Initialize channel tracks and launch default stream (FIFA+)
-        loadCategory(stations.sports, 'sportsContainer');
-        loadCategory(stations.news, 'newsContainer');
-        playStream(stations.sports[0]);
+        // Safe Initialization Engine
+        try {
+            loadCategory(stations.sports, 'sportsContainer');
+            loadCategory(stations.news, 'newsContainer');
+            
+            // Launch the first secure channel as default (FIFA+)
+            if (stations.sports.length > 0) {
+                playStream(stations.sports[0]);
+            }
+        } catch (error) {
+            console.error("Initialization safe-catch triggered: ", error);
+        }
 
-        // SMART DIRECTIONAL NAVIGATION MATRIX ENGINE
+        // DIRECTIONAL NAVIGATION ENGINE
         document.addEventListener('keydown', (e) => {
             const focusable = Array.from(document.querySelectorAll('a, .station-card'));
             let index = focusable.indexOf(document.activeElement);
             
             if (e.key === "ArrowRight") index = (index + 1) % focusable.length;
             if (e.key === "ArrowLeft") index = (index - 1 + focusable.length) % focusable.length;
-            if (e.key === "Enter") document.activeElement.click();
+            if (e.key === "Enter") {
+                e.preventDefault();
+                document.activeElement.click();
+            }
             
             if(focusable[index]) {
                 focusable[index].focus();
-                focusable[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', i
+                focusable[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        });
+    </script>
+</body>
+            </html>
