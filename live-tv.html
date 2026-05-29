@@ -1,58 +1,183 @@
 <!DOCTYPE html>
-<html         }
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>str▶eam - Live TV</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root { 
+            --brand-blue: #0064ff; 
+            --bg-dark: #040714; 
+            --glass: rgba(255, 255, 255, 0.12); 
+            --card-bg: #121624;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: var(--bg-dark); 
+            color: white; 
+            margin: 0; 
+            overflow-x: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* REMOTE & DIRECTIONAL KEYBOARD FOCUS */
+        :focus { 
+            outline: none; 
+            border: 3px solid var(--brand-blue) !important; 
+            transform: scale(1.03); 
+            box-shadow: 0 0 25px var(--brand-blue); 
+            z-index: 10; 
+            background: rgba(0, 100, 255, 0.2); 
+        }
+
+        /* FIXED NAV ICON STYLING (Prevents stretching seen in screenshots) */
+        .nav-container { 
+            background: rgba(4, 7, 20, 0.95); 
+            backdrop-filter: blur(25px); 
+            z-index: 1000; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            display: flex;
+            box-sizing: border-box;
+        }
+
+        .nav-link { 
+            color: rgba(255,255,255,0.5); 
+            text-decoration: none; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+            transition: 0.2s; 
+            border-radius: 10px; 
+        }
+        
+        .nav-link.active { 
+            color: var(--brand-blue); 
+            text-shadow: 0 0 10px var(--brand-blue); 
+        }
+        
+        /* Strict sizing constraints to eliminate layout stretching */
+        .icon { 
+            width: 24px !important; 
+            height: 24px !important; 
+            min-width: 24px;
+            min-height: 24px;
+            max-width: 24px;
+            max-height: 24px;
+            fill: currentColor; 
+            display: inline-block;
+        }
+        
+        .tv-logo { display: none; } 
+
+        .main-layout { width: 100%; display: flex; flex-direction: column; }
+
+        /* THE LIVE VIDEO THEATRE STAGE */
+        .player-stage {
+            width: 100%;
+            height: 45vh;
+            background: #000;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .player-stage video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .channel-billboard {
+            padding: 15px 30px;
+            background: linear-gradient(to bottom, rgba(4,7,20,0), var(--bg-dark));
+        }
+
+        .channel-title { font-size: 1.8em; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+        .channel-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; color: #ff3b30; font-weight: bold; text-transform: uppercase; margin-top: 5px;}
+        .status-dot { width: 8px; height: 8px; background: #ff3b30; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #ff3b30; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* HORIZONTAL LIVE CHANNEL SELECTION CARDS */
+        .row-title { padding-left: 30px; font-size: 1.3em; margin-top: 25px; font-weight: 700; color: rgba(255,255,255,0.9); }
+        .station-grid { display: flex; gap: 15px; padding: 10px 30px 20px 30px; overflow-x: auto; scrollbar-width: none; }
+        .station-grid::-webkit-scrollbar { display: none; }
+
+        .station-card {
+            min-width: 170px;
+            height: 95px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .station-name { font-weight: bold; font-size: 0.9em; position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* LIVE TV SCHEDULE GUIDE ENGINE */
+        .guide-section { padding: 10px 30px 40px 30px; }
+        .guide-container { background: #0b0e19; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .guide-header { padding: 15px; background: #121624; font-weight: bold; font-size: 1em; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--brand-blue); }
+        .guide-row { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9em; transition: 0.2s; }
+        .guide-row.current-active { background: rgba(0, 100, 255, 0.08); border-left: 4px solid var(--brand-blue); }
+        .guide-time { width: 90px; font-weight: bold; color: rgba(255,255,255,0.4); }
+        .guide-details { flex: 1; }
+        .guide-show-title { font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .guide-show-desc { font-size: 0.85em; color: rgba(255,255,255,0.5); }
 
         /* =======================================================
-           2. LAPTOP MATRIX STYLES (Sidebar view)
+           1. MOBILE RESPONSIVE RULES (Fixes stretching layouts)
            ======================================================= */
-        @media (min-width: 600px) and (max-width: 1024px) {
-            body { flex-direction: row; }
-            
-            .nav-container {
-                position: fixed;
-                left: 0; top: 0; bottom: 0;
-                width: 90px;
-                flex-direction: column;
-                justify-content: center;
-                gap: 35px;
-                padding: 0 10px;
-                border-radius: 0 20px 20px 0;
-            }
-
-            .main-layout { margin-left: 110px; }
-            .player-stage { height: 45vh; }
+        @media (max-width: 599px) {
+            .nav-container { position: fixed; bottom: 0; left: 0; right: 0; justify-content: space-around; padding: 8px 0; border-radius: 15px 15px 0 0; }
+            .nav-link { padding: 4px; font-size: 0.75em; width: 60px; }
+            .main-layout { padding-bottom: 85px; }
+            .player-stage { height: 28vh; }
+            .channel-billboard { padding: 12px 20px; }
+            .row-title { padding-left: 20px; font-size: 1.2em; }
+            .station-grid { padding: 10px 20px; }
+            .guide-section { padding: 10px 20px 40px 20px; }
         }
 
         /* =======================================================
-           3. TV BOX MATRIX STYLES (Top Bar layout)
+           2. LAPTOP RESPONSIVE RULES (Sidebar Mode)
+           ======================================================= */
+        @media (min-width: 600px) and (max-width: 1024px) {
+            body { flex-direction: row; }
+            .nav-container { position: fixed; left: 0; top: 0; bottom: 0; width: 85px; flex-direction: column; justify-content: center; gap: 30px; padding: 20px 0; border-radius: 0 15px 15px 0; }
+            .nav-link { font-size: 0.8em; padding: 10px 0; }
+            .main-layout { margin-left: 100px; }
+            .player-stage { height: 42vh; }
+        }
+
+        /* =======================================================
+           3. TV BOX RESPONSIVE RULES (Top Pill Mode)
            ======================================================= */
         @media (min-width: 1025px) {
-            .nav-container { 
-                position: fixed; 
-                top: 20px; 
-                left: 50%;
-                transform: translateX(-50%);
-                width: fit-content; 
-                border-radius: 50px; 
-                padding: 12px 40px; 
-                gap: 40px; 
-            }
-            
-            .tv-logo { 
-                display: block;
-                position: fixed; 
-                bottom: 40px; right: 50px; 
-                font-size: 2.5em; 
-                color: var(--brand-blue); 
-                font-weight: bold; 
-                z-index: 1000;
-            }
-
-            .main-layout { margin-top: 0px; }
-            .player-stage { height: 65vh; }
-            .channel-billboard { padding: 25px 60px; }
-            .row-title { padding-left: 60px; font-size: 1.5em; }
-            .station-grid { padding: 15px 60px 50px 60px; gap: 25px; }
-            .station-card { min-width: 240px; height: 135px; }
+            .nav-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: fit-content; border-radius: 50px; padding: 10px 35px; gap: 35px; }
+            .nav-link { font-size: 0.85em; }
+            .tv-logo { display: block; position: fixed; bottom: 40px; right: 50px; font-size: 2.5em; color: var(--brand-blue); font-weight: bold; z-index: 1000; }
+            .player-stage { height: 60vh; }
+            .channel-billboard { padding: 20px 60px; }
+            .row-title { padding-left: 60px; font-size: 1.4em; }
+            .station-grid { padding: 10px 60px 30px 60px; gap: 20px; }
+            .station-card { min-width: 220px; height: 120px; }
+            .guide-section { padding: 10px 60px 60px 60px; }
         }
     </style>
 </head>
@@ -69,80 +194,194 @@
 
     <div class="main-layout">
         <div class="player-stage">
-            <iframe id="livePlayer" src="https://www.youtube.com/embed/live_stream?channel=UC4i9_bOsnN-O9o3R2_BlyHA&autoplay=1&mute=1" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <video id="videoPlayer" controls autoplay muted playsinline></video>
         </div>
 
         <div class="channel-billboard">
-            <div class="channel-status"><span class="status-dot"></span> Live broadcast feed</div>
-            <h1 class="channel-title" id="currentPlayerTitle">FIFA+ Live Stream</h1>
+            <div class="channel-status"><span class="status-dot"></span> Live Now</div>
+            <h1 class="channel-title" id="currentPlayerTitle">Loading Channel...</h1>
         </div>
 
         <h2 class="row-title">Sports Channels</h2>
         <div class="station-grid" id="sportsContainer"></div>
 
-        <h2 class="row-title">Global News Networks</h2>
+        <h2 class="row-title">Entertainment & News</h2>
         <div class="station-grid" id="newsContainer"></div>
+
+        <h2 class="row-title">Channel Guide & Schedule</h2>
+        <div class="guide-section">
+            <div class="guide-container">
+                <div class="guide-header" id="guideHeaderTitle">On Air Schedule</div>
+                <div id="guideRowsWrapper"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // LIVE FEED STATION MAP
+        // MASTER DIRECT SERVER M3U8 DIRECT STREAM MATRIX
         const stations = {
             sports: [
-                { name: "FIFA+ On-Air", channelId: "UC4i9_bOsnN-O9o3R2_BlyHA", fallbackVideo: "bX44V97bXbI", bg: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&q=80" },
-                { name: "Olympics Channel", channelId: "UC9x7N9M4M4qA1W2h6d8e2_w", fallbackVideo: "60_S6q9gHxk", bg: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80" },
-                { name: "Red Bull TV", channelId: "UCblfuW_4rakhd2g9qqY60kg", fallbackVideo: "5gR-vW3p_F0", bg: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=400&q=80" },
-                { name: "World Billiards Live", channelId: "UCp_y84EwZ77b-H5R4K6hI0Q", fallbackVideo: "I_rF-ZAnz6s", bg: "https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=400&q=80" },
-                { name: "World Poker Tour TV", channelId: "UCvX6HscE-D7b4XUvS0d_2uA", fallbackVideo: "LpW6YF4w-OQ", bg: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80" }
+                { 
+                    name: "FIFA+ On-Air", 
+                    url: "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "FIFA World Cup Classics", desc: "Revisiting legendary match action from tournament archives." },
+                        { time: "10:30 AM", title: "Live: Matchday Preview", desc: "Analysis, lineup breakdowns, and tactical predictions." },
+                        { time: "12:00 PM", title: "The Football Review Show", desc: "Deep dive insights into international club soccer leagues." }
+                    ]
+                },
+                { 
+                    name: "Olympics Channel", 
+                    url: "https://ocshls-2-olympicchannel.akamaized.net/ocshls/OC1_71.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Gold Medal Runs", desc: "Relive historic record-breaking moments across Track & Field." },
+                        { time: "09:45 AM", title: "Aquatics Championships", desc: "Live-taped competitive final rounds from the grand pool." },
+                        { time: "12:15 PM", title: "Olympic Stories Documentary", desc: "The road to triumph and training regimes of world champions." }
+                    ]
+                },
+                { 
+                    name: "Red Bull TV", 
+                    url: "https://886bd3fbc782459f8de7555d32d7e9ce.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-957-WORBLATAMESFAST-WHALETVPLUS/957/whaletvplus/hls/master/playlist.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Cliff Diving World Series", desc: "Extreme high-diving tournament coverage direct from Europe." },
+                        { time: "10:00 AM", title: "Mountain Bike Downhill", desc: "Adrenaline fueled time-trials through mountain singletracks." },
+                        { time: "11:30 AM", title: "Formula 1 Paddock Central", desc: "Behind the curtain engineering insights with technical crews." }
+                    ]
+                }
             ],
             news: [
-                { name: "DW News Live", channelId: "UCknLrEdhRCp1aegoKJS74XA", fallbackVideo: "v39c8gW5c4E", bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80" },
-                { name: "Sky News Live", channelId: "UComdcy96kthjwZ9S9_n7LwQ", fallbackVideo: "9AuqeyvKN2A", bg: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80" },
-                { name: "Al Jazeera English", channelId: "UCNye-wNBqNL5ZzHSJ1rKp8Q", fallbackVideo: "-upS8XUvDZs", bg: "https://images.unsplash.com/photo-1495020689067-958852a6565d?w=400&q=80" },
-                { name: "ABC News Live", channelId: "UCBi2mrWuN6vydAwvr7HQ_rg", fallbackVideo: "w_Ma8oQLmSM", bg: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=400&q=80" }
+                { 
+                    name: "CNN News Feed", 
+                    url: "https://turnerlive.warnermediacdn.com/hls/live/586495/cnngo/cnn_slate/VIDEO_2_1964000.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Global Newsroom Live", desc: "Breaking headlines and rapid coverage from worldwide bureaus." },
+                        { time: "10:00 AM", title: "Marketplace & Business Report", desc: "Analysis of global trade, stock indices, and economic shifts." },
+                        { time: "11:00 AM", title: "International Correspondents", desc: "In-depth political panels investigating modern global affairs." }
+                    ]
+                },
+                { 
+                    name: "Al Jazeera English", 
+                    url: "https://d35j504z0x2vu2.cloudfront.net/v1/master/0bc8e8376bd8417a1b6761138aa41c26c7309312/al-jazeera-english/playlist.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Al Jazeera News Hour", desc: "Comprehensive independent broadcast reporting on global events." },
+                        { time: "09:00 AM", title: "The Stream Interactive", desc: "Social media trend discussions focusing on human rights issues." },
+                        { time: "10:30 AM", title: "Listening Post", desc: "Critiquing media representation and journalistic reporting trends." }
+                    ]
+                },
+                { 
+                    name: "BBC One Live", 
+                    url: "https://vs-hls-push-uk-live.akamaized.net/x=3/i=urn:bbc:pips:service:bbc_one_hd/t=3840/v=pv14/b=5070016/main.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "BBC Breakfast Live", desc: "The latest news updates, business analysis, and lifestyle segments." },
+                        { time: "10:15 AM", title: "The Repair Shop", desc: "Dedicated craftsmen breathe life back into historic family heirlooms." },
+                        { time: "11:45 AM", title: "BBC News Special", desc: "Live coverage of major domestic updates and regional reports." }
+                    ]
+                },
+                { 
+                    name: "Toonami Aftermath", 
+                    url: "https://api.toonamiaftermath.com:3000/est/playlist.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Dragon Ball Z Marathon", desc: "Classic continuous episodes from the Saiyan and Frieza arcs." },
+                        { time: "10:00 AM", title: "Gundam Wing Classics", desc: "Retro tactical mech space warfare blocks from the 90s era." },
+                        { time: "11:30 AM", title: "The Midnight Run Block", desc: "Action packed classic anime anthologies engineered for fans." }
+                    ]
+                },
+                { 
+                    name: "Boomerang / Cartoon Network", 
+                    url: "https://stream01.vnet.am/Boomerang/tracks-v1a2/mono.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Tom and Jerry Chronicles", desc: "Classic golden-era slapstick chase sequences and short episodes." },
+                        { time: "09:30 AM", title: "Looney Tunes Hour", desc: "Bugs Bunny, Daffy Duck, and Elmer Fudd vintage showcase." },
+                        { time: "11:00 AM", title: "The Flintstones Family Time", desc: "Prehistoric suburban life adventures direct from Bedrock." }
+                    ]
+                },
+                { 
+                    name: "BET Live Stream", 
+                    url: "http://170.254.18.106/BET/index.m3u8",
+                    schedule: [
+                        { time: "08:00 AM", title: "Morning Music Culture", desc: "A curated video mix highlighting top R&B and Hip-Hop records." },
+                        { time: "10:00 AM", title: "BET Original Sitcoms", desc: "Binge classic daily comedy episodes and syndication hits." },
+                        { time: "12:00 PM", title: "BET News Special", desc: "Spotlighting community updates, creative arts, and entertainment." }
+                    ]
+                }
             ]
         };
 
+        const video = document.getElementById('videoPlayer');
+        let hls = new Hls();
         let currentTabIndex = 10;
 
+        // HIGH PERFORMANCE VIDEO STREAMING LOGIC PIPELINE
+        function playStream(station) {
+            document.getElementById('currentPlayerTitle').innerText = station.name;
+            updateScheduleGuide(station);
+
+            if (Hls.isSupported()) {
+                hls.destroy(); 
+                hls = new Hls();
+                hls.loadSource(station.url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(e => console.log("Autoplay wait")); });
+            } 
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = station.url;
+                video.addEventListener('loadedmetadata', () => { video.play(); });
+            }
+        }
+
+        // DYNAMIC SCHEDULE GUIDE ENGINE
+        function updateScheduleGuide(station) {
+            document.getElementById('guideHeaderTitle').innerText = `${station.name} — Program Schedule`;
+            const wrapper = document.getElementById('guideRowsWrapper');
+            wrapper.innerHTML = '';
+
+            station.schedule.forEach((show, index) => {
+                const row = document.createElement('div');
+                // First show in list gets highlighted as "Live Now" style block
+                row.className = `guide-row ${index === 0 ? 'current-active' : ''}`;
+                
+                row.innerHTML = `
+                    <div class="guide-time">${index === 0 ? '● NOW' : show.time}</div>
+                    <div class="guide-details">
+                        <div class="guide-show-title">${show.title}</div>
+                        <div class="guide-show-desc">${show.desc}</div>
+                    </div>
+                `;
+                wrapper.appendChild(row);
+            });
+        }
+
+        // CARDS SETUP DIRECTORY GENERATOR
         function loadCategory(data, containerId) {
             const container = document.getElementById(containerId);
             data.forEach((station) => {
                 const card = document.createElement('div');
                 card.className = 'station-card';
                 card.tabIndex = currentTabIndex++;
-                card.style.backgroundImage = `url(${station.bg})`;
                 card.innerHTML = `<div class="station-name">${station.name}</div>`;
 
-                // Interactive Click Pipeline to load stream engine channelId
                 card.addEventListener('click', () => {
-                    document.getElementById('currentPlayerTitle').innerText = station.name;
-                    
-                    // URL logic pointing to live syndication endpoints
-dex = (index + 1) % focusable.length;
-                e.preventDefault();
-            }
-            if (e.key === "ArrowLeft") {
-                index = (index - 1 + focusable.length) % focusable.length;
-                e.preventDefault();
-            }
-            if (e.key === "ArrowDown") {
-                index = (index + 5 < focusable.length) ? index + 5 : index;
-                e.preventDefault();
-            }
-            if (e.key === "ArrowUp") {
-                index = (index - 5 >= 0) ? index - 5 : index;
-                e.preventDefault();
-            }
-            if (e.key === "Enter") {
-                document.activeElement.click();
-            }
+                    playStream(station);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // Initialize channel tracks and launch default stream (FIFA+)
+        loadCategory(stations.sports, 'sportsContainer');
+        loadCategory(stations.news, 'newsContainer');
+        playStream(stations.sports[0]);
+
+        // SMART DIRECTIONAL NAVIGATION MATRIX ENGINE
+        document.addEventListener('keydown', (e) => {
+            const focusable = Array.from(document.querySelectorAll('a, .station-card'));
+            let index = focusable.indexOf(document.activeElement);
+            
+            if (e.key === "ArrowRight") index = (index + 1) % focusable.length;
+            if (e.key === "ArrowLeft") index = (index - 1 + focusable.length) % focusable.length;
+            if (e.key === "Enter") document.activeElement.click();
             
             if(focusable[index]) {
                 focusable[index].focus();
-                focusable[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        });
-    </script>
-</body>
-    </html>
-    
+                focusable[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', i
