@@ -1,83 +1,160 @@
-:root {
-    --primary-blue: #0064ff; /* Paramount Blue */
-    --disney-dark: #040714;
-    --stream-red: #e50914;
-    --text-white: #f9f9f9;
+:root { 
+    --brand-blue: #0064ff; 
+    --bg-dark: #040714; 
+    --glass: rgba(255, 255, 255, 0.15); 
 }
 
-body {
-    background-color: var(--disney-dark);
-    color: var(--text-white);
-    font-family: 'Inter', -apple-system, sans-serif;
-    margin: 0;
-    padding: 0;
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: var(--bg-dark); 
+    color: white; 
+    margin: 0; 
+    overflow-x: hidden; 
+    display: flex;
+    flex-direction: column;
 }
 
-.navbar {
+/* Subtle clean focus state instead of the aggressive blue box */
+:focus-visible { 
+    outline: 2px solid var(--brand-blue); 
+    outline-offset: 2px;
+}
+
+.nav-container { 
+    background: rgba(4, 7, 20, 0.9); 
+    backdrop-filter: blur(20px); 
+    z-index: 1000; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    display: flex;
+}
+
+.nav-link { 
+    color: rgba(255,255,255,0.5); 
+    text-decoration: none; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 4px; 
+    transition: 0.3s; 
+    border-radius: 10px; 
+    padding: 8px; 
+}
+
+.nav-link:hover {
+    color: white;
+}
+
+.nav-link.active { 
+    color: var(--brand-blue); 
+    text-shadow: 0 0 10px var(--brand-blue); 
+}
+
+.icon { width: 24px; height: 24px; fill: currentColor; }
+.tv-logo { display: none; } 
+
+.main-layout { width: 100%; display: flex; flex-direction: column; }
+
+/* THE LIVE CINEMA STAGE SCREEN */
+.hero { 
+    height: 60vh; 
+    background: #000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.hero video {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px 30px;
+    background: linear-gradient(to top, var(--bg-dark) 30%, transparent);
+}
+
+.hero-title { font-size: 2.8em; margin: 0; font-weight: 900; text-transform: uppercase; }
+.hero-meta { font-size: 0.9em; color: rgba(255,255,255,0.6); margin: 5px 0 15px 0; }
+
+/* ROWS & GRIDS */
+.row-title { padding-left: 30px; font-size: 1.4em; margin-top: 30px; font-weight: 700; }
+.movie-row { display: flex; gap: 20px; padding: 10px 30px 20px 30px; overflow-x: auto; scrollbar-width: none; }
+.movie-row::-webkit-scrollbar { display: none; }
+
+.movie-card { 
+    min-width: 220px; height: 125px; background: var(--glass); border-radius: 8px; 
+    background-size: cover; background-position: center; cursor: pointer; transition: 0.3s; 
+    position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    border-color: var(--brand-blue);
+}
+
+.movie-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 15px 10px 8px 10px; font-size: 0.85em; opacity: 0; transition: opacity 0.3s ease;
+}
+
+.movie-card:hover .movie-info { opacity: 1; }
+.card-title { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-year { font-size: 0.8em; color: rgba(255,255,255,0.6); }
+
+/* FOOTER */
+.site-footer {
+    margin-top: 60px;
+    padding: 30px 60px;
+    background: rgba(0,0,0,0.4);
+    border-top: 1px solid rgba(255,255,255,0.05);
     display: flex;
     justify-content: space-between;
-    padding: 20px 5%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    align-items: center;
+    font-size: 0.85em;
+    color: rgba(255,255,255,0.5);
 }
 
-.logo {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--stream-red);
-}
-
-.logo span { color: white; }
-
-/* Plan Cards */
-.plans-container {
+.footer-links {
     display: flex;
-    flex-wrap: wrap;
     gap: 20px;
-    justify-content: center;
-    padding: 50px 5%;
 }
 
-.plan-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 25px;
-    width: 280px;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
+.footer-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
-.plan-card:hover {
-    transform: scale(1.05);
-    border-color: var(--primary-blue);
-    background: rgba(255, 255, 255, 0.08);
+.footer-links a:hover {
+    color: var(--brand-blue);
 }
 
-.plan-card.blue-plan {
-    border: 2px solid var(--primary-blue);
-    background: linear-gradient(145deg, rgba(0, 100, 255, 0.1), rgba(0,0,0,0.5));
+/* DEVICE RESPONSIVENESS */
+@media (max-width: 599px) {
+    .nav-container { position: fixed; bottom: 0; left: 0; right: 0; justify-content: space-around; padding: 10px 0; border-radius: 20px 20px 0 0; }
+    .main-layout { padding-bottom: 90px; }
+    .hero { height: 35vh; }
+    .site-footer { flex-direction: column; text-align: center; gap: 15px; padding: 20px; }
 }
 
-.price { font-size: 1.5rem; font-weight: bold; margin: 10px 0; }
-.currency { font-size: 0.9rem; color: #aaa; }
-
-.btn-select {
-    background: var(--primary-blue);
-    color: white;
-    border: none;
-    padding: 12px;
-    width: 100%;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-top: 15px;
+@media (min-width: 600px) and (max-width: 1024px) {
+    body { flex-direction: row; }
+    .nav-container { position: fixed; left: 0; top: 0; bottom: 0; width: 90px; flex-direction: column; justify-content: center; gap: 35px; padding: 0 10px; border-radius: 0 20px 20px 0; }
+    .main-layout { margin-left: 110px; }
 }
 
-/* Add-on Styling */
-.box-office-section {
-    background: rgba(229, 9, 20, 0.1);
-    border: 1px dashed var(--stream-red);
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    text-align: center;
+@media (min-width: 1025px) {
+    .nav-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: fit-content; border-radius: 50px; padding: 12px 40px; gap: 40px; z-index: 1000; }
+    .tv-logo { display: block; position: fixed; bottom: 40px; right: 50px; font-size: 2.5em; color: var(--brand-blue); font-weight: bold; z-index: 1000; }
+    .hero { height: 70vh; }
+    .hero-content { padding: 60px; }
+    .hero-title { font-size: 5em; }
+    .row-title { padding-left: 60px; }
+    .movie-row { padding: 20px 60px; }
 }
