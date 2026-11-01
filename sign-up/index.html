@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Sign Up - str▶eam</title>
+  <title>Sign In - str▶eam</title>
   
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +55,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Background Glow for Large Screens */
+    /* Ambient Glow */
     body::before {
       content: '';
       position: absolute;
@@ -110,12 +110,12 @@
       color: var(--royal-blue-primary);
     }
 
-    /* Main Container (Responsive Widths) */
-    .signup-container {
+    /* Main Card */
+    .signin-container {
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 460px; /* Mobile width */
+      max-width: 460px;
       margin: 60px auto 20px;
       background: var(--diamond-glass-bg);
       backdrop-filter: blur(24px) saturate(180%);
@@ -127,7 +127,6 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Title & Description */
     .page-title {
       font-family: 'Outfit', sans-serif;
       font-size: 1.85rem;
@@ -143,7 +142,7 @@
       line-height: 1.45;
     }
 
-    /* Social / Provider Buttons */
+    /* Provider Buttons */
     .provider-buttons {
       display: flex;
       flex-direction: column;
@@ -204,7 +203,7 @@
     }
 
     /* Form Fields */
-    .signup-form {
+    .signin-form {
       display: flex;
       flex-direction: column;
       gap: 18px;
@@ -216,10 +215,27 @@
       gap: 6px;
     }
 
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .form-label {
       font-size: 0.84rem;
       font-weight: 600;
       color: var(--text-secondary);
+    }
+
+    .forgot-link {
+      font-size: 0.8rem;
+      color: var(--royal-blue-primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .forgot-link:hover, .forgot-link:focus-visible {
+      text-decoration: underline;
     }
 
     .form-input {
@@ -241,7 +257,6 @@
       box-shadow: 0 0 0 3px var(--royal-blue-glow);
     }
 
-    /* TV & Keyboard Focus Optimization */
     .form-input:focus-visible {
       outline: 2px solid var(--royal-blue-primary);
       outline-offset: 1px;
@@ -275,7 +290,6 @@
       outline-offset: 2px;
     }
 
-    /* Error Message Alert */
     .error-alert {
       display: none;
       background: rgba(239, 68, 68, 0.15);
@@ -287,7 +301,7 @@
       line-height: 1.4;
     }
 
-    /* Footer / Sign In Link */
+    /* Footer Redirect */
     .form-footer {
       margin-top: 24px;
       text-align: center;
@@ -309,66 +323,24 @@
       text-decoration: underline;
     }
 
-    /* ==========================================================================
-       RESPONSIVE BREAKPOINTS (Tablet, Laptop & Smart TV)
-       ========================================================================== */
-
-    /* Tablet Optimization (768px and up) */
+    /* Responsive Breakpoints */
     @media (min-width: 768px) {
-      body {
-        padding: 40px 24px;
-      }
-
-      .top-header {
-        top: 36px;
-        left: 40px;
-      }
-
-      .signup-container {
-        max-width: 520px;
-        padding: 44px 40px;
-        margin-top: 40px;
-      }
-
-      .page-title {
-        font-size: 2.1rem;
-      }
+      body { padding: 40px 24px; }
+      .top-header { top: 36px; left: 40px; }
+      .signin-container { max-width: 520px; padding: 44px 40px; margin-top: 40px; }
+      .page-title { font-size: 2.1rem; }
     }
 
-    /* Laptop / Large Desktop Optimization (1024px and up) */
     @media (min-width: 1024px) {
-      .signup-container {
-        max-width: 540px;
-        padding: 48px 44px;
-      }
+      .signin-container { max-width: 540px; padding: 48px 44px; }
     }
 
-    /* TV & Ultra-Wide Screen Optimization (1440px and up / Smart TV D-Pad Mode) */
     @media (min-width: 1440px) or (min-height: 900px) {
-      body {
-        justify-content: center;
-      }
-
-      .signup-container {
-        max-width: 580px;
-        padding: 52px 48px;
-        border-radius: 32px;
-      }
-
-      .page-title {
-        font-size: 2.3rem;
-      }
-
-      .btn-provider, .form-input, .btn-submit {
-        height: 56px;
-        font-size: 1.05rem;
-      }
-
-      /* Enhanced D-Pad Focus Rings for Remote Control Browsing */
-      *:focus-visible {
-        outline: 3px solid var(--royal-blue-primary) !important;
-        outline-offset: 3px !important;
-      }
+      body { justify-content: center; }
+      .signin-container { max-width: 580px; padding: 52px 48px; border-radius: 32px; }
+      .page-title { font-size: 2.3rem; }
+      .btn-provider, .form-input, .btn-submit { height: 56px; font-size: 1.05rem; }
+      *:focus-visible { outline: 3px solid var(--royal-blue-primary) !important; outline-offset: 3px !important; }
     }
   </style>
 </head>
@@ -376,7 +348,7 @@
 
   <!-- Top-Left Brand Logo (Code SVG) -->
   <header class="top-header">
-    <a href="/" class="brand-logo" tabindex="1">
+    <a href="/Stream-2.0/" class="brand-logo" tabindex="1">
       <div class="logo-play-icon">
         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="17" cy="17" r="17" fill="#0052FF"/>
@@ -387,123 +359,84 @@
     </a>
   </header>
 
-  <!-- Sign-Up Diamond Glass Container -->
-  <main class="signup-container">
-    <h1 class="page-title">Create Account</h1>
-    <p class="page-subtitle">Join str▶eam to unlock full access to live TV, movies, and exclusive content.</p>
+  <!-- Sign-In Diamond Glass Container -->
+  <main class="signin-container">
+    <h1 class="page-title">Welcome Back</h1>
+    <p class="page-subtitle">Sign in to continue watching on your favorite devices.</p>
 
     <!-- Error Alert Box -->
     <div id="error-alert" class="error-alert"></div>
 
-    <!-- Provider Sign-Up Options -->
+    <!-- Provider Sign-In Options -->
     <div class="provider-buttons">
       <!-- Google Auth Button -->
-      <button type="button" class="btn-provider" id="btn-google-signup" tabindex="2">
+      <button type="button" class="btn-provider" id="btn-google-signin" tabindex="2">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
         </svg>
-        Continue with Google
+        Sign in with Google
       </button>
 
       <!-- Phone Auth Button -->
-      <button type="button" class="btn-provider" id="btn-phone-signup" tabindex="3">
+      <button type="button" class="btn-provider" id="btn-phone-signin" tabindex="3">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
           <line x1="12" y1="18" x2="12.01" y2="18"/>
         </svg>
-        Continue with Phone Number
+        Sign in with Phone Number
       </button>
     </div>
 
     <div class="divider">
-      <span>Or Sign Up With Email</span>
+      <span>Or Sign In With Email</span>
     </div>
 
     <!-- Email Form -->
-    <form class="signup-form" id="signup-form" onsubmit="handleSignup(event)">
-      <!-- Full Name -->
-      <div class="form-group">
-        <label class="form-label" for="fullname">Full Name</label>
-        <input type="text" id="fullname" class="form-input" placeholder="e.g. John Doe" required tabindex="4">
-      </div>
-
-      <!-- Date of Birth (Age Check) -->
-      <div class="form-group">
-        <label class="form-label" for="dob">Date of Birth (Must be 16+)</label>
-        <input type="date" id="dob" class="form-input" required tabindex="5">
-      </div>
-
+    <form class="signin-form" id="signin-form" onsubmit="handleSignin(event)">
       <!-- Email Address -->
       <div class="form-group">
         <label class="form-label" for="email">Email Address</label>
-        <input type="email" id="email" class="form-input" placeholder="name@example.com" required tabindex="6">
+        <input type="email" id="email" class="form-input" placeholder="name@example.com" required tabindex="4">
       </div>
 
       <!-- Password -->
       <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <input type="password" id="password" class="form-input" placeholder="At least 6 characters" minlength="6" required tabindex="7">
+        <div class="form-label-row">
+          <label class="form-label" for="password">Password</label>
+          <a href="#" class="forgot-link" onclick="alert('Password reset link will be sent to your email.'); return false;">Forgot?</a>
+        </div>
+        <input type="password" id="password" class="form-input" placeholder="Enter your password" required tabindex="5">
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="btn-submit" tabindex="8">Create Account</button>
+      <button type="submit" class="btn-submit" tabindex="6">Sign In</button>
     </form>
 
-    <!-- Footer Redirect -->
+    <!-- Footer Redirect to Sign-Up -->
     <div class="form-footer">
-      Already have an account? <a href="/sign-in/" tabindex="9">Sign In</a>
+      Don't have an account? <a href="/Stream-2.0/sign-up/" tabindex="7">Sign Up</a>
     </div>
   </main>
 
-  <!-- Firebase Logic Placeholder Script -->
+  <!-- Navigation & Auth Script -->
   <script>
-    // Age Validation Logic (Under 16 Restriction)
-    function validateAge(dobValue) {
-      const today = new Date();
-      const birthDate = new Date(dobValue);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age >= 16;
-    }
-
-    function showError(message) {
-      const alertBox = document.getElementById('error-alert');
-      alertBox.textContent = message;
-      alertBox.style.display = 'block';
-    }
-
-    function handleSignup(event) {
+    function handleSignin(event) {
       event.preventDefault();
-      const alertBox = document.getElementById('error-alert');
-      alertBox.style.display = 'none';
-
-      const dob = document.getElementById('dob').value;
-      const isEligible = validateAge(dob);
-
-      if (!isEligible) {
-        showError('Registration blocked: You must be at least 16 years old to create a str▶eam account.');
-        return;
-      }
-
-      // Store local session marker for demo & redirect
       localStorage.setItem('stream_user_session', 'active');
-      window.location.href = '/';
+      window.location.href = '/Stream-2.0/';
     }
 
-    // Provider buttons handler
-    document.getElementById('btn-google-signup').addEventListener('click', () => {
-      alert('Firebase Google Auth Provider modal will trigger here.');
+    document.getElementById('btn-google-signin').addEventListener('click', () => {
+      localStorage.setItem('stream_user_session', 'active');
+      window.location.href = '/Stream-2.0/';
     });
 
-    document.getElementById('btn-phone-signup').addEventListener('click', () => {
-      alert('Firebase Phone Auth OTP modal will trigger here.');
+    document.getElementById('btn-phone-signin').addEventListener('click', () => {
+      localStorage.setItem('stream_user_session', 'active');
+      window.location.href = '/Stream-2.0/';
     });
   </script>
 </body>
