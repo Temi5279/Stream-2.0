@@ -1,168 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Stream</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Home - str▶eam</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Dark Royal Blue Palette */
+      --bg-pitch: #080a0f;
+      --bg-surface: #0f131d;
+      --bg-card: #151a26;
+      
+      --royal-blue-primary: #0052ff;
+      --royal-blue-hover: #1a66ff;
+      --royal-blue-glow: rgba(0, 82, 255, 0.45);
+      --royal-blue-gradient: linear-gradient(135deg, #0052ff 0%, #3b82f6 100%);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      /* Diamond Glass System */
+      --diamond-glass-bg: rgba(18, 24, 38, 0.75);
+      --diamond-glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 50%, rgba(0, 82, 255, 0.25) 100%);
+      --diamond-glass-shadow: 0 16px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+      
+      --radius-lg: 24px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
+
+      --mobile-nav-height: 72px;
+      --sidebar-width: 240px;
+      --tv-header-height: 80px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Auth Hide Guard */
+    html {
+      display: none; /* Hidden until auth state is validated */
+    }
+
+    body {
+      background-color: var(--bg-pitch);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: calc(var(--mobile-nav-height) + 20px);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, .nav-label, .page-header-title {
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    /* Top Bar Header (All Screens) */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      background: rgba(8, 10, 15, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-title span {
+      color: var(--royal-blue-primary);
+    }
+
+    /* Top Page Header Title ("HOME") */
+    .page-header-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-left: 2px solid var(--royal-blue-primary);
+      padding-left: 12px;
+    }
+
+    .user-profile-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--royal-blue-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--royal-blue-glow);
+    }
+
+    /* Main Content Wrapper */
+    .main-wrapper {
+      padding: 20px 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Hero Featured Card */
+    .hero-card {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(0, 82, 255, 0.2) 0%, rgba(15, 19, 29, 0.9) 100%), #121826;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: flex-end;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+      max-width: 540px;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(0, 82, 255, 0.25);
+      border: 1px solid rgba(0, 82, 255, 0.5);
+      color: #60a5fa;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+
+    .hero-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      background: var(--royal-blue-gradient);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px var(--royal-blue-glow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-play:hover, .btn-play:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 82, 255, 0.6);
+    }
+
+    /* Section Category Rows */
+    .content-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 16px;
+    }
+
+    .media-card {
+      aspect-ratio: 2 / 3;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25 ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+    }
+
+    .media-card:hover, .media-card:focus-visible {
+      transform: translateY(-4px) scale(1.02);
+      border-color: var(--royal-blue-primary);
+      outline: none;
+    }
+
+    .media-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    /* ==========================================================================
+       NAVIGATION ADAPTERS (MOBILE BOTTOM / TABLET & LAPTOP SIDEBAR / TV TOP)
+       ========================================================================== */
+
+    /* 1. MOBILE BOTTOM NAV (< 768px) */
+    .app-nav {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 440px;
+      height: var(--mobile-nav-height);
+      background: var(--diamond-glass-bg);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      box-shadow: var(--diamond-glass-shadow);
+      z-index: 999;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex: 1;
+      height: 100%;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+      position: relative;
+      outline: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .nav-item.active {
+      color: var(--royal-blue-primary);
+    }
+
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      width: 16px;
+      height: 3px;
+      background: var(--royal-blue-gradient);
+      border-radius: 4px;
+      box-shadow: 0 0 10px var(--royal-blue-primary);
+    }
+
+    /* 2. TABLET & LAPTOP SIDEBAR (768px - 1439px) */
+    @media (min-width: 768px) and (max-width: 1439px) {
+      body {
+        padding-left: var(--sidebar-width);
+        padding-bottom: 20px;
+      }
+
+      .app-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: none;
+        width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+        height: 100vh;
+        border-radius: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: none;
+        border-left: none;
+        border-bottom: none;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 90px 16px 24px;
+        gap: 12px;
+      }
+
+      .nav-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 14px;
+        width: 100%;
+        height: 50px;
+        padding: 0 16px;
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+      }
+
+      .nav-item.active {
+        background: rgba(0, 82, 255, 0.15);
+        color: #ffffff;
+        border: 1px solid rgba(0, 82, 255, 0.4);
+      }
+
+      .nav-item.active::after {
+        display: none;
+      }
+    }
+
+    /* 3. SMART TV TOP NAVIGATION (≥ 1440px / TV Aspect Ratios) */
+    @media (min-width: 1440px) {
+      body {
+        padding-top: var(--tv-header-height);
+        padding-bottom: 20px;
+      }
+
+      .app-header {
+        height: var(--tv-header-height);
+        padding: 0 40px;
+      }
+
+      .app-nav {
+        position: static;
+        transform: none;
+        width: auto;
+        max-width: none;
+        height: 100%;
+        background: transparent;
+        backdrop-filter: none;
+        border: none;
+        box-shadow: none;
+        display: flex;
+        gap: 24px;
+      }
+
+      .nav-item {
+        flex-direction: row;
+        gap: 8px;
+        font-size: 1.05rem;
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+      }
+
+      .nav-item.active {
+        background: rgba(0, 82, 255, 0.2);
+        border: 1px solid rgba(0, 82, 255, 0.5);
+      }
+
+      .nav-item.active::after {
+        display: none;
+      }
+
+      /* TV D-Pad Focus Rings */
+      *:focus-visible {
+        outline: 3px solid var(--royal-blue-primary) !important;
+        outline-offset: 3px !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <div class="container" id="app" style="display: none;">
-
-    <!-- Top Bar -->
-    <header class="top-bar">
-      <div class="logo">
-        <img src="icon-512.png" alt="Stream" class="logo-img" />
-      </div>
-      <div class="top-actions">
-        <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
-      </div>
-    </header>
-
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-bg"></div>
-      <div class="hero-content">
-        <span class="hero-badge">Featured</span>
-        <h1 class="hero-title">Classic Cinema Night</h1>
-        <p class="hero-meta">Public Domain · 1940s–1960s · Free to watch</p>
-        <div class="hero-actions">
-          <button class="btn-primary">
-            <i class="fa-solid fa-play"></i> Play
-          </button>
-          <button class="btn-secondary">
-            <i class="fa-solid fa-plus"></i> My List
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Live TV -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">Live TV</h2>
-        <a href="live.html" class="see-all">See all</a>
-      </div>
-      <div class="row">
-        <div class="live-card">
-          <span class="live-badge">LIVE</span>
-        </div>
-        <div class="live-card">
-          <span class="live-badge">LIVE</span>
-        </div>
-        <div class="live-card">
-          <span class="live-badge">LIVE</span>
-        </div>
-        <div class="live-card">
-          <span class="live-badge">LIVE</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Public Domain Classics -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">Public Domain Classics</h2>
-        <a href="#" class="see-all">See all</a>
-      </div>
-      <div class="row">
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Night of the Living Dead</div>
-          <div class="card-meta">1968 · Horror</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">His Girl Friday</div>
-          <div class="card-meta">1940 · Comedy</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Charade</div>
-          <div class="card-meta">1963 · Thriller</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">The General</div>
-          <div class="card-meta">1926 · Silent</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Nosferatu</div>
-          <div class="card-meta">1922 · Horror</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Recommended -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">Recommended For You</h2>
-        <a href="#" class="see-all">See all</a>
-      </div>
-      <div class="row">
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Plan 9 from Outer Space</div>
-          <div class="card-meta">1959 · Sci-Fi</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Detour</div>
-          <div class="card-meta">1945 · Noir</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">The Kid</div>
-          <div class="card-meta">1921 · Comedy</div>
-        </div>
-        <div class="card">
-          <div class="card-poster"></div>
-          <div class="card-title">Carnival of Souls</div>
-          <div class="card-meta">1962 · Horror</div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav" id="bottomNav" style="display: none;">
-    <a href="index.html" class="nav-item active">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </a>
-    <a href="live.html" class="nav-item">
-      <i class="fa-solid fa-tv"></i>
-      <span>Live TV</span>
-    </a>
-    <a href="discover.html" class="nav-item">
-      <i class="fa-solid fa-compass"></i>
-      <span>Discover</span>
-    </a>
-    <a href="profile.html" class="nav-item">
-      <i class="fa-regular fa-user"></i>
-      <span>Profile</span>
-    </a>
-  </nav>
-
-  <!-- Firebase Auth Check -->
-  <script type="module">
-    import { auth } from './firebase-config.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('bottomNav').style.display = 'flex';
+  <!-- Auth Protection Guard Check Script -->
+  <script>
+    (function checkAuth() {
+      const userSession = localStorage.getItem('stream_user_session');
+      if (!userSession) {
+        // Unauthenticated access: Redirect directly to Sign-In page
+        window.location.replace('/sign-in/');
       } else {
-        window.location.href = 'sign-in/';
+        // Authenticated: Render Page
+        document.documentElement.style.display = 'block';
       }
-    });
+    })();
   </script>
+
+  <!-- App Header Bar -->
+  <header class="app-header">
+    <div class="brand-group">
+      <!-- Logo -->
+      <a href="/" class="brand-logo" tabindex="1">
+        <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
+          <circle cx="17" cy="17" r="17" fill="#0052FF"/>
+          <path d="M12.5 10.5L23.5 17L12.5 23.5V10.5Z" fill="white"/>
+        </svg>
+        <span class="brand-title">str<span>▶</span>eam</span>
+      </a>
+
+      <!-- Page Identification Header -->
+      <span class="page-header-title">HOME</span>
+    </div>
+
+    <!-- Responsive Navigation Container -->
+    <nav class="app-nav" id="app-nav">
+      <!-- Home Tab -->
+      <a href="/" class="nav-item active" tabindex="2">
+        <svg viewBox="0 0 24 24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        <span class="nav-label">Home</span>
+      </a>
+
+      <!-- Live TV Tab -->
+      <a href="/live-tv/" class="nav-item" tabindex="3">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>
+        </svg>
+        <span class="nav-label">Live TV</span>
+      </a>
+
+      <!-- Discover Tab -->
+      <a href="/discover/" class="nav-item" tabindex="4">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        <span class="nav-label">Discover</span>
+      </a>
+
+      <!-- Profile Tab -->
+      <a href="/profile/" class="nav-item" tabindex="5">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span class="nav-label">Profile</span>
+      </a>
+    </nav>
+
+    <!-- User Profile Button -->
+    <div class="user-profile-avatar" tabindex="6" onclick="window.location.href='/profile/'">T</div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-wrapper">
+    
+    <!-- Hero Spotlight Banner -->
+    <section class="hero-card">
+      <div class="hero-content">
+        <span class="hero-badge">Featured Original</span>
+        <h1 class="hero-title">Lisabi: The Uprising</h1>
+        <p class="hero-desc">Experience the epic tale of strength, revolution, and freedom in high definition on str▶eam.</p>
+        <button class="btn-play" tabindex="7">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Watch Now
+        </button>
+      </div>
+    </section>
+
+    <!-- Content Category Grid -->
+    <section class="content-section">
+      <h2 class="section-title">Trending Movies</h2>
+      <div class="media-grid">
+        <div class="media-card" tabindex="8">
+          <span class="media-card-title">Movie Title 1</span>
+        </div>
+        <div class="media-card" tabindex="9">
+          <span class="media-card-title">Movie Title 2</span>
+        </div>
+        <div class="media-card" tabindex="10">
+          <span class="media-card-title">Movie Title 3</span>
+        </div>
+        <div class="media-card" tabindex="11">
+          <span class="media-card-title">Movie Title 4</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
 </body>
 </html>
