@@ -8,11 +8,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 <body>
+
   <div class="container" id="app" style="display: none;">
 
     <!-- Top Bar -->
     <header class="top-bar">
-      <div class="logo">Stream</div>
+      <div class="logo">
+        <img src="icon-512.png" alt="Stream" class="logo-img" />
+      </div>
       <div class="top-actions">
         <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
         <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
@@ -37,7 +40,7 @@
       </div>
     </section>
 
-    <!-- Live TV Row -->
+    <!-- Live TV -->
     <section class="section">
       <div class="section-header">
         <h2 class="section-title">Live TV</h2>
@@ -146,21 +149,20 @@
     </a>
   </nav>
 
-  <!-- Firebase + Auth Check -->
+  <!-- Firebase Auth Check -->
   <script type="module">
     import { auth } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in → show the app
         document.getElementById('app').style.display = 'block';
         document.getElementById('bottomNav').style.display = 'flex';
       } else {
-        // Not signed in → redirect to sign-in page
         window.location.href = 'signin.html';
       }
     });
   </script>
+
 </body>
 </html>
