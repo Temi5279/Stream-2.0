@@ -348,7 +348,7 @@
 
   <!-- Top-Left Brand Logo (Code SVG) -->
   <header class="top-header">
-    <a href="/" class="brand-logo" tabindex="1">
+    <a href="/Stream-2.0/" class="brand-logo" tabindex="1">
       <div class="logo-play-icon">
         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="17" cy="17" r="17" fill="#0052FF"/>
@@ -417,7 +417,7 @@
 
     <!-- Footer Redirect to Sign-Up -->
     <div class="form-footer">
-      Don't have an account? <a href="/sign-up/" tabindex="7">Sign Up</a>
+      Don't have an account? <a href="/Stream-2.0/sign-up/" tabindex="7">Sign Up</a>
     </div>
   </main>
 
@@ -425,26 +425,18 @@
   <script>
     function handleSignin(event) {
       event.preventDefault();
-
-      // Store local session marker
       localStorage.setItem('stream_user_session', 'active');
-      
-      // Redirect straight to the Homepage (index.html)
-      window.location.href = '/';
+      window.location.href = '/Stream-2.0/';
     }
 
-    // Google Sign-In Handler
     document.getElementById('btn-google-signin').addEventListener('click', () => {
-      // Upon successful Firebase Google Popup Auth:
       localStorage.setItem('stream_user_session', 'active');
-      window.location.href = '/';
+      window.location.href = '/Stream-2.0/';
     });
 
-    // Phone Sign-In Handler
     document.getElementById('btn-phone-signin').addEventListener('click', () => {
-      // Upon successful Firebase Phone OTP Verification:
       localStorage.setItem('stream_user_session', 'active');
-      window.location.href = '/';
+      window.location.href = '/Stream-2.0/';
     });
   </script>
 </body>
