@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Stream</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+  <div class="container" id="app" style="display: none;">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="logo">Stream</div>
+      <div class="top-actions">
+        <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="profile-btn"><i class="fa-regular fa-user"></i></button>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <span class="hero-badge">Featured</span>
+        <h1 class="hero-title">Classic Cinema Night</h1>
+        <p class="hero-meta">Public Domain · 1940s–1960s · Free to watch</p>
+        <div class="hero-actions">
+          <button class="btn-primary">
+            <i class="fa-solid fa-play"></i> Play
+          </button>
+          <button class="btn-secondary">
+            <i class="fa-solid fa-plus"></i> My List
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live TV Row -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Live TV</h2>
+        <a href="live.html" class="see-all">See all</a>
+      </div>
+      <div class="row">
+        <div class="live-card">
+          <span class="live-badge">LIVE</span>
+        </div>
+        <div class="live-card">
+          <span class="live-badge">LIVE</span>
+        </div>
+        <div class="live-card">
+          <span class="live-badge">LIVE</span>
+        </div>
+        <div class="live-card">
+          <span class="live-badge">LIVE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Public Domain Classics -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Public Domain Classics</h2>
+        <a href="#" class="see-all">See all</a>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Night of the Living Dead</div>
+          <div class="card-meta">1968 · Horror</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">His Girl Friday</div>
+          <div class="card-meta">1940 · Comedy</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Charade</div>
+          <div class="card-meta">1963 · Thriller</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">The General</div>
+          <div class="card-meta">1926 · Silent</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Nosferatu</div>
+          <div class="card-meta">1922 · Horror</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommended -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Recommended For You</h2>
+        <a href="#" class="see-all">See all</a>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Plan 9 from Outer Space</div>
+          <div class="card-meta">1959 · Sci-Fi</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Detour</div>
+          <div class="card-meta">1945 · Noir</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">The Kid</div>
+          <div class="card-meta">1921 · Comedy</div>
+        </div>
+        <div class="card">
+          <div class="card-poster"></div>
+          <div class="card-title">Carnival of Souls</div>
+          <div class="card-meta">1962 · Horror</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav" id="bottomNav" style="display: none;">
+    <a href="index.html" class="nav-item active">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="live.html" class="nav-item">
+      <i class="fa-solid fa-tv"></i>
+      <span>Live TV</span>
+    </a>
+    <a href="discover.html" class="nav-item">
+      <i class="fa-solid fa-compass"></i>
+      <span>Discover</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <i class="fa-regular fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- Firebase + Auth Check -->
+  <script type="module">
+    import { auth } from './firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in → show the app
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('bottomNav').style.display = 'flex';
+      } else {
+        // Not signed in → redirect to sign-in page
+        window.location.href = 'signin.html';
+      }
+    });
+  </script>
+</body>
+</html>
