@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Sign Up - str▶eam</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-pitch: #080a0f;
+      --bg-surface: rgba(15, 19, 29, 0.75);
+      --royal-blue-primary: #0052ff;
+      --royal-blue-hover: #1a66ff;
+      --royal-blue-glow: rgba(0, 82, 255, 0.45);
+      --royal-blue-gradient: linear-gradient(135deg, #0052ff 0%, #3b82f6 100%);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: rgba(255, 255, 255, 0.12);
+      
+      --diamond-glass-bg: rgba(18, 24, 38, 0.75);
+      --diamond-glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.04) 50%, rgba(0, 82, 255, 0.3) 100%);
+      --diamond-glass-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      
+      --radius-lg: 24px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-pitch);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Background Glow for Large Screens */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 82, 255, 0.15) 0%, rgba(8, 10, 15, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Left Header Logo */
+    .top-header {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      z-index: 10;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .brand-logo:focus-visible {
+      outline: 2px solid var(--royal-blue-primary);
+      border-radius: var(--radius-sm);
+    }
+
+    .logo-play-icon {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-title span {
+      color: var(--royal-blue-primary);
+    }
+
+    /* Main Container (Responsive Widths) */
+    .signup-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px; /* Mobile width */
+      margin: 60px auto 20px;
+      background: var(--diamond-glass-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      box-shadow: var(--diamond-glass-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Title & Description */
+    .page-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.45;
+    }
+
+    /* Social / Provider Buttons */
+    .provider-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn-provider {
+      width: 100%;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .btn-provider:hover, .btn-provider:focus-visible {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-provider:focus-visible {
+      outline: 2px solid var(--royal-blue-primary);
+      outline-offset: 2px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 20px 0;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .divider span {
+      padding: 0 12px;
+    }
+
+    /* Form Fields */
+    .signup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .form-input {
+      width: 100%;
+      height: 48px;
+      background: rgba(10, 14, 23, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0 16px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--royal-blue-primary);
+      box-shadow: 0 0 0 3px var(--royal-blue-glow);
+    }
+
+    /* TV & Keyboard Focus Optimization */
+    .form-input:focus-visible {
+      outline: 2px solid var(--royal-blue-primary);
+      outline-offset: 1px;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      background: var(--royal-blue-gradient);
+      border: none;
+      border-radius: var(--radius-md);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--royal-blue-glow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      outline: none;
+    }
+
+    .btn-submit:hover, .btn-submit:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 82, 255, 0.6);
+    }
+
+    .btn-submit:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    /* Error Message Alert */
+    .error-alert {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    /* Footer / Sign In Link */
+    .form-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .form-footer a {
+      color: var(--royal-blue-primary);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 4px;
+      transition: color 0.2s ease;
+      outline: none;
+    }
+
+    .form-footer a:hover, .form-footer a:focus-visible {
+      color: var(--royal-blue-hover);
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS (Tablet, Laptop & Smart TV)
+       ========================================================================== */
+
+    /* Tablet Optimization (768px and up) */
+    @media (min-width: 768px) {
+      body {
+        padding: 40px 24px;
+      }
+
+      .top-header {
+        top: 36px;
+        left: 40px;
+      }
+
+      .signup-container {
+        max-width: 520px;
+        padding: 44px 40px;
+        margin-top: 40px;
+      }
+
+      .page-title {
+        font-size: 2.1rem;
+      }
+    }
+
+    /* Laptop / Large Desktop Optimization (1024px and up) */
+    @media (min-width: 1024px) {
+      .signup-container {
+        max-width: 540px;
+        padding: 48px 44px;
+      }
+    }
+
+    /* TV & Ultra-Wide Screen Optimization (1440px and up / Smart TV D-Pad Mode) */
+    @media (min-width: 1440px) or (min-height: 900px) {
+      body {
+        justify-content: center;
+      }
+
+      .signup-container {
+        max-width: 580px;
+        padding: 52px 48px;
+        border-radius: 32px;
+      }
+
+      .page-title {
+        font-size: 2.3rem;
+      }
+
+      .btn-provider, .form-input, .btn-submit {
+        height: 56px;
+        font-size: 1.05rem;
+      }
+
+      /* Enhanced D-Pad Focus Rings for Remote Control Browsing */
+      *:focus-visible {
+        outline: 3px solid var(--royal-blue-primary) !important;
+        outline-offset: 3px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top-Left Brand Logo (Code SVG) -->
+  <header class="top-header">
+    <a href="/" class="brand-logo" tabindex="1">
+      <div class="logo-play-icon">
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="17" fill="#0052FF"/>
+          <path d="M12.5 10.5L23.5 17L12.5 23.5V10.5Z" fill="white"/>
+        </svg>
+      </div>
+      <span class="brand-title">str<span>▶</span>eam</span>
+    </a>
+  </header>
+
+  <!-- Sign-Up Diamond Glass Container -->
+  <main class="signup-container">
+    <h1 class="page-title">Create Account</h1>
+    <p class="page-subtitle">Join str▶eam to unlock full access to live TV, movies, and exclusive content.</p>
+
+    <!-- Error Alert Box -->
+    <div id="error-alert" class="error-alert"></div>
+
+    <!-- Provider Sign-Up Options -->
+    <div class="provider-buttons">
+      <!-- Google Auth Button -->
+      <button type="button" class="btn-provider" id="btn-google-signup" tabindex="2">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <!-- Phone Auth Button -->
+      <button type="button" class="btn-provider" id="btn-phone-signup" tabindex="3">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+        Continue with Phone Number
+      </button>
+    </div>
+
+    <div class="divider">
+      <span>Or Sign Up With Email</span>
+    </div>
+
+    <!-- Email Form -->
+    <form class="signup-form" id="signup-form" onsubmit="handleSignup(event)">
+      <!-- Full Name -->
+      <div class="form-group">
+        <label class="form-label" for="fullname">Full Name</label>
+        <input type="text" id="fullname" class="form-input" placeholder="e.g. John Doe" required tabindex="4">
+      </div>
+
+      <!-- Date of Birth (Age Check) -->
+      <div class="form-group">
+        <label class="form-label" for="dob">Date of Birth (Must be 16+)</label>
+        <input type="date" id="dob" class="form-input" required tabindex="5">
+      </div>
+
+      <!-- Email Address -->
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="name@example.com" required tabindex="6">
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="At least 6 characters" minlength="6" required tabindex="7">
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-submit" tabindex="8">Create Account</button>
+    </form>
+
+    <!-- Footer Redirect -->
+    <div class="form-footer">
+      Already have an account? <a href="/sign-in/" tabindex="9">Sign In</a>
+    </div>
+  </main>
+
+  <!-- Firebase Logic Placeholder Script -->
+  <script>
+    // Age Validation Logic (Under 16 Restriction)
+    function validateAge(dobValue) {
+      const today = new Date();
+      const birthDate = new Date(dobValue);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age >= 16;
+    }
+
+    function showError(message) {
+      const alertBox = document.getElementById('error-alert');
+      alertBox.textContent = message;
+      alertBox.style.display = 'block';
+    }
+
+    function handleSignup(event) {
+      event.preventDefault();
+      const alertBox = document.getElementById('error-alert');
+      alertBox.style.display = 'none';
+
+      const dob = document.getElementById('dob').value;
+      const isEligible = validateAge(dob);
+
+      if (!isEligible) {
+        showError('Registration blocked: You must be at least 16 years old to create a str▶eam account.');
+        return;
+      }
+
+      // Store local session marker for demo & redirect
+      localStorage.setItem('stream_user_session', 'active');
+      window.location.href = '/';
+    }
+
+    // Provider buttons handler
+    document.getElementById('btn-google-signup').addEventListener('click', () => {
+      alert('Firebase Google Auth Provider modal will trigger here.');
+    });
+
+    document.getElementById('btn-phone-signup').addEventListener('click', () => {
+      alert('Firebase Phone Auth OTP modal will trigger here.');
+    });
+  </script>
+</body>
+</html>
