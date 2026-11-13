@@ -1,5 +1,5 @@
-const VERSION = "stream-v1";
-const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
+const VERSION = "stream-v2";
+const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "app.js", "watch/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)));
@@ -27,6 +27,11 @@ self.addEventListener("fetch", (e) => {
         .then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; })
         .catch(() => caches.match(req).then((r) => r || caches.match("./")))
     );
+    return;
+  }
+  // Movie list: always try the network first so new films show up
+  if (url.pathname.endsWith("movies.json")) {
+    e.respondWith(fetch(req).then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; }).catch(() => caches.match(req)));
     return;
   }
   // Styles, scripts, icons: cached copy first
