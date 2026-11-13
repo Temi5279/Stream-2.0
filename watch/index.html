@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Watch · str▶eam</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body class="watch">
+  <div class="player" id="p">
+    <video id="v" playsinline preload="metadata"></video>
+    <div class="ui" id="ui">
+      <div class="p-top"><a class="p-btn" href="../discover/" aria-label="Back">←</a><span id="ttl"></span></div>
+      <div class="p-mid">
+        <button class="p-btn" id="b10" aria-label="Back 10 seconds">−10</button>
+        <button class="p-btn big" id="pp" aria-label="Play">▶</button>
+        <button class="p-btn" id="f10" aria-label="Forward 10 seconds">+10</button>
+      </div>
+      <div class="p-bot">
+        <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+        <div class="p-row">
+          <span id="t">0:00 / 0:00</span>
+          <span><button class="p-btn sm" id="mute" aria-label="Mute">🔊</button><button class="p-btn sm" id="fs" aria-label="Fullscreen">⛶</button></span>
+        </div>
+      </div>
+    </div>
+    <div class="p-msg" id="msg">Loading…</div>
+  </div>
+
+  <script src="../app.js"></script>
+  <script>
+  (function () {
+    var id = new URLSearchParams(location.search).get("id");
+    var p = document.getElementById("p"), v = document.getElementById("v"), ui = document.getElementById("ui"),
+        pp = document.getElementById("pp"), seek = document.getElementById("seek"), tt = document.getElementById("t"),
+        msg = document.getElementById("msg"), ttl = document.getElementById("ttl");
+    var hideTimer, lastSave = 0, dragging = false;
+
+    function fmt(s) {
+      if (!isFinite(s)) return "0:00"; s = Math.floor(s);
+      var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+      return (h ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (x < 10 ? "0" : "") + x;
+    }
+    function say(t) { msg.textContent = t || ""; msg.style.display = t ? "block" : "none"; }
+    function show() { ui.classList.add("on"); clearTimeout(hideTimer); if (!v.paused) hideTimer = setTimeout(function () { ui.classList.remove("on"); }, 3000); }
+    function jump(n) { v.currentTime = Math.max(0, Math.min((v.duration || 1e9), v.currentTime + n)); show(); }
+    function toggle() { v.paused ? v.play() : v.pause(); }
+    function save() { if (id && v.duration) Stream.save(id, v.currentTime, v.duration); }
+
+    if (!id) { say("No movie selected. Go back and pick one."); return; }
+
+    // Pick a playable file from the Internet Archive item
+    Promise.all([Stream.movies(), fetch("https://archive.org/metadata/" + encodeURIComponent(id)).then(function (r) { return r.json(); })])
+      .then(function (res) {
+        var m = res[0].filter(function (x) { return x.id === id; })[0];
+        ttl.textContent = m ? m.title : id;
+        document.title = (m ? m.title : "Watch") + " · str▶eam";
+        var files = (res[1].files || []).filter(function (f) { return /\.mp4$/i.test(f.name); });
+        var order = ["h.264", "MPEG4", "h.264 HD"];
+        var pick = null;
+        for (var i = 0; i < order.length && !pick; i++) pick = files.filter(function (f) { return f.format === order[i]; })[0];
+        pick = pick || files[0];
+        if (!pick) { say("This film has no streamable file yet."); return; }
+        v.src = "https://archive.org/download/" + encodeURIComponent(id) + "/" + pick.name.split("/").map(encodeURIComponent).join("/");
+      })
+      .catch(function () { say("Could not load this film. Check your connection and try again."); });
+
+    v.addEventListener("loadedmetadata", function () {
+      say("");
+      var s = Stream.progress()[id];
+      if (s && s.t > 5 && s.t < v.duration - 30) v.currentTime = s.t;
+      show();
+    });
+    v.addEventListener("play", function () { pp.textContent = "❚❚"; pp.setAttribute("aria-label", "Pause"); say(""); show(); });
+    v.addEventListener("pause", function () { pp.textContent = "▶"; pp.setAttribute("aria-label", "Play"); ui.classList.add("on"); save(); });
+    v.addEventListener("waiting", function () { say("Buffering…"); });
+    v.addEventListener("playing", function () { say(""); });
+    v.addEventListener("error", function () { say("This video could not be played."); });
+    v.addEventListener("timeupdate", function () {
+      if (!dragging && v.duration) seek.value = v.currentTime / v.duration * 1000;
+      tt.textContent = fmt(v.currentTime) + " / " + fmt(v.duration);
+      if (Date.now() - lastSave > 5000) { lastSave = Date.now(); save(); }
+    });
+    window.addEventListener("pagehide", save);
+
+    seek.addEventListener("input", function () { dragging = true; tt.textContent = fmt(seek.value / 1000 * v.duration) + " / " + fmt(v.duration); show(); });
+    seek.addEventListener("change", function () { v.currentTime = seek.value / 1000 * v.duration; dragging = false; });
+    pp.addEventListener("click", toggle);
+    document.getElementById("b10").addEventListener("click", function () { jump(-10); });
+    document.getElementById("f10").addEventListener("click", function () { jump(10); });
+    document.getElementById("mute").addEventListener("click", function () { v.muted = !v.muted; this.textContent = v.muted ? "🔇" : "🔊"; });
+    document.getElementById("fs").addEventListener("click", function () {
+      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      if (p.requestFullscreen) {
+        p.requestFullscreen().then(function () { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () {}); }).catch(function () {});
+      } else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
+
+    // Tap shows or hides controls. Double tap the left or right side to skip 10 seconds.
+    var lastTap = 0, tapTimer;
+    p.addEventListener("click", function (e) {
+      if (e.target.closest("button, a, input")) return;
+      var now = Date.now();
+      if (now - lastTap < 300) {
+        clearTimeout(tapTimer);
+        jump(e.clientX < p.clientWidth / 2 ? -10 : 10);
+      } else {
+        tapTimer = setTimeout(function () { ui.classList.contains("on") ? ui.classList.remove("on") : show(); }, 300);
+      }
+      lastTap = now;
+    });
+    p.addEventListener("mousemove", show);
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space") { e.preventDefault(); toggle(); }
+      else if (e.key === "ArrowLeft") jump(-10);
+      else if (e.key === "ArrowRight") jump(10);
+      else if (e.key === "f") document.getElementById("fs").click();
+      else if (e.key === "m") document.getElementById("mute").click();
+    });
+  })();
+  </script>
+</body>
+</html>
