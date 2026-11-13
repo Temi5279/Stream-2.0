@@ -23,19 +23,38 @@
 
   <main>
     <h1 class="page-title">Live TV</h1>
-    <div class="player-box"><p>Pick a channel to start watching</p></div>
+    <div id="lp"></div>
+    <p class="live-now" id="now"></p>
     <section class="row" aria-labelledby="c1">
-      <h2 id="c1">Free channels</h2>
-      <div class="cards">
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-      </div>
+      <h2 id="c1">Channels</h2>
+      <div class="cards" id="ch"></div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="../app.js"></script>
+  <script src="../player.js"></script>
+  <script>
+  var pl = Player.mount(document.getElementById("lp"), { live: true, fullscreenOnPlay: false });
+  var now = document.getElementById("now"), ch = document.getElementById("ch");
+  Stream.channels().then(function (list) {
+    var btns = [];
+    function pick(c, b) {
+      btns.forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      pl.setTitle(c.name); pl.setStart("Tap to watch live"); pl.load(c.src);
+      now.textContent = "Now showing: " + c.name;
+    }
+    list.forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "card chan glass"; b.setAttribute("aria-pressed", "false");
+      b.innerHTML = "<span></span><small></small>";
+      b.firstChild.textContent = c.name; b.lastChild.textContent = c.category || "";
+      b.onclick = function () { pick(c, b); };
+      ch.appendChild(b); btns.push(b);
+    });
+    if (list.length) pick(list[0], btns[0]);
+  });
+  </script>
   <script src="../pwa.js"></script>
 </body>
 </html>
