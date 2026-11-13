@@ -1,11 +1,23 @@
 [
   {
     "id": "Night.Of.The.Living.Dead_1080p",
+    "file": "NightOfTheLivingDead.mp4",
     "title": "Night of the Living Dead",
     "year": 1968,
     "genre": "Horror",
     "runtime": "1h 35m",
-    "description": "Seven strangers barricade themselves in a farmhouse as the dead rise outside. George Romero's low-budget landmark.",
+    "rating": 7.8,
+    "director": "George A. Romero",
+    "cast": [
+      "Duane Jones",
+      "Judith O'Dea",
+      "Karl Hardman",
+      "Marilyn Eastman",
+      "Keith Wayne",
+      "Judith Ridley",
+      "Kyra Schon"
+    ],
+    "description": "Seven strangers barricade themselves in a rural Pennsylvania farmhouse as the dead rise outside. George Romero's low-budget landmark changed horror forever.",
     "rights": "Public domain (released without a copyright notice)"
   },
   {
@@ -14,7 +26,16 @@
     "year": 1922,
     "genre": "Horror",
     "runtime": "1h 34m",
-    "description": "A silent German classic about Count Orlok, a vampire who comes to a new town. Directed by F. W. Murnau.",
-    "rights": "Public domain (check on archive.org before launch)"
+    "director": "F. W. Murnau",
+    "cast": [
+      "Max Schreck",
+      "Gustav von Wangenheim",
+      "Greta Schröder",
+      "Alexander Granach",
+      "Georg H. Schnell",
+      "John Gottowt"
+    ],
+    "description": "A silent German classic: a young estate agent travels to Transylvania and Count Orlok follows him home. One of the most influential horror films ever made.",
+    "rights": "Public domain (published 1922)"
   }
 ]
