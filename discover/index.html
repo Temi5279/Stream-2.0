@@ -23,27 +23,41 @@
 
   <main>
     <h1 class="page-title">Discover</h1>
-    <input class="search glass" type="search" placeholder="Search movies and series" aria-label="Search">
-    <div class="chips"><button class="chip glass" aria-pressed="true">All</button><button class="chip glass" aria-pressed="false">Movies</button><button class="chip glass" aria-pressed="false">Series</button><button class="chip glass" aria-pressed="false">Cartoons</button><button class="chip glass" aria-pressed="false">Silent films</button></div>
-    <div class="grid">
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-    </div>
+    <input class="search glass" id="q" type="search" placeholder="Search movies and series" aria-label="Search">
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="none" hidden>No films match your search.</p>
   </main>
 
+  <script src="../app.js"></script>
+  <script>
+  Stream.movies().then(function (all) {
+    var genre = "All", q = document.getElementById("q"), grid = document.getElementById("grid"),
+        chips = document.getElementById("chips"), none = document.getElementById("none");
+    function draw() {
+      var t = q.value.trim().toLowerCase();
+      var list = all.filter(function (m) {
+        return (genre === "All" || m.genre === genre) &&
+          (!t || (m.title + " " + m.year + " " + m.genre + " " + m.description).toLowerCase().indexOf(t) > -1);
+      });
+      grid.replaceChildren.apply(grid, list.map(function (m) { return Stream.card(m); }));
+      none.hidden = list.length > 0;
+    }
+    ["All"].concat(all.map(function (m) { return m.genre; }).filter(function (g, i, a) { return a.indexOf(g) === i; }))
+      .forEach(function (g) {
+        var b = document.createElement("button");
+        b.className = "chip glass"; b.textContent = g; b.setAttribute("aria-pressed", g === genre);
+        b.onclick = function () {
+          genre = g;
+          Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute("aria-pressed", c === b); });
+          draw();
+        };
+        chips.appendChild(b);
+      });
+    q.addEventListener("input", draw);
+    draw();
+  });
+  </script>
   <script src="../pwa.js"></script>
 </body>
 </html>
