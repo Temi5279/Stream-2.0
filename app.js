@@ -7,6 +7,8 @@
 
   window.Stream = {
     movies: function () { return fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }); },
+    channels: function () { return fetch(new URL("channels.json", ROOT)).then(function (r) { return r.json(); }); },
+    movieUrl: function (id) { return new URL("movie/?id=" + encodeURIComponent(id), ROOT).href; },
     thumb: function (id) { return "https://archive.org/services/img/" + encodeURIComponent(id); },
     watchUrl: function (id) { return new URL("watch/?id=" + encodeURIComponent(id), ROOT).href; },
     progress: read,
@@ -17,7 +19,7 @@
     card: function (m, pct) {
       var a = document.createElement("a");
       a.className = "card";
-      a.href = Stream.watchUrl(m.id);
+      a.href = Stream.movieUrl(m.id);
       a.style.backgroundImage = "linear-gradient(to top, rgba(4,10,34,.92), rgba(4,10,34,0) 55%), url(" + Stream.thumb(m.id) + ")";
       a.style.backgroundSize = "cover";
       a.style.backgroundPosition = "center";
