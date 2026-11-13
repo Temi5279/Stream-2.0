@@ -197,3 +197,35 @@ main { padding: 18px 16px 0; max-width: 1400px; margin: 0 auto; }
   font: inherit; font-weight: 600; color: var(--text); cursor: pointer;
 }
 .install-btn[hidden] { display: none; }
+
+/* ---------- Posters ---------- */
+.card { position: relative; overflow: hidden; }
+.card span { text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.prog { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255, 255, 255, 0.25); }
+.prog i { display: block; height: 100%; background: var(--glow); }
+.empty { color: var(--muted); padding: 24px 0; }
+
+/* ---------- Player ---------- */
+body.watch { padding: 0; background: #000; }
+.player { position: fixed; inset: 0; background: #000; user-select: none; -webkit-user-select: none; }
+.player video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.ui {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to bottom, rgba(0,0,0,.65), transparent 28%, transparent 62%, rgba(0,0,0,.8));
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.ui.on { opacity: 1; pointer-events: auto; }
+.p-top { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; }
+.p-mid { display: flex; justify-content: center; align-items: center; gap: clamp(24px, 10vw, 80px); }
+.p-bot { display: grid; gap: 8px; }
+.p-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.p-btn {
+  min-width: 48px; height: 48px; padding: 0 12px; border-radius: 50%;
+  display: inline-grid; place-items: center; font: inherit; font-weight: 700; color: #fff; cursor: pointer;
+  background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.28);
+}
+.p-btn.big { width: 76px; height: 76px; font-size: 1.6rem; background: rgba(91, 125, 255, 0.55); }
+.p-btn.sm { height: 40px; min-width: 40px; margin-left: 6px; }
+#seek { width: 100%; accent-color: var(--glow); height: 28px; }
+.p-msg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 12px 20px; border-radius: 16px; background: rgba(4,10,34,.85); text-align: center; max-width: 80%; pointer-events: none; }
