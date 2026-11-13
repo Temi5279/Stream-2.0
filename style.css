@@ -1,428 +1,153 @@
-/* ==========================================================================
-   str▶eam - Premium Diamond Glass & Dark Royal Blue Stylesheet
-   ========================================================================== */
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-
 :root {
-  /* Core Color Palette (Dark Royal Blue Concept) */
-  --bg-pitch: #080a0f;
-  --bg-surface: #0f131d;
-  --bg-card: #151a26;
-  
-  --royal-blue-primary: #0052ff;
-  --royal-blue-glow: rgba(0, 82, 255, 0.45);
-  --royal-blue-gradient: linear-gradient(135deg, #0052ff 0%, #3b82f6 100%);
-  --royal-blue-subtle: rgba(0, 82, 255, 0.12);
-  
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  
-  /* Diamond Glass Effects */
-  --diamond-glass-bg: rgba(18, 24, 38, 0.65);
-  --diamond-glass-border: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(0, 82, 255, 0.2) 100%);
-  --diamond-glass-shadow: 0 16px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 2px 0 rgba(0, 82, 255, 0.15);
-  --diamond-reflection: linear-gradient(120deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.08) 100%);
-
-  /* Navigation & Elements */
-  --nav-height: 72px;
-  --header-height: 64px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 8px;
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --ink: #040a22;
+  --deep: #0a1a5c;
+  --royal: #1d3fd8;
+  --glow: #5b7dff;
+  --text: #eaf0ff;
+  --muted: #94a3d9;
+  --glass: rgba(20, 40, 120, 0.38);
+  --glass-edge: rgba(150, 175, 255, 0.28);
+  --nav-h: 68px;
+  --rail-w: 92px;
 }
 
-/* Base Resets */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: dark; }
 
 body {
-  background-color: var(--bg-pitch);
-  color: var(--text-primary);
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
-  padding-top: var(--header-height);
-  padding-bottom: calc(var(--nav-height) + 20px);
-  -webkit-font-smoothing: antialiased;
+  font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(900px 500px at 85% -5%, rgba(29, 63, 216, 0.55), transparent 70%),
+    radial-gradient(700px 500px at -10% 40%, rgba(91, 125, 255, 0.22), transparent 70%),
+    var(--ink);
+  background-attachment: fixed;
+  padding-bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px));
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.02em;
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 10px; }
+
+/* ---------- Logo ---------- */
+.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.02em; }
+.logo span { color: var(--glow); font-size: 0.85em; }
+
+/* ---------- Glass ---------- */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 10px 30px rgba(0, 0, 20, 0.45);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass {
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(12, 28, 96, 0.92); }
 }
 
-/* ==========================================================================
-   Header & Top Navigation
-   ========================================================================== */
-
-.app-header {
+/* ---------- Nav: bottom on phones ---------- */
+.nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: rgba(8, 10, 15, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  z-index: 100;
+  z-index: 20;
+  left: 12px; right: 12px;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  height: var(--nav-h);
+  border-radius: 26px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
+.nav .logo { display: none; }
+.nav ul { list-style: none; display: flex; width: 100%; justify-content: space-around; }
+.nav a {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 14px; border-radius: 18px;
+  font-size: 0.72rem; color: var(--muted);
+  transition: background 0.2s, color 0.2s;
 }
+.nav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav a[aria-current="page"] { color: var(--text); background: rgba(91, 125, 255, 0.3); }
 
-.brand-logo-img {
-  height: 28px;
-  width: auto;
-  object-fit: contain;
-}
+/* ---------- Main ---------- */
+main { padding: 18px 16px 0; max-width: 1400px; margin: 0 auto; }
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 
-.brand-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.03em;
-}
-
-.brand-name span {
-  color: var(--royal-blue-primary);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-avatar-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--royal-blue-gradient);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 0 12px var(--royal-blue-glow);
-}
-
-/* ==========================================================================
-   Diamond Glass Components
-   ========================================================================== */
-
-.diamond-glass {
-  background: var(--diamond-glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid transparent;
-  border-image: var(--diamond-glass-border) 1;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--diamond-glass-shadow);
+.hero {
   position: relative;
-  overflow: hidden;
-}
-
-.diamond-glass::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--diamond-reflection);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ==========================================================================
-   Hero & Content Sections
-   ========================================================================== */
-
-.hero-banner {
-  position: relative;
-  width: calc(100% - 32px);
-  margin: 16px auto 28px;
-  height: 380px;
-  border-radius: 24px;
-  overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: flex-end;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, var(--bg-pitch) 5%, rgba(8, 10, 15, 0.4) 60%, transparent 100%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
+  min-height: 300px;
+  border-radius: 28px;
   padding: 24px;
-  width: 100%;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(0, 82, 255, 0.2);
-  border: 1px solid rgba(0, 82, 255, 0.5);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #60a5fa;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 10px;
-}
-
-.hero-title {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-}
-
-.hero-description {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
   overflow: hidden;
+  background:
+    linear-gradient(to top, rgba(4, 10, 34, 0.92), rgba(4, 10, 34, 0.1) 70%),
+    linear-gradient(135deg, var(--royal), var(--deep) 60%, #02061a);
+  border: 1px solid var(--glass-edge);
+}
+.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.1; max-width: 16ch; }
+.hero p { color: var(--muted); max-width: 46ch; line-height: 1.5; }
+.btn {
+  align-self: flex-start;
+  padding: 12px 26px; border-radius: 999px;
+  font-weight: 700; font-size: 1rem;
+  background: linear-gradient(180deg, #7f98ff, var(--royal));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 22px rgba(29, 63, 216, 0.5);
+  color: #fff; cursor: pointer;
 }
 
-.btn-primary-blue {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--royal-blue-gradient);
-  color: #ffffff;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 8px 20px var(--royal-blue-glow);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+/* ---------- Rows ---------- */
+.row { margin-top: 28px; }
+.row h2 { font-size: 1.15rem; margin-bottom: 12px; }
+.cards {
+  display: flex; gap: 12px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 8px; scrollbar-width: none;
+}
+.cards::-webkit-scrollbar { display: none; }
+.card {
+  flex: 0 0 132px; aspect-ratio: 2 / 3;
+  border-radius: 18px; scroll-snap-align: start;
+  display: flex; align-items: flex-end; padding: 10px;
+  font-size: 0.8rem; font-weight: 600;
+  background: linear-gradient(160deg, var(--royal), var(--deep) 70%);
+  border: 1px solid var(--glass-edge);
+}
+.card:nth-child(2n) { background: linear-gradient(160deg, #3a5bff, #0a1a5c 75%); }
+.card:nth-child(3n) { background: linear-gradient(160deg, #162a8c, #040a22 80%); }
+
+/* ---------- Tablet and laptop: side rail ---------- */
+@media (min-width: 768px) {
+  body { padding-bottom: 40px; padding-left: calc(var(--rail-w) + 28px); }
+  .nav {
+    left: 14px; right: auto; top: 14px; bottom: 14px;
+    width: var(--rail-w); height: auto;
+    flex-direction: column; justify-content: flex-start;
+    padding: 20px 0; gap: 26px; border-radius: 30px;
+  }
+  .nav .logo { display: block; font-size: 1rem; }
+  .nav ul { flex-direction: column; gap: 10px; align-items: center; }
+  .top .logo { display: none; }
+  .card { flex-basis: 168px; }
 }
 
-.btn-primary-blue:active {
-  transform: scale(0.96);
+/* ---------- TV: top bar ---------- */
+@media (min-width: 1600px) {
+  body { padding-left: 0; padding-top: 110px; font-size: 1.15rem; }
+  .nav {
+    left: 40px; right: 40px; top: 20px; bottom: auto;
+    width: auto; height: 80px;
+    flex-direction: row; padding: 0 36px; gap: 48px; border-radius: 40px;
+  }
+  .nav .logo { font-size: 1.7rem; }
+  .nav ul { flex-direction: row; width: auto; gap: 18px; }
+  .nav a { flex-direction: row; gap: 10px; font-size: 1.05rem; padding: 10px 22px; }
+  .card { flex-basis: 220px; }
 }
 
-/* Category Rows & Media Cards */
-.section-row {
-  margin-bottom: 28px;
-  padding: 0 16px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.media-scroll-container {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-}
-
-.media-scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-.media-card {
-  flex: 0 0 140px;
-  height: 210px;
-  border-radius: var(--radius-md);
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
-  cursor: pointer;
-}
-
-.media-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0, 82, 255, 0.5);
-}
-
-.media-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ==========================================================================
-   Bottom Navigation Bar (Diamond Glass Netflix Style)
-   ========================================================================== */
-
-.bottom-nav {
-  position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 24px);
-  max-width: 460px;
-  height: var(--nav-height);
-  background: rgba(15, 19, 29, 0.75);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 8px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-  z-index: 999;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  flex: 1;
-  height: 100%;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  transition: color var(--transition-fast), transform var(--transition-fast);
-  position: relative;
-}
-
-.nav-item svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-  transition: transform var(--transition-fast);
-}
-
-.nav-item.active {
-  color: var(--royal-blue-primary);
-}
-
-.nav-item.active svg {
-  transform: translateY(-2px);
-  filter: drop-shadow(0 0 8px var(--royal-blue-primary));
-}
-
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  width: 16px;
-  height: 3px;
-  background: var(--royal-blue-gradient);
-  border-radius: 4px;
-  box-shadow: 0 0 10px var(--royal-blue-primary);
-}
-
-/* ==========================================================================
-   Auth Guard Modal (Diamond Glass)
-   ========================================================================== */
-
-.auth-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 6, 10, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.auth-modal-card {
-  width: 100%;
-  max-width: 400px;
-  padding: 32px 24px;
-  text-align: center;
-  background: rgba(18, 24, 38, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 28px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.25);
-}
-
-.auth-modal-logo {
-  height: 40px;
-  margin-bottom: 16px;
-}
-
-.auth-modal-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-}
-
-.auth-modal-subtitle {
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-  line-height: 1.4;
-}
-
-.btn-full-blue {
-  width: 100%;
-  padding: 14px;
-  background: var(--royal-blue-gradient);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 24px var(--royal-blue-glow);
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
 }
