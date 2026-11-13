@@ -1,5 +1,5 @@
-const VERSION = "stream-v2";
-const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "app.js", "watch/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
+const VERSION = "stream-v3";
+const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)));
@@ -30,7 +30,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   // Movie list: always try the network first so new films show up
-  if (url.pathname.endsWith("movies.json")) {
+  if (/(movies|channels)\.json$/.test(url.pathname)) {
     e.respondWith(fetch(req).then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; }).catch(() => caches.match(req)));
     return;
   }
