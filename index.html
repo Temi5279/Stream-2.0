@@ -52,29 +52,32 @@
       <a class="btn" href="discover/">Start watching</a>
     </section>
 
-    <section class="row" aria-labelledby="r1">
+    <section class="row" id="cwrow" aria-labelledby="r1" hidden>
       <h2 id="r1">Continue watching</h2>
-      <div class="cards">
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-      </div>
+      <div class="cards" id="cw"></div>
     </section>
 
     <section class="row" aria-labelledby="r2">
       <h2 id="r2">Public-domain classics</h2>
-      <div class="cards">
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-        <a class="card" href="#">Title</a>
-      </div>
+      <div class="cards" id="classics"></div>
     </section>
   </main>
 
+  <script src="app.js"></script>
+  <script>
+  Stream.movies().then(function (all) {
+    var prog = Stream.progress(), cw = document.getElementById("cw");
+    var done = Object.keys(prog).filter(function (id) { return prog[id].t > 5 && prog[id].t < prog[id].d - 30; })
+      .sort(function (a, b) { return prog[b].ts - prog[a].ts; });
+    done.forEach(function (id) {
+      var m = all.filter(function (x) { return x.id === id; })[0];
+      if (m) cw.appendChild(Stream.card(m, Math.round(prog[id].t / prog[id].d * 100)));
+    });
+    if (cw.children.length) document.getElementById("cwrow").hidden = false;
+    var c = document.getElementById("classics");
+    all.forEach(function (m) { c.appendChild(Stream.card(m)); });
+  });
+  </script>
   <script src="pwa.js"></script>
 </body>
 </html>
