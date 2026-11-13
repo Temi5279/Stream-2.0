@@ -1,0 +1,20 @@
+[
+  {
+    "id": "Night.Of.The.Living.Dead_1080p",
+    "title": "Night of the Living Dead",
+    "year": 1968,
+    "genre": "Horror",
+    "runtime": "1h 35m",
+    "description": "Seven strangers barricade themselves in a farmhouse as the dead rise outside. George Romero's low-budget landmark.",
+    "rights": "Public domain (released without a copyright notice)"
+  },
+  {
+    "id": "nosferatu_eine_symphonie_des_grauens",
+    "title": "Nosferatu",
+    "year": 1922,
+    "genre": "Horror",
+    "runtime": "1h 34m",
+    "description": "A silent German classic about Count Orlok, a vampire who comes to a new town. Directed by F. W. Murnau.",
+    "rights": "Public domain (check on archive.org before launch)"
+  }
+]
