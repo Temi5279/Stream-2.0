@@ -415,3 +415,5 @@ html.tv :focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
   .hp { left: auto; right: 24px; bottom: 24px; width: 380px; }
 }
 html.tv .helper-fab { display: none; }
+
+html.tv a:focus, html.tv button:focus, html.tv input:focus { outline: 4px solid #fff; outline-offset: 4px; }
