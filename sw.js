@@ -1,8 +1,9 @@
-const VERSION = "stream-v10";
+const VERSION = "stream-v12";
 const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)));
+  // Add files one by one so a single missing file can never stop the app from installing
+  e.waitUntil(caches.open(VERSION).then((c) => Promise.all(SHELL.map((u) => c.add(u).catch(() => {})))));
   self.skipWaiting();
 });
 
