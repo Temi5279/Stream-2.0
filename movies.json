@@ -3,39 +3,451 @@
     "id": "Night.Of.The.Living.Dead_1080p",
     "file": "NightOfTheLivingDead.mp4",
     "title": "Night of the Living Dead",
-    "year": 1968,
+    "year": "1968",
     "genre": "Horror",
     "runtime": "1h 35m",
-    "rating": 7.8,
     "director": "George A. Romero",
-    "cast": [
-      "Duane Jones",
-      "Judith O'Dea",
-      "Karl Hardman",
-      "Marilyn Eastman",
-      "Keith Wayne",
-      "Judith Ridley",
-      "Kyra Schon"
-    ],
-    "description": "Seven strangers barricade themselves in a rural Pennsylvania farmhouse as the dead rise outside. George Romero's low-budget landmark changed horror forever.",
-    "rights": "Public domain (released without a copyright notice)"
+    "description": "Seven strangers barricade themselves in a rural farmhouse as the dead rise outside."
   },
   {
     "id": "nosferatu_eine_symphonie_des_grauens",
     "title": "Nosferatu",
-    "year": 1922,
+    "year": "1922",
     "genre": "Horror",
     "runtime": "1h 34m",
     "director": "F. W. Murnau",
-    "cast": [
-      "Max Schreck",
-      "Gustav von Wangenheim",
-      "Greta Schröder",
-      "Alexander Granach",
-      "Georg H. Schnell",
-      "John Gottowt"
-    ],
-    "description": "A silent German classic: a young estate agent travels to Transylvania and Count Orlok follows him home. One of the most influential horror films ever made.",
-    "rights": "Public domain (published 1922)"
+    "description": "Vampire Count Orlok expresses interest in a new residence and real estate agent's wife."
+  },
+  {
+    "id": "Plan9FromOuterSpace_1959",
+    "title": "Plan 9 from Outer Space",
+    "year": "1959",
+    "genre": "Sci-Fi",
+    "runtime": "1h 19m",
+    "director": "Edward D. Wood Jr.",
+    "description": "Aliens resurrect the dead to stop humanity from creating a doomsday weapon."
+  },
+  {
+    "id": "house_on_haunted_hill_1959",
+    "title": "House on Haunted Hill",
+    "year": "1959",
+    "genre": "Horror",
+    "runtime": "1h 15m",
+    "director": "William Castle",
+    "description": "An eccentric millionaire offers $10,000 to five people who can spend a night in a haunted house."
+  },
+  {
+    "id": "The_Little_Shop_of_Horrors_1960",
+    "title": "The Little Shop of Horrors",
+    "year": "1960",
+    "genre": "Comedy",
+    "runtime": "1h 12m",
+    "director": "Roger Corman",
+    "description": "A clumsy young floral assistant cultivates a plant that feeds on human blood."
+  },
+  {
+    "id": "Carnival_of_Souls_1962",
+    "title": "Carnival of Souls",
+    "year": "1962",
+    "genre": "Horror",
+    "runtime": "1h 18m",
+    "director": "Herk Harvey",
+    "description": "After a car accident, a young woman becomes drawn to a mysterious abandoned pavilion."
+  },
+  {
+    "id": "The_Bat_1959",
+    "title": "The Bat",
+    "year": "1959",
+    "genre": "Horror",
+    "runtime": "1h 20m",
+    "director": "Crane Wilbur",
+    "description": "A masked criminal known as The Bat terrorizes a country home rented by a mystery writer."
+  },
+  {
+    "id": "White_Zombie_1932",
+    "title": "White Zombie",
+    "year": "1932",
+    "genre": "Horror",
+    "runtime": "1h 6m",
+    "director": "Victor Halperin",
+    "description": "A jealous plantation owner uses voodoo magic to turn a young woman into a zombie."
+  },
+  {
+    "id": "D.O.A._1950",
+    "title": "D.O.A.",
+    "year": "1950",
+    "genre": "Film Noir",
+    "runtime": "1h 23m",
+    "director": "Rudolph Maté",
+    "description": "A doomed accountant poisoned with a slow-acting toxin spends his final hours investigating his own murder."
+  },
+  {
+    "id": "Detour1945",
+    "title": "Detour",
+    "year": "1945",
+    "genre": "Film Noir",
+    "runtime": "1h 8m",
+    "director": "Edgar G. Ulmer",
+    "description": "A down-on-his-luck piano player hitchhiking to Hollywood gets entangled with a ruthless blackmailer."
+  },
+  {
+    "id": "The_Scarlet_Pimpernel_1934",
+    "title": "The Scarlet Pimpernel",
+    "year": "1934",
+    "genre": "Adventure",
+    "runtime": "1h 37m",
+    "director": "Harold Young",
+    "description": "An aristocratic Englishman leads a double life rescuing French aristocrats from the guillotine."
+  },
+  {
+    "id": "His_Girl_Friday_1940",
+    "title": "His Girl Friday",
+    "year": "1940",
+    "genre": "Comedy",
+    "runtime": "1h 32m",
+    "director": "Howard Hawks",
+    "description": "A newspaper editor uses every trick in the book to keep his ace reporter ex-wife from remarrying."
+  },
+  {
+    "id": "Charade_1963",
+    "title": "Charade",
+    "year": "1963",
+    "genre": "Romance",
+    "runtime": "1h 53m",
+    "director": "Stanley Donen",
+    "description": "A young woman is pursued in Paris by several men who want the fortune her murdered husband stole."
+  },
+  {
+    "id": "Royal_Wedding_1951",
+    "title": "Royal Wedding",
+    "year": "1951",
+    "genre": "Musical",
+    "runtime": "1h 33m",
+    "director": "Stanley Donen",
+    "description": "A brother-and-sister dance act find romance while performing in London during the royal wedding."
+  },
+  {
+    "id": "The_General_1926",
+    "title": "The General",
+    "year": "1926",
+    "genre": "Comedy",
+    "runtime": "1h 17m",
+    "director": "Buster Keaton",
+    "description": "Union spies steal an engineer's beloved locomotive and his girlfriend during the American Civil War."
+  },
+  {
+    "id": "Safety_Last_1923",
+    "title": "Safety Last!",
+    "year": "1923",
+    "genre": "Comedy",
+    "runtime": "1h 13m",
+    "director": "Fred C. Newmeyer, Sam Taylor",
+    "description": "A department store worker undertakes a dangerous publicity stunt climbing a skyscraper."
+  },
+  {
+    "id": "Sherlock_Jr._1924",
+    "title": "Sherlock Jr.",
+    "year": "1924",
+    "genre": "Comedy",
+    "runtime": "45m",
+    "director": "Buster Keaton",
+    "description": "A film projectionist framed for theft falls asleep and dreams himself into the movie as a detective."
+  },
+  {
+    "id": "Metropolis_1927_202",
+    "title": "Metropolis",
+    "year": "1927",
+    "genre": "Sci-Fi",
+    "runtime": "2h 28m",
+    "director": "Fritz Lang",
+    "description": "In a futuristic cyberpunk city, a wealthy youth attempts to bridge the gap between workers and rulers."
+  },
+  {
+    "id": "A_Trip_to_the_Moon_1902",
+    "title": "A Trip to the Moon",
+    "year": "1902",
+    "genre": "Sci-Fi",
+    "runtime": "14m",
+    "director": "Georges Méliès",
+    "description": "An astronomical conference travels to the moon in a cannon-propelled capsule."
+  },
+  {
+    "id": "The_Phantom_of_the_Opera_1925_",
+    "title": "The Phantom of the Opera",
+    "year": "1925",
+    "genre": "Horror",
+    "runtime": "1h 33m",
+    "director": "Rupert Julian",
+    "description": "A disfigured composer haunts the Paris Opera House and terrorizes the opera company."
+  },
+  {
+    "id": "The_Hunchback_of_Notre_Dame_1923_re-edit",
+    "title": "The Hunchback of Notre Dame",
+    "year": "1923",
+    "genre": "Drama",
+    "runtime": "1h 50m",
+    "director": "Wallace Worsley",
+    "description": "A deformed bellringer of Notre Dame tries to save a gypsy girl from a cruel magistrate."
+  },
+  {
+    "id": "M_1931_restored",
+    "title": "M",
+    "year": "1931",
+    "genre": "Thriller",
+    "runtime": "1h 57m",
+    "director": "Fritz Lang",
+    "description": "Berlin police and criminal syndicates hunt down a serial killer targeting young children."
+  },
+  {
+    "id": "Pandoras_Box_1929",
+    "title": "Pandora's Box",
+    "year": "1929",
+    "genre": "Drama",
+    "runtime": "1h 50m",
+    "director": "G.W. Pabst",
+    "description": "The irresistible dancer Lulu destroys the lives of everyone around her before meeting her tragic fate."
+  },
+  {
+    "id": "The_Lodger_A_Story_of_the_London_Fog_1927",
+    "title": "The Lodger",
+    "year": "1927",
+    "genre": "Thriller",
+    "runtime": "1h 30m",
+    "director": "Alfred Hitchcock",
+    "description": "A mysterious young man rents a room in a London home while a serial killer strikes the city."
+  },
+  {
+    "id": "The_39_Steps_1935_public_domain",
+    "title": "The 39 Steps",
+    "year": "1935",
+    "genre": "Thriller",
+    "runtime": "1h 26m",
+    "director": "Alfred Hitchcock",
+    "description": "A man in London tries to help a counter-espionage agent but gets framed for her murder."
+  },
+  {
+    "id": "The_Man_Who_Knew_Too_Much_1934_V2",
+    "title": "The Man Who Knew Too Much",
+    "year": "1934",
+    "genre": "Thriller",
+    "runtime": "1h 15m",
+    "director": "Alfred Hitchcock",
+    "description": "Vacationing tourists accidentally uncover an assassination plot and have their daughter kidnapped."
+  },
+  {
+    "id": "Sabotage_1936_",
+    "title": "Sabotage",
+    "year": "1936",
+    "genre": "Thriller",
+    "runtime": "1h 16m",
+    "director": "Alfred Hitchcock",
+    "description": "A Scotland Yard detective investigates a London cinema manager suspected of terrorist bombings."
+  },
+  {
+    "id": "Young_and_Innocent_1937",
+    "title": "Young and Innocent",
+    "year": "1937",
+    "genre": "Thriller",
+    "runtime": "1h 23m",
+    "director": "Alfred Hitchcock",
+    "description": "A young man accused of murder teams up with a police chief's daughter to prove his innocence."
+  },
+  {
+    "id": "The_Lady_Vanishes_1938_",
+    "title": "The Lady Vanishes",
+    "year": "1938",
+    "genre": "Mystery",
+    "runtime": "1h 36m",
+    "director": "Alfred Hitchcock",
+    "description": "A train passenger notices an elderly lady has gone missing and encounters denial from fellow travelers."
+  },
+  {
+    "id": "Rebecca_1940_full_movie",
+    "title": "Rebecca",
+    "year": "1940",
+    "genre": "Mystery",
+    "runtime": "2h 10m",
+    "director": "Alfred Hitchcock",
+    "description": "A young bride is haunted by the lingering memory of her wealthy husband's first wife."
+  },
+  {
+    "id": "The_Stranger_1946_Orson_Welles",
+    "title": "The Stranger",
+    "year": "1946",
+    "genre": "Film Noir",
+    "runtime": "1h 35m",
+    "director": "Orson Welles",
+    "description": "A war crimes investigator tracks a high-ranking Nazi fugitive hiding out in a quiet Connecticut town."
+  },
+  {
+    "id": "The_Southerner_1945",
+    "title": "The Southerner",
+    "year": "1945",
+    "genre": "Drama",
+    "runtime": "1h 31m",
+    "director": "Jean Renoir",
+    "description": "A poor Texas cotton farming family struggles against weather, poverty, and harsh hardship."
+  },
+  {
+    "id": "The_Kid_1921_Chaplin",
+    "title": "The Kid",
+    "year": "1921",
+    "genre": "Comedy",
+    "runtime": "58m",
+    "director": "Charlie Chaplin",
+    "description": "The Tramp cares for an abandoned child he finds on the street, forming an inseparable bond."
+  },
+  {
+    "id": "Gold_Rush_1925",
+    "title": "The Gold Rush",
+    "year": "1925",
+    "genre": "Comedy",
+    "runtime": "1h 35m",
+    "director": "Charlie Chaplin",
+    "description": "A prospector heads to the Klondike during the gold rush and falls in love with a saloon dancer."
+  },
+  {
+    "id": "City_Lights_1931",
+    "title": "City Lights",
+    "year": "1931",
+    "genre": "Romance",
+    "runtime": "1h 27m",
+    "director": "Charlie Chaplin",
+    "description": "The Tramp falls in love with a blind flower girl and desperately tries to raise money for her eyesight."
+  },
+  {
+    "id": "Modern_Times_1936_2020",
+    "title": "Modern Times",
+    "year": "1936",
+    "genre": "Comedy",
+    "runtime": "1h 27m",
+    "director": "Charlie Chaplin",
+    "description": "The Tramp struggles to survive in the modern industrial world alongside a young homeless woman."
+  },
+  {
+    "id": "The_Great_Dictator_1940",
+    "title": "The Great Dictator",
+    "year": "1940",
+    "genre": "Comedy",
+    "runtime": "2h 5m",
+    "director": "Charlie Chaplin",
+    "description": "A Jewish barber is mistaken for a fascist dictator in this biting satirical masterpiece."
+  },
+  {
+    "id": "Gullivers_Travels_1939_Fleischer",
+    "title": "Gulliver's Travels",
+    "year": "1939",
+    "genre": "Animation",
+    "runtime": "1h 16m",
+    "director": "Dave Fleischer",
+    "description": "Animated classic adaptation of Jonathan Swift's tale about a shipwrecked sailor in Lilliput."
+  },
+  {
+    "id": "Superman_1941_Fleischer",
+    "title": "Superman",
+    "year": "1941",
+    "genre": "Animation",
+    "runtime": "10m",
+    "director": "Dave Fleischer",
+    "description": "The classic Fleischer studios animated short introducing the Man of Steel."
+  },
+  {
+    "id": "Popeye_The_Sailor_Meets_Sindbad_The_Sailor_1936",
+    "title": "Popeye the Sailor Meets Sindbad the Sailor",
+    "year": "1936",
+    "genre": "Animation",
+    "runtime": "16m",
+    "director": "Dave Fleischer",
+    "description": "Popeye battles the legendary sailor Sindbad in this legendary two-reel animated short."
+  },
+  {
+    "id": "Alice_in_Wonderland_1903_film",
+    "title": "Alice in Wonderland",
+    "year": "1903",
+    "genre": "Fantasy",
+    "runtime": "12m",
+    "director": "Cecil Hepworth, Percy Stow",
+    "description": "The earliest cinematic adaptation of Lewis Carroll's timeless children's fantasy novel."
+  },
+  {
+    "id": "The_Perils_of_Pauline_1914_episodes",
+    "title": "The Perils of Pauline",
+    "year": "1914",
+    "genre": "Adventure",
+    "runtime": "1h 40m",
+    "director": "Louis J. Gasnier, Donald MacKenzie",
+    "description": "A thrilling silent-era serial following a spirited heroine facing endless dramatic dangers."
+  },
+  {
+    "id": "The_Phantom_Empire_1935_Serial",
+    "title": "The Phantom Empire",
+    "year": "1935",
+    "genre": "Sci-Fi",
+    "runtime": "4h 15m",
+    "director": "Otto Brower, B. Reeves Eason",
+    "description": "Gene Autry discovers an advanced subterranean civilization beneath his radio ranch."
+  },
+  {
+    "id": "Flash_Gordon_Space_Soldiers_1936_Serial",
+    "title": "Flash Gordon: Space Soldiers",
+    "year": "1936",
+    "genre": "Sci-Fi",
+    "runtime": "3h 45m",
+    "director": "Jess Shannon, Frederick Stephani",
+    "description": "Flash Gordon travels to planet Mongo to save Earth from the evil Emperor Ming the Merciless."
+  },
+  {
+    "id": "The_Battleship_Potemkin_1925",
+    "title": "Battleship Potemkin",
+    "year": "1925",
+    "genre": "Drama",
+    "runtime": "1h 6m",
+    "director": "Sergei Eisenstein",
+    "description": "A dramatized account of a mutiny aboard a Russian naval ship during the 1905 revolution."
+  },
+  {
+    "id": "Man_with_a_Movie_Camera_1929",
+    "title": "Man with a Movie Camera",
+    "year": "1929",
+    "genre": "Documentary",
+    "runtime": "1h 8m",
+    "director": "Dziga Vertov",
+    "description": "A groundbreaking experimental silent documentary capturing urban daily life in Soviet cities."
+  },
+  {
+    "id": "Intolerance_1916",
+    "title": "Intolerance",
+    "year": "1916",
+    "genre": "Drama",
+    "runtime": "2h 57m",
+    "director": "D. W. Griffith",
+    "description": "Four historical tales of bigotry and human persecution woven across different eras."
+  },
+  {
+    "id": "Birth_of_a_Nation_1915",
+    "title": "The Birth of a Nation",
+    "year": "1915",
+    "genre": "Drama",
+    "runtime": "3h 7m",
+    "director": "D. W. Griffith",
+    "description": "An epic silent historical drama depicting the American Civil War and Reconstruction era."
+  },
+  {
+    "id": "The_Canyon_of_Wicked_Men_1938",
+    "title": "The Canyon of Wicked Men",
+    "year": "1938",
+    "genre": "Western",
+    "runtime": "54m",
+    "director": "Robert N. Bradbury",
+    "description": "A classic vintage Western lawman tracks down outlaws hiding out in rugged desert territory."
+  },
+  {
+    "id": "The_Sign_of_the_Cross_1932_",
+    "title": "The Sign of the Cross",
+    "year": "1932",
+    "genre": "Drama",
+    "runtime": "2h 5m",
+    "director": "Cecil B. DeMille",
+    "description": "A Roman prefect falls deeply in love with a Christian woman during the reign of Nero."
   }
 ]
