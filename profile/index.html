@@ -8,6 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
+  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
 </head>
 <body>
 
@@ -24,21 +25,22 @@
   <main>
     <h1 class="page-title">Profile</h1>
     <div class="profile-head glass">
-      <div class="avatar">G</div>
+      <div class="avatar" data-user-initial>G</div>
       <div>
-        <h2>Guest</h2>
-        <p>Sign in to save your list and keep watching.</p>
+        <h2 data-user-name>Guest</h2>
+        <p data-user-email></p>
       </div>
     </div>
-    <a class="btn" href="#">Sign in</a>
-    <ul class="list" style="margin-top:22px">
+    <ul class="list">
       <li><a class="glass" href="#">Switch profile</a></li>
       <li><a class="glass" href="#">My list</a></li>
       <li><a class="glass" href="#">Watch history</a></li>
       <li><a class="glass" href="#">Settings</a></li>
+      <li><button class="glass" type="button" data-signout>Sign out</button></li>
     </ul>
   </main>
 
   <script src="../pwa.js"></script>
+  <script type="module" src="../guard.js"></script>
 </body>
 </html>
