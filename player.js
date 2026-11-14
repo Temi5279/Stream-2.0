@@ -10,6 +10,7 @@
     mute: svg('<path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
     fs: svg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
     exit: svg('<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>'),
+    cc: svg('<rect x="3" y="5" width="18" height="14" rx="3"/><text x="12" y="14.6" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" stroke="none">CC</text>'),
     back: svg('<path d="M15 5l-7 7 7 7"/>')
   };
   function fmt(s) {
@@ -33,17 +34,41 @@
           '<div class="p-mid"><button class="p-btn skip b10" aria-label="Back 10 seconds">' + I.back10 + '</button><button class="p-btn big pp" aria-label="Play">' + I.play + '</button><button class="p-btn skip f10" aria-label="Forward 10 seconds">' + I.fwd10 + "</button></div>" +
           '<div class="p-bot"><input class="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">' +
             '<div class="p-row"><span class="tm">' + (o.live ? '<span class="live-badge">● LIVE</span>' : "0:00 / 0:00") + "</span>" +
-            '<span><button class="p-btn sm mute" aria-label="Mute">' + I.vol + '</button><button class="p-btn sm fs" aria-label="Fullscreen">' + I.fs + "</button></span></div></div>" +
+            '<span><button class="p-btn sm cc" aria-label="Captions" aria-pressed="false" hidden>' + I.cc + '</button><button class="p-btn sm mute" aria-label="Mute">' + I.vol + '</button><button class="p-btn sm fs" aria-label="Fullscreen">' + I.fs + "</button></span></div></div>" +
         "</div>" +
         '<div class="p-msg" hidden></div>';
 
       var q = function (s) { return el.querySelector(s); };
       var v = q("video"), ui = q(".ui"), pp = q(".pp"), seek = q(".seek"), tm = q(".tm"), msg = q(".p-msg"),
-          start = q(".start"), ttl = q(".p-title"), fsb = q(".fs"), mb = q(".mute");
-      var hls = null, hideT, started = false, startAt = 0, dragging = false, lastSave = 0;
+          start = q(".start"), ttl = q(".p-title"), fsb = q(".fs"), mb = q(".mute"), cc = q(".cc");
+      var ccIdx = 0, ccOpts = [], toastT, hls = null, hideT, started = false, startAt = 0, dragging = false, lastSave = 0;
 
       function say(t) { msg.textContent = t || ""; msg.hidden = !t; }
-      function show() { ui.classList.add("on"); clearTimeout(hideT); if (!v.paused) hideT = setTimeout(function () { ui.classList.remove("on"); }, 3000); }
+      function show() { ui.classList.add("on"); clearTimeout(hideT); if (!v.paused) hideT = setTimeout(function () { ui.classList.remove("on"); }, 5000); }
+      function toast(t) { say(t); clearTimeout(toastT); toastT = setTimeout(function () { if (msg.textContent === t) say(""); }, 1800); }
+      // Captions: from the stream's own subtitle tracks or CEA-608/708 captions
+      function refreshCC() {
+        var list = [], hs = hls && hls.subtitleTracks && hls.subtitleTracks.length;
+        if (hs) hls.subtitleTracks.forEach(function (t, i) { list.push({ label: t.name || t.lang || "Subtitles " + (i + 1), kind: "hls", idx: i }); });
+        for (var i = 0; i < v.textTracks.length; i++) {
+          var t = v.textTracks[i];
+          if (t.kind !== "captions" && t.kind !== "subtitles") continue;
+          if (hs && t.kind === "subtitles") continue;
+          list.push({ label: t.label || t.language || "Captions " + (list.length + 1), kind: "native", track: t });
+        }
+        ccOpts = list; cc.hidden = !list.length;
+      }
+      function applyCC() {
+        for (var i = 0; i < v.textTracks.length; i++) if (v.textTracks[i].mode === "showing") v.textTracks[i].mode = "disabled";
+        if (hls) hls.subtitleTrack = -1;
+        if (!ccIdx) { cc.setAttribute("aria-pressed", "false"); toast("Captions off"); return; }
+        var c = ccOpts[ccIdx - 1];
+        if (c.kind === "hls") { hls.subtitleTrack = c.idx; hls.subtitleDisplay = true; } else c.track.mode = "showing";
+        cc.setAttribute("aria-pressed", "true"); toast("Captions: " + c.label);
+      }
+      cc.addEventListener("click", function () { ccIdx = (ccIdx + 1) % (ccOpts.length + 1); applyCC(); show(); });
+      v.textTracks.addEventListener("addtrack", refreshCC);
+      ui.addEventListener("pointerdown", show);
       function jump(n) { if (o.live) return; v.currentTime = Math.max(0, Math.min(v.duration || 1e9, v.currentTime + n)); show(); }
       function toggle() { v.paused ? v.play().catch(function () {}) : v.pause(); }
       function save() { if (o.onProgress && v.duration && !o.live) o.onProgress(v.currentTime, v.duration); }
@@ -65,7 +90,7 @@
       pp.addEventListener("click", toggle);
       q(".b10").addEventListener("click", function () { jump(-10); });
       q(".f10").addEventListener("click", function () { jump(10); });
-      mb.addEventListener("click", function () { v.muted = !v.muted; mb.innerHTML = v.muted ? I.mute : I.vol; });
+      mb.addEventListener("click", function () { v.muted = !v.muted; mb.innerHTML = v.muted ? I.mute : I.vol; show(); });
       fsb.addEventListener("click", function () { document.fullscreenElement ? document.exitFullscreen() : enterFull(); });
 
       v.addEventListener("loadedmetadata", function () {
@@ -113,12 +138,14 @@
         setStart: function (t) { q(".start-sub").textContent = t || ""; },
         poster: function (url) { if (url) start.style.backgroundImage = "linear-gradient(rgba(4,10,34,.55), rgba(4,10,34,.85)), url(" + url + ")"; },
         load: function (src, at) {
-          startAt = at || 0; say("");
+          startAt = at || 0; say(""); ccIdx = 0; ccOpts = []; cc.hidden = true; cc.setAttribute("aria-pressed", "false");
           if (hls) { hls.destroy(); hls = null; }
           if (/\.m3u8(\?|$)/i.test(src) && !v.canPlayType("application/vnd.apple.mpegurl")) {
             if (window.Hls && Hls.isSupported()) {
               hls = new Hls();
               hls.on(Hls.Events.ERROR, function (ev, d) { if (d.fatal) say("This channel couldn't be loaded. It may be offline, or it may not allow other websites to play it."); });
+              hls.on(Hls.Events.MANIFEST_PARSED, refreshCC);
+              hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, refreshCC);
               hls.loadSource(src); hls.attachMedia(v);
             } else { say("This browser can't play live channels."); return; }
           } else { v.src = src; }
