@@ -13,6 +13,7 @@ onAuthStateChanged(auth, function (user) {
   document.querySelectorAll("[data-user-email]").forEach(function (el) { el.textContent = user ? user.email || "" : "Not signed in"; });
   document.querySelectorAll("[data-user-initial]").forEach(function (el) { el.textContent = name.charAt(0).toUpperCase(); });
   reveal();
+  if (typeof window.StreamIntro === "function") window.StreamIntro(user);
 });
 
 document.addEventListener("click", function (e) {
