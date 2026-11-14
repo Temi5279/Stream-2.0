@@ -208,11 +208,11 @@ main { padding: 18px 16px 0; max-width: 1400px; margin: 0 auto; }
 /* ---------- Player ---------- */
 body.watch { padding: 0; background: #000; overflow: hidden; }
 .player { position: relative; background: #000; overflow: hidden; border-radius: 24px; aspect-ratio: 16 / 9; border: 1px solid var(--glass-edge); user-select: none; -webkit-user-select: none; }
-.player.full { position: fixed; inset: 0; border-radius: 0; border: 0; aspect-ratio: auto; }
+.player.full { position: fixed; top: 0; right: 0; bottom: 0; left: 0; border-radius: 0; border: 0; aspect-ratio: auto; }
 .player:fullscreen { border-radius: 0; border: 0; aspect-ratio: auto; }
 .player video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
 .start {
-  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; cursor: pointer;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; cursor: pointer;
   background: linear-gradient(rgba(4,10,34,.55), rgba(4,10,34,.8)) center / cover, var(--deep) center / cover;
 }
 .start[hidden], .p-msg[hidden] { display: none; }
@@ -225,7 +225,7 @@ body.watch { padding: 0; background: #000; overflow: hidden; }
 .start-ttl { font-weight: 700; font-size: 1.1rem; padding: 0 16px; }
 .start-sub { color: var(--muted); font-size: 0.9rem; }
 .ui {
-  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(10px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 30%, transparent 55%, rgba(0,0,0,.85));
   opacity: 0; pointer-events: none; transition: opacity .25s;
@@ -261,7 +261,7 @@ body.watch { padding: 0; background: #000; overflow: hidden; }
 .live-now { margin: 12px 4px 0; color: var(--muted); }
 
 /* ---------- Movie page ---------- */
-.m-bg { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center; filter: blur(40px) saturate(1.3); transform: scale(1.3); opacity: .35; }
+.m-bg { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; background-size: cover; background-position: center; filter: blur(40px) saturate(1.3); transform: scale(1.3); opacity: .35; }
 .m-wrap { display: grid; gap: 22px; max-width: 980px; margin: 0 auto; }
 .m-poster { width: min(60%, 260px); aspect-ratio: 2 / 3; object-fit: cover; border-radius: 22px; border: 1px solid var(--glass-edge); box-shadow: 0 16px 40px rgba(0,0,20,.6); justify-self: center; background: var(--deep); }
 .m-info h1 { font-size: clamp(1.7rem, 5vw, 2.6rem); line-height: 1.1; }
@@ -373,3 +373,45 @@ mark.todo { background: #ffd166; color: #2a1f00; padding: 0 0.3em; border-radius
 .list-title { margin: 26px 4px 10px; color: var(--muted); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; }
 .list a span { color: var(--muted); }
 .ver { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 22px; }
+
+/* ---------- TV mode (html.tv): top bar, bigger cards, clear focus ring for remotes ---------- */
+html.tv body:not(.plain) { padding-left: 0; padding-top: 112px; padding-bottom: 40px; font-size: 1.15rem; }
+html.tv .nav { left: 40px; right: 40px; top: 20px; bottom: auto; width: auto; height: 80px; flex-direction: row; justify-content: flex-start; padding: 0 36px; gap: 48px; border-radius: 40px; }
+html.tv .nav .logo { display: block; font-size: 1.7rem; }
+html.tv .nav ul { flex-direction: row; width: auto; gap: 18px; }
+html.tv .nav a { flex-direction: row; gap: 10px; font-size: 1.05rem; padding: 10px 22px; }
+html.tv .top .logo { display: none; }
+html.tv .card { flex-basis: 220px; }
+html.tv .chan { flex-basis: 210px; min-height: 170px; }
+html.tv :focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+
+/* ---------- Older browsers (many TVs): fallbacks for aspect-ratio ---------- */
+@supports not (aspect-ratio: 1) {
+  .player:not(.full)::before { content: ""; display: block; padding-top: 56.25%; }
+  .player:not(.full) video { position: absolute; top: 0; left: 0; }
+  .card { min-height: 200px; }
+  .m-poster { height: 340px; }
+}
+
+/* ---------- Help assistant ---------- */
+.helper-fab { position: fixed; z-index: 30; right: 14px; bottom: calc(var(--nav-h) + 26px + env(safe-area-inset-bottom, 0px)); padding: 12px 18px; border-radius: 999px; font: inherit; font-weight: 600; color: var(--text); cursor: pointer; }
+.helper-fab[hidden], .hp[hidden] { display: none; }
+.hp { position: fixed; z-index: 40; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); height: min(78vh, 560px); display: flex; flex-direction: column; border-radius: 26px; overflow: hidden; background: rgba(8, 20, 76, 0.96); }
+.hp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid var(--glass-edge); }
+.hp-head small { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+.hp-x { background: none; border: 0; color: var(--text); font-size: 1.1rem; cursor: pointer; padding: 6px 10px; }
+.hp-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.hp-m { max-width: 85%; padding: 10px 14px; border-radius: 18px; line-height: 1.45; font-size: 0.95rem; }
+.hp-m.bot { align-self: flex-start; background: rgba(91, 125, 255, 0.22); border-bottom-left-radius: 6px; }
+.hp-m.user { align-self: flex-end; background: var(--royal); border-bottom-right-radius: 6px; }
+.hp-m a { color: #fff; text-decoration: underline; }
+.hp-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 14px 10px; }
+.hp-chips button { padding: 8px 14px; border-radius: 999px; font: inherit; font-size: 0.85rem; color: var(--text); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-edge); cursor: pointer; }
+.hp-form { display: flex; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--glass-edge); }
+.hp-form input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 999px; font: inherit; color: var(--text); background: rgba(4, 10, 34, 0.6); border: 1px solid var(--glass-edge); }
+.hp-form button { padding: 0 18px; border-radius: 999px; font: inherit; font-weight: 700; color: #fff; background: var(--royal); border: 0; cursor: pointer; }
+@media (min-width: 768px) {
+  .helper-fab { bottom: 24px; right: 24px; }
+  .hp { left: auto; right: 24px; bottom: 24px; width: 380px; }
+}
+html.tv .helper-fab { display: none; }
