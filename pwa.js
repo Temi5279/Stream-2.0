@@ -1,3 +1,19 @@
+// TV mode: top navigation bar and larger controls. Open the site once with ?tv=1 to turn it on (?tv=0 turns it off).
+(function () {
+  var here = document.currentScript && document.currentScript.src;
+  try {
+    var q = new URLSearchParams(location.search).get("tv");
+    if (q === "1") localStorage.setItem("stream-tv", "1");
+    if (q === "0") localStorage.removeItem("stream-tv");
+    var onTV = localStorage.getItem("stream-tv") === "1" ||
+      /SmartTV|SMART-TV|Tizen|Web0S|webOS|NetCast|BRAVIA|AFT[A-Z]|GoogleTV|Android.*TV|CrKey|HbbTV|Roku|VIDAA/i.test(navigator.userAgent);
+    if (onTV) {
+      document.documentElement.classList.add("tv");
+      if (here) { var s = document.createElement("script"); s.src = new URL("tvnav.js", here).href; document.body.appendChild(s); }
+    }
+  } catch (e) {}
+})();
+
 // Registers the service worker and shows an "Install app" button when the browser allows it.
 (function () {
   var base = document.currentScript.src;
