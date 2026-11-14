@@ -5,6 +5,10 @@
 
   function read() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
 
+  var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.style.backgroundImage = e.target.getAttribute("data-bg"); io.unobserve(e.target); } });
+  }, { rootMargin: "300px" }) : null;
+
   window.Stream = {
     movies: function () { return fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }); },
     channels: function () { return fetch(new URL("channels.json", ROOT)).then(function (r) { return r.json(); }); },
@@ -21,7 +25,8 @@
       var a = document.createElement("a");
       a.className = "card";
       a.href = Stream.movieUrl(m.id);
-      a.style.backgroundImage = "linear-gradient(to top, rgba(4,10,34,.92), rgba(4,10,34,0) 55%), url(" + Stream.thumb(m.id) + ")";
+      var bg = "linear-gradient(to top, rgba(4,10,34,.92), rgba(4,10,34,0) 55%), url(" + Stream.thumb(m.id) + ")";
+      if (io) { a.setAttribute("data-bg", bg); io.observe(a); } else a.style.backgroundImage = bg;
       a.style.backgroundSize = "cover";
       a.style.backgroundPosition = "center";
       var s = document.createElement("span"); s.textContent = m.title; a.appendChild(s);
