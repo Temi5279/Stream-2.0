@@ -25,35 +25,98 @@
     <h1 class="page-title">Live TV</h1>
     <div id="lp"></div>
     <p class="live-now" id="now"></p>
-    <section class="row" aria-labelledby="c1">
-      <h2 id="c1">Channels</h2>
-      <div class="cards" id="ch"></div>
-    </section>
+    <ul class="sched" id="sched"></ul>
+
+    <input class="search glass" id="q" type="search" placeholder="Search channels" aria-label="Search channels" style="margin-top:22px">
+    <div id="rows"></div>
+    <p class="empty" id="none" hidden>No channels match your search.</p>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
   <script src="../app.js"></script>
   <script src="../player.js"></script>
   <script>
-  var pl = Player.mount(document.getElementById("lp"), { live: true, fullscreenOnPlay: false });
-  var now = document.getElementById("now"), ch = document.getElementById("ch");
-  Stream.channels().then(function (list) {
-    var btns = [];
-    function pick(c, b) {
-      btns.forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
-      pl.setTitle(c.name); pl.setStart("Tap to watch live"); pl.load(c.src);
-      now.textContent = "Now showing: " + c.name;
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var pl = Player.mount($("lp"), { live: true, fullscreenOnPlay: false });
+    var channels = [], epg = null, cur = null;
+
+    function hm(sec) { return new Date(sec * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+    function list(c) { return epg && c.epg && epg.programmes && epg.programmes[c.epg] || []; }
+    function nowNext(c) {
+      var p = list(c), t = Date.now() / 1000;
+      for (var i = 0; i < p.length; i++) if (p[i][0] <= t && t < p[i][1]) return { now: p[i], next: p[i + 1], i: i };
+      return null;
     }
-    list.forEach(function (c) {
-      var b = document.createElement("button");
-      b.className = "card chan glass"; b.setAttribute("aria-pressed", "false");
-      b.innerHTML = "<span></span><small></small>";
-      b.firstChild.textContent = c.name; b.lastChild.textContent = c.category || "";
-      b.onclick = function () { pick(c, b); };
-      ch.appendChild(b); btns.push(b);
+
+    function drawInfo() {
+      if (!cur) return;
+      var s = $("sched"), n = nowNext(cur);
+      $("now").textContent = "Now showing: " + cur.name;
+      s.innerHTML = "";
+      if (!n) {
+        var li = document.createElement("li"); li.className = "glass";
+        li.textContent = epg ? "No schedule available for this channel right now." : "Schedule isn't set up yet.";
+        s.appendChild(li); return;
+      }
+      list(cur).slice(n.i, n.i + 6).forEach(function (p, k) {
+        var li = document.createElement("li"); li.className = k ? "glass" : "glass now";
+        var t = document.createElement("time"); t.textContent = hm(p[0]);
+        var d = document.createElement("span"); d.textContent = p[2] || "Programme";
+        li.appendChild(t); li.appendChild(d); s.appendChild(li);
+      });
+    }
+
+    function pick(c) {
+      cur = c;
+      pl.setTitle(c.name); pl.setStart("Tap to watch live"); pl.load(c.src);
+      drawInfo(); mark();
+    }
+    function mark() {
+      Array.prototype.forEach.call($("rows").querySelectorAll(".chan"), function (b) { b.setAttribute("aria-pressed", !!cur && b.dataset.id === cur.id); });
+    }
+
+    function draw() {
+      var q = $("q").value.trim().toLowerCase(), rows = $("rows"), any = false;
+      rows.innerHTML = "";
+      var cats = [];
+      channels.forEach(function (c) { if (cats.indexOf(c.category) < 0) cats.push(c.category); });
+      cats.forEach(function (cat) {
+        var mine = channels.filter(function (c) { return c.category === cat && (!q || (c.name + " " + cat).toLowerCase().indexOf(q) > -1); });
+        if (!mine.length) return;
+        any = true;
+        var sec = document.createElement("section"); sec.className = "row";
+        var h = document.createElement("h2"); h.textContent = cat; sec.appendChild(h);
+        var box = document.createElement("div"); box.className = "cards"; sec.appendChild(box);
+        mine.forEach(function (c) {
+          var b = document.createElement("button");
+          b.className = "card chan glass"; b.dataset.id = c.id; b.setAttribute("aria-pressed", "false");
+          var logo;
+          if (c.logo) {
+            logo = document.createElement("img"); logo.src = c.logo; logo.alt = ""; logo.loading = "lazy";
+            logo.onerror = function () { var ph = document.createElement("div"); ph.className = "ph"; ph.textContent = c.name.charAt(0); logo.replaceWith(ph); };
+          } else { logo = document.createElement("div"); logo.className = "ph"; logo.textContent = c.name.charAt(0); }
+          var name = document.createElement("b"); name.textContent = c.name;
+          var sub = document.createElement("small"), n = nowNext(c);
+          sub.textContent = n ? n.now[2] : "Live";
+          b.appendChild(logo); b.appendChild(name); b.appendChild(sub);
+          b.onclick = function () { pick(c); window.scrollTo({ top: 0, behavior: "smooth" }); };
+          box.appendChild(b);
+        });
+        rows.appendChild(sec);
+      });
+      $("none").hidden = any;
+      mark();
+    }
+
+    Promise.all([Stream.channels(), Stream.epg()]).then(function (r) {
+      channels = r[0]; epg = r[1];
+      draw();
+      if (channels.length) pick(channels[0]);
     });
-    if (list.length) pick(list[0], btns[0]);
-  });
+    $("q").addEventListener("input", draw);
+    setInterval(function () { drawInfo(); }, 60000);
+  })();
   </script>
   <script src="../pwa.js"></script>
 </body>
