@@ -21,41 +21,32 @@
     </ul>
   </nav>
 
-  <main>
-    <h1 class="page-title">Discover</h1>
-    <input class="search glass" id="q" type="search" placeholder="Search movies and series" aria-label="Search">
-    <div class="chips" id="chips"></div>
-    <div class="grid" id="grid"></div>
-    <p class="empty" id="none" hidden>No films match your search.</p>
-  </main>
+  <main id="m"></main>
 
   <script src="../app.js"></script>
   <script>
   Stream.movies().then(function (all) {
-    var genre = "All", q = document.getElementById("q"), grid = document.getElementById("grid"),
-        chips = document.getElementById("chips"), none = document.getElementById("none");
-    function draw() {
-      var t = q.value.trim().toLowerCase();
-      var list = all.filter(function (m) {
-        return (genre === "All" || m.genre === genre) &&
-          (!t || (m.title + " " + m.year + " " + m.genre + " " + m.description).toLowerCase().indexOf(t) > -1);
-      });
-      grid.replaceChildren.apply(grid, list.map(function (m) { return Stream.card(m); }));
-      none.hidden = list.length > 0;
-    }
-    ["All"].concat(all.map(function (m) { return m.genre; }).filter(function (g, i, a) { return a.indexOf(g) === i; }))
-      .forEach(function (g) {
-        var b = document.createElement("button");
-        b.className = "chip glass"; b.textContent = g; b.setAttribute("aria-pressed", g === genre);
-        b.onclick = function () {
-          genre = g;
-          Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute("aria-pressed", c === b); });
-          draw();
-        };
-        chips.appendChild(b);
-      });
-    q.addEventListener("input", draw);
-    draw();
+    function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
+    var id = new URLSearchParams(location.search).get("id"), root = document.getElementById("m");
+    var m = all.filter(function (x) { return x.id === id; })[0];
+    if (!id) { root.innerHTML = '<p class="empty">No film selected. Open Discover and pick one.</p>'; return; }
+    if (!m) { root.innerHTML = '<p class="empty">Film not found: ' + esc(id) + '</p>'; return; }
+    document.title = m.title + " · str▶eam";
+    var s = Stream.progress()[id], resume = s && s.t > 5 && s.t < s.d - 30;
+    var thumb = Stream.thumb(id);
+    root.innerHTML =
+      '<div class="m-bg" style="background-image:url(' + thumb + ')"></div>' +
+      '<div class="m-wrap"><img class="m-poster" src="' + thumb + '" alt="' + esc(m.title) + ' poster">' +
+      '<div class="m-info"><h1>' + esc(m.title) + '</h1>' +
+      '<p class="m-meta"><span>' + esc(m.year) + '</span><span>' + esc(m.runtime) + '</span><span>' + esc(m.genre) + '</span>' +
+      (m.rating ? '<span class="m-rate">★ ' + esc(m.rating) + ' IMDb</span>' : '') + '</p>' +
+      '<a class="btn" href="' + Stream.watchUrl(id) + '">' + (resume ? 'Resume' : 'Play') + '</a>' +
+      '<p class="m-desc">' + esc(m.description) + '</p>' +
+      '<dl class="m-dl"><dt>Director</dt><dd>' + esc(m.director) + '</dd>' +
+      '<dt>Cast</dt><dd>' + esc((m.cast || []).join(", ")) + '</dd>' +
+      '<dt>Rights</dt><dd>' + esc(m.rights) + '</dd></dl>' +
+      '<a class="m-src" href="https://archive.org/details/' + encodeURIComponent(id) + '" target="_blank" rel="noopener">View on the Internet Archive</a>' +
+      '</div></div>';
   });
   </script>
   <script src="../pwa.js"></script>
