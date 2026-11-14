@@ -129,6 +129,8 @@
         else if (e.key === "ArrowRight") jump(10);
         else if (e.key === "f") fsb.click();
         else if (e.key === "m") mb.click();
+        else if (e.key === "MediaPlayPause" || (e.key === "Enter" && !e.target.closest("button, a, input"))) toggle();
+        else if (e.key === "ArrowUp" || e.key === "ArrowDown") show();
       });
 
       el.addEventListener("keydown", show);
