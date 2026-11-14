@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040a22">
+  <title>Install check · str▶eam</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
+</head>
+<body class="plain">
+  <div class="doc" style="padding-top:24px">
+    <article class="glass">
+      <h1>Install check</h1>
+      <p>This page tests why Chrome may not offer to install stream. Wait a few seconds for every line to finish.</p>
+      <ul id="out" style="list-style:none;margin:0"></ul>
+    </article>
+  </div>
+  <script>
+  var out = document.getElementById("out");
+  function row(ok, text, note) {
+    var li = document.createElement("li"); li.style.margin = "0 0 12px";
+    li.textContent = (ok === null ? "… " : ok ? "✅ " : "❌ ") + text + (note ? " (" + note + ")" : "");
+    out.appendChild(li); return li;
+  }
+  var installable = false;
+  window.addEventListener("beforeinstallprompt", function () { installable = true; });
+  (async function () {
+    row(location.protocol === "https:", "Secure connection (HTTPS)");
+    row(!matchMedia("(display-mode: standalone)").matches, "Opened in the browser", matchMedia("(display-mode: standalone)").matches ? "you are already inside the installed app" : "");
+    try {
+      var m = await (await fetch("../manifest.json", { cache: "no-store" })).json();
+      row(true, "Manifest found: " + m.name + ", display " + m.display);
+      for (var i = 0; i < m.icons.length; i++) {
+        var ic = m.icons[i];
+        await new Promise(function (res) {
+          var im = new Image();
+          im.onload = function () { row(true, "Icon " + ic.sizes + " (" + ic.purpose + ") loads"); res(); };
+          im.onerror = function () { row(false, "Icon " + ic.src + " is missing"); res(); };
+          im.src = new URL(ic.src, new URL("../manifest.json", location.href)).href;
+        });
+      }
+    } catch (e) { row(false, "Manifest problem", e.message); }
+    if (!("serviceWorker" in navigator)) { row(false, "This browser has no service worker support"); return; }
+    var reg = await navigator.serviceWorker.getRegistration(new URL("../", location.href).href);
+    row(!!reg, "Service worker registered", reg ? reg.scope : "wait and refresh once");
+    row(!!(reg && reg.active), "Service worker active");
+    row(!!navigator.serviceWorker.controller, "This page is controlled by it", "refresh once if not");
+    try {
+      var keys = await caches.keys();
+      var n = 0; for (var k = 0; k < keys.length; k++) n += (await (await caches.open(keys[k])).keys()).length;
+      row(n > 5, "Offline files saved: " + n, keys.join(", "));
+    } catch (e) {}
+    var wait = row(null, "Waiting for Chrome to say the app is installable…");
+    setTimeout(function () {
+      wait.textContent = installable ? "✅ Chrome says: installable. Use the menu, then Install app." : "❌ Chrome has not offered installing. Open this page in Chrome itself (not another browser), refresh twice and check again.";
+    }, 5000);
+  })();
+  </script>
+  <script src="../pwa.js"></script>
+</body>
+</html>
