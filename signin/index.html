@@ -37,7 +37,11 @@
     import { auth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, googleSignIn, friendlyError } from "../firebase.js";
     var $ = function (id) { return document.getElementById(id); };
     var busy = false;
-    onAuthStateChanged(auth, function (u) { if (u && !busy) location.replace("../"); });
+    onAuthStateChanged(auth, function (u) {
+      if (!u) return;
+      if (!busy) location.replace("../");
+      else setTimeout(function () { location.replace("../"); }, 3500); // safety net if anything below is slow
+    });
 
     function say(t, ok) { $("msg").className = ok ? "msg ok" : "msg"; $("msg").textContent = t; }
     function fail(t) { say(t); busy = false; $("go").disabled = false; $("g").disabled = false; }
