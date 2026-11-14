@@ -26,11 +26,11 @@ export { onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWith
 
 // Saves name, email and date of birth in Firestore. Sign-in still works if this fails.
 export async function saveProfile(user, extra) {
-  try {
-    await setDoc(doc(db, "users", user.uid),
-      Object.assign({ name: user.displayName || "", email: user.email || "", updatedAt: serverTimestamp() }, extra || {}),
-      { merge: true });
-  } catch (e) { console.warn("Profile not saved:", e.code || e); }
+  // Never let a slow or missing database hold up sign-in: give it 3 seconds, then move on.
+  var write = setDoc(doc(db, "users", user.uid),
+    Object.assign({ name: user.displayName || "", email: user.email || "", updatedAt: serverTimestamp() }, extra || {}),
+    { merge: true }).catch(function (e) { console.warn("Profile not saved:", e.code || e); });
+  await Promise.race([write, new Promise(function (res) { setTimeout(res, 3000); })]);
 }
 
 export async function googleSignIn() {
