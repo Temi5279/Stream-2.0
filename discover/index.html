@@ -41,7 +41,7 @@
         return (genre === "All" || m.genre === genre) &&
           (!t || (m.title + " " + m.year + " " + m.genre + " " + m.description).toLowerCase().indexOf(t) > -1);
       });
-      grid.replaceChildren.apply(grid, list.map(function (m) { return Stream.card(m); }));
+      grid.innerHTML = ""; list.forEach(function (m) { grid.appendChild(Stream.card(m)); });
       none.hidden = list.length > 0;
     }
     ["All"].concat(all.map(function (m) { return m.genre; }).filter(function (g, i, a) { return a.indexOf(g) === i; }))
@@ -59,6 +59,7 @@
     draw();
   });
   </script>
+  <script src="../helper.js"></script>
   <script src="../pwa.js"></script>
   <script type="module" src="../guard.js"></script>
 </body>
