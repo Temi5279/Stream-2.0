@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040a22">
+  <title>str▶eam · Classic films and free live TV</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body class="plain">
+
+  <header class="w-top">
+    <a class="logo" href="./" aria-label="stream home">str<span>▶</span>eam</a>
+    <a class="btn sm ghost" href="../signin/">Sign in</a>
+  </header>
+
+  <main class="w-main">
+    <section class="w-hero">
+      <h1>Classic films and live TV, free</h1>
+      <p>Silent classics, golden-age horror and cult favourites, plus live news, sports, music and kids channels. All in one app for your phone, tablet and laptop.</p>
+      <div class="w-cta">
+        <a class="btn" href="../signup/">Get started, it's free</a>
+        <a class="btn ghost" href="../signin/">I have an account</a>
+      </div>
+    </section>
+
+    <section class="w-sec" aria-labelledby="f1">
+      <h2 id="f1">Why stream</h2>
+      <div class="features">
+        <div class="feat glass"><h3>Free classic films</h3><p>Public-domain movies from the Internet Archive, with more added all the time.</p></div>
+        <div class="feat glass"><h3>Live TV</h3><p id="chcount">Live channels across news, sports, music, kids and more.</p></div>
+        <div class="feat glass"><h3>Pick up where you left off</h3><p>Stream remembers how far you got, so you can jump straight back in.</p></div>
+        <div class="feat glass"><h3>Install it like an app</h3><p>Add it to your home screen on phone, tablet or laptop. No app store needed.</p></div>
+      </div>
+    </section>
+
+    <section class="w-sec" aria-labelledby="f2">
+      <h2 id="f2">On stream now</h2>
+      <div class="cards" id="films"></div>
+      <div class="logos" id="logos" style="margin-top:14px"></div>
+    </section>
+
+    <section class="w-sec" aria-labelledby="f3">
+      <h2 id="f3">How it works</h2>
+      <ol class="steps">
+        <li class="glass">Create your free account with email or Google.</li>
+        <li class="glass">Pick a film or a live channel.</li>
+        <li class="glass">Press play. Captions show on channels that offer them.</li>
+      </ol>
+    </section>
+
+    <section class="w-sec faq" aria-labelledby="f4">
+      <h2 id="f4">Questions</h2>
+      <details class="glass"><summary>Is it really free?</summary><p>Yes. Stream is free to use. We may add ads in the future to keep it running.</p></details>
+      <details class="glass"><summary>Where do the films come from?</summary><p>From the Internet Archive's public-domain collection. We check each film before adding it.</p></details>
+      <details class="glass"><summary>Do I need to install anything?</summary><p>No, it works in your browser. You can also install it to your home screen if you like.</p></details>
+      <details class="glass"><summary>What do you do with my details?</summary><p>We use your name, email and date of birth to run your account. We don't sell them.</p></details>
+    </section>
+
+    <section class="w-final glass">
+      <h2>Ready to watch?</h2>
+      <a class="btn" href="../signup/" style="display:inline-block">Create your free account</a>
+    </section>
+  </main>
+
+  <footer class="w-foot">© 2026 str▶eam · Films via the Internet Archive</footer>
+
+  <script src="../app.js"></script>
+  <script>
+  Stream.movies().then(function (all) {
+    var box = document.getElementById("films");
+    all.forEach(function (m) {
+      var a = Stream.card(m); a.href = "../signup/"; box.appendChild(a);
+    });
+  });
+  Stream.channels().then(function (ch) {
+    document.getElementById("chcount").textContent = ch.length + " live channels across news, sports, music, kids and more.";
+    var box = document.getElementById("logos");
+    ch.filter(function (c) { return c.logo; }).slice(0, 16).forEach(function (c) {
+      var i = document.createElement("img"); i.src = c.logo; i.alt = c.name; i.loading = "lazy";
+      i.onerror = function () { i.remove(); }; box.appendChild(i);
+    });
+  });
+  </script>
+  <script type="module">
+    import { auth, onAuthStateChanged } from "../firebase.js";
+    onAuthStateChanged(auth, function (u) { if (u) location.replace("../"); });
+  </script>
+  <script src="../pwa.js"></script>
+</body>
+</html>
