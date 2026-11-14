@@ -1,14 +1,398 @@
 [
-  {
-    "id": "fifa-plus",
-    "name": "FIFA+",
-    "category": "Sports",
-    "src": "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8"
-  },
-  {
-    "id": "aljazeera-en",
-    "name": "Al Jazeera English",
-    "category": "News",
-    "src": "https://live-hls-web-aje.getaj.net/AJE/index.m3u8"
-  }
+ {
+  "id": "fifa-plus",
+  "name": "FIFA+",
+  "category": "Sports",
+  "src": "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8"
+ },
+ {
+  "id": "euronews-english",
+  "name": "Euronews English",
+  "category": "News",
+  "src": "https://rakuten-euronews-1-gb.samsung.wurl.com/manifest/playlist.m3u8",
+  "logo": "https://i.imgur.com/8MsbPCU.png",
+  "epg": "EuronewsEnglish.fr"
+ },
+ {
+  "id": "dw-english",
+  "name": "DW English",
+  "category": "News",
+  "src": "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8",
+  "logo": "https://i.imgur.com/A1xzjOI.png",
+  "epg": "DWEnglish.de"
+ },
+ {
+  "id": "al-jazeera-english",
+  "name": "Al Jazeera English",
+  "category": "News",
+  "src": "https://live-hls-web-aje.getaj.net/AJE/index.m3u8",
+  "logo": "https://i.imgur.com/BB93NQP.png",
+  "epg": "AlJazeeraEnglish.qa"
+ },
+ {
+  "id": "cgtn-english",
+  "name": "CGTN English",
+  "category": "News",
+  "src": "https://news.cgtn.com/resource/live/english/cgtn-news.m3u8",
+  "logo": "https://i.imgur.com/fMsJYzl.png",
+  "epg": "CGTN.cn"
+ },
+ {
+  "id": "cbs-news",
+  "name": "CBS News",
+  "category": "News",
+  "src": "https://cbsnews.akamaized.net/hls/live/2020607/cbsnlineup_8/master.m3u8",
+  "logo": "https://i.imgur.com/nki2HDQ.png",
+  "epg": "CBSNews.us"
+ },
+ {
+  "id": "abc-news-live",
+  "name": "ABC News Live",
+  "category": "News",
+  "src": "https://content.uplynk.com/channel/3324f2467c414329b3b0cc5cd987b6be.m3u8",
+  "logo": "https://i.imgur.com/7sJLzKi.png",
+  "epg": "ABCNews.us"
+ },
+ {
+  "id": "bloomberg",
+  "name": "Bloomberg",
+  "category": "News",
+  "src": "https://bloomberg.com/media-manifest/streams/us.m3u8",
+  "logo": "https://i.imgur.com/VnCcH73.png",
+  "epg": "BloombergTelevision.us"
+ },
+ {
+  "id": "reuters-tv",
+  "name": "Reuters TV",
+  "category": "News",
+  "src": "https://reuters-reutersnow-1-eu.rakuten.wurl.tv/playlist.m3u8",
+  "logo": "https://i.imgur.com/AbvCnoH.png",
+  "epg": "ReutersTV.us"
+ },
+ {
+  "id": "abc-news-australia",
+  "name": "ABC News Australia",
+  "category": "News",
+  "src": "https://abc-iview-mediapackagestreams-2.akamaized.net/out/v1/6e1cc6d25ec0480ea099a5399d73bc4b/index.m3u8",
+  "logo": "https://i.imgur.com/GpgrYCb.png",
+  "epg": "ABCNews.au"
+ },
+ {
+  "id": "cbc-news",
+  "name": "CBC News",
+  "category": "News",
+  "src": "https://cbcnewshd-f.akamaihd.net/i/cbcnews_1@8981/index_2500_av-p.m3u8",
+  "logo": "https://i.imgur.com/1EqQGKS.png",
+  "epg": "CBCNewsNetwork.ca"
+ },
+ {
+  "id": "ctv-news",
+  "name": "CTV News",
+  "category": "News",
+  "src": "https://pe-fa-lp02a.9c9media.com/live/News1Digi/p/hls/00000201/38ef78f479b07aa0/index/0c6a10a2/live/stream/h264/v1/3500000/manifest.m3u8",
+  "logo": "https://i.imgur.com/T3oBeiX.png",
+  "epg": "CTVNewsChannel.ca"
+ },
+ {
+  "id": "cpac",
+  "name": "CPAC",
+  "category": "News",
+  "src": "https://d7z3qjdsxbwoq.cloudfront.net/groupa/live/f9809cea-1e07-47cd-a94d-2ddd3e1351db/live.isml/.m3u8",
+  "logo": "https://i.imgur.com/AbdFD0S.png",
+  "epg": "CPACEnglish.ca"
+ },
+ {
+  "id": "onn-ontario",
+  "name": "ONN Ontario",
+  "category": "News",
+  "src": "https://onntv.vantrix.tv:443/onntv_hls/1080p/onntv_hls-HLS-1080p.m3u8",
+  "logo": "https://i.imgur.com/zz5ST9K.png",
+  "epg": "ONNtv.ca"
+ },
+ {
+  "id": "tagesschau24",
+  "name": "Tagesschau24",
+  "category": "World News",
+  "src": "https://tagesschau.akamaized.net/hls/live/2020115/tagesschau/tagesschau_1/master.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Tagesschau24-2012.svg/640px-Tagesschau24-2012.svg.png",
+  "epg": "tagesschau24.de"
+ },
+ {
+  "id": "welt",
+  "name": "Welt",
+  "category": "World News",
+  "src": "https://w-live2weltcms.akamaized.net/hls/live/2041019/Welt-LivePGM/index.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Welt_TV_Logo_2016.svg/640px-Welt_TV_Logo_2016.svg.png",
+  "epg": "Welt.de"
+ },
+ {
+  "id": "dw-deutsch",
+  "name": "DW Deutsch",
+  "category": "World News",
+  "src": "https://dwamdstream111.akamaized.net/hls/live/2017972/dwstream111/index.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Deutsche_Welle_Logo.svg/320px-Deutsche_Welle_Logo.svg.png",
+  "epg": "DWDeutsch.de"
+ },
+ {
+  "id": "euronews-deutsch",
+  "name": "Euronews Deutsch",
+  "category": "World News",
+  "src": "https://euronews.alteox.app/hls/de_stream.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Euronews_2016_logo.svg/640px-Euronews_2016_logo.svg.png",
+  "epg": "EuronewsGerman.fr"
+ },
+ {
+  "id": "euronews-fran-ais",
+  "name": "Euronews Français",
+  "category": "World News",
+  "src": "https://euronews.alteox.app/hls/fr_stream.m3u8",
+  "logo": "https://i.imgur.com/3Lr5iAj.png",
+  "epg": "EuronewsFrench.fr"
+ },
+ {
+  "id": "tv5-monde-info",
+  "name": "TV5 Monde Info",
+  "category": "World News",
+  "src": "https://ott.tv5monde.com/Content/HLS/Live/channel(info)/index.m3u8",
+  "logo": "https://i.imgur.com/NcysrWH.png",
+  "epg": "TV5MondeInfo.fr"
+ },
+ {
+  "id": "bfm-tv",
+  "name": "BFM TV",
+  "category": "World News",
+  "src": "https://bcovlive-a.akamaihd.net/f3c53617100e4fd7a0fbdf9e784a650e/eu-central-1/876450610001/playlist.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Logo_BFM_TV_%282019%29.png/53px-Logo_BFM_TV_%282019%29.png",
+  "epg": "BFMTV.fr"
+ },
+ {
+  "id": "cgtn-fran-ais",
+  "name": "CGTN Français",
+  "category": "World News",
+  "src": "https://news.cgtn.com/resource/live/french/cgtn-f.m3u8",
+  "logo": "https://i.imgur.com/fMsJYzl.png",
+  "epg": "CGTNFrench.cn"
+ },
+ {
+  "id": "public-s-nat",
+  "name": "Public Sénat",
+  "category": "World News",
+  "src": "https://www.publicsenat.fr/direct",
+  "logo": "https://i.imgur.com/bJOdFT1.png",
+  "epg": "PublicSenat.fr"
+ },
+ {
+  "id": "lcp",
+  "name": "LCP",
+  "category": "World News",
+  "src": "https://lcp.fr/le-live-lcp-tnt-5433",
+  "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/6/6a/Logo_LCP-AN_-_Public_S%C3%A9nat_%282019%29.svg/53px-Logo_LCP-AN_-_Public_S%C3%A9nat_%282019%29.svg.png",
+  "epg": "LCP.fr"
+ },
+ {
+  "id": "ln24",
+  "name": "LN24",
+  "category": "World News",
+  "src": "https://live.cdn.ln24.be/out/v1/b191621c8b9a436cad37bb36a82d2e1c/index.m3u8",
+  "logo": "https://i.imgur.com/hePpxnn.png",
+  "epg": "LN24.be"
+ },
+ {
+  "id": "stadium",
+  "name": "Stadium",
+  "category": "Sports",
+  "src": "https://bcovlive-a.akamaihd.net/e64d564b9275484f85981d8c146fb915/us-east-1/5994000126001/profile_1/976f34cf5a614518b7b539cbf9812080/chunklist_ssaiV.m3u8",
+  "logo": "https://imgur.com/6ae9E8d.png",
+  "epg": "Stadium.us"
+ },
+ {
+  "id": "racing-com",
+  "name": "Racing.com",
+  "category": "Sports",
+  "src": "https://racingvic-i.akamaized.net/hls/live/598695/racingvic/1500.m3u8",
+  "logo": "https://i.imgur.com/pma0OCf.png",
+  "epg": "Racingcom.au"
+ },
+ {
+  "id": "teledeporte",
+  "name": "Teledeporte",
+  "category": "Sports",
+  "src": "https://rtvelivestreamv3.akamaized.net/segments/tdp/tdp_main_1080.m3u8",
+  "logo": "https://i.imgur.com/HliegRJ.png",
+  "epg": "tdp.es"
+ },
+ {
+  "id": "nasa-tv-public",
+  "name": "NASA TV Public",
+  "category": "Docs & Science",
+  "src": "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master_2000.m3u8",
+  "logo": "https://i.imgur.com/rmyfoOI.png",
+  "epg": "NASATVPublic.us"
+ },
+ {
+  "id": "nasa-tv-media",
+  "name": "NASA TV Media",
+  "category": "Docs & Science",
+  "src": "https://ntv2.akamaized.net/hls/live/2013923/NASA-NTV2-HLS/master.m3u8",
+  "logo": "https://i.imgur.com/rmyfoOI.png",
+  "epg": "NASATVMedia.us"
+ },
+ {
+  "id": "docurama",
+  "name": "Docurama",
+  "category": "Docs & Science",
+  "src": "https://cinedigm.vo.llnwd.net/conssui/amagi_hls_data_xumo1234A-docuramaA/CDN/master.m3u8",
+  "logo": "https://i.imgur.com/bNg8mze.png",
+  "epg": "Docurama.us"
+ },
+ {
+  "id": "pbs-america",
+  "name": "PBS America",
+  "category": "Docs & Science",
+  "src": "https://pbs-samsunguk.amagi.tv/playlist.m3u8",
+  "logo": "https://i.imgur.com/J4zE5z9.jpg"
+ },
+ {
+  "id": "savoir-m-dia",
+  "name": "Savoir Média",
+  "category": "Docs & Science",
+  "src": "https://hls.savoir.media/live/stream.m3u8",
+  "logo": "https://i.imgur.com/pa4wOVY.png",
+  "epg": "CFTUDT.ca"
+ },
+ {
+  "id": "buzzr",
+  "name": "Buzzr",
+  "category": "Entertainment",
+  "src": "https://buzzrota-web.amagi.tv/playlist480.m3u8",
+  "logo": "https://i.imgur.com/VihFt5p.png",
+  "epg": "Buzzr.us"
+ },
+ {
+  "id": "retro-tv",
+  "name": "Retro TV",
+  "category": "Entertainment",
+  "src": "https://bcovlive-a.akamaihd.net/5e531be3ed6c41229b2af2d9bffba88d/us-east-1/6183977686001/profile_1/chunklist.m3u8",
+  "logo": "https://imgur.com/PNTYOgg.png",
+  "epg": "RetroTVEast.us"
+ },
+ {
+  "id": "drybar-comedy",
+  "name": "Drybar Comedy",
+  "category": "Entertainment",
+  "src": "https://drybar-drybarcomedy-1-ca.samsung.wurl.com/manifest/playlist.m3u8",
+  "logo": "https://i.imgur.com/EldlmTp.png",
+  "epg": "DryBarComedy.us"
+ },
+ {
+  "id": "heartland",
+  "name": "Heartland",
+  "category": "Entertainment",
+  "src": "https://bcovlive-a.akamaihd.net/1ad942d15d9643bea6d199b729e79e48/us-east-1/6183977686001/profile_1/chunklist.m3u8",
+  "logo": "https://imgur.com/a67bbag.png",
+  "epg": "HeartlandEastern.us"
+ },
+ {
+  "id": "rev-n",
+  "name": "Rev'n",
+  "category": "Entertainment",
+  "src": "https://bcovlive-a.akamaihd.net/a71236fdda1747999843bd3d55bdd6fa/us-east-1/6183977686001/profile_1/chunklist.m3u8",
+  "logo": "https://imgur.com/VUhqVgG.png",
+  "epg": "RevnTV.us"
+ },
+ {
+  "id": "now-80s",
+  "name": "Now 80s",
+  "category": "Music",
+  "src": "https://lightning-now80s-samsunguk.amagi.tv/playlist.m3u8",
+  "logo": "https://i.imgur.com/8paz37m.png"
+ },
+ {
+  "id": "deluxe-music",
+  "name": "Deluxe Music",
+  "category": "Music",
+  "src": "https://sdn-global-live-streaming-packager-cache.3qsdn.com/13456/13456_264_live.m3u8",
+  "logo": "https://i.imgur.com/E65GQN9.png",
+  "epg": "DeluxeMusic.de"
+ },
+ {
+  "id": "schlager-deluxe",
+  "name": "Schlager Deluxe",
+  "category": "Music",
+  "src": "https://sdn-global-live-streaming-packager-cache.3qsdn.com/26658/26658_264_live.m3u8",
+  "logo": "https://i.imgur.com/YPpgUOg.png",
+  "epg": "SchlagerDeluxe.de"
+ },
+ {
+  "id": "deluxe-lounge",
+  "name": "Deluxe Lounge",
+  "category": "Music",
+  "src": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=2664",
+  "logo": "https://i.imgur.com/JN6Kd0q.png",
+  "epg": "DeluxeLoungeHD.de"
+ },
+ {
+  "id": "mtv-germany",
+  "name": "MTV Germany",
+  "category": "Music",
+  "src": "https://0d26a00dfbb1.airspace-cdn.cbsivideo.com/mtvg18ef/master/mtvg18ef.m3u8",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/MTV-2021.svg/640px-MTV-2021.svg.png",
+  "epg": "MTVGermany.de"
+ },
+ {
+  "id": "super3",
+  "name": "Super3",
+  "category": "Kids",
+  "src": "https://directes-tv-es.ccma.cat/live-origin/c33-super3-hls/bitrate_3.m3u8",
+  "logo": "https://i.imgur.com/X9CLS4m.jpg",
+  "epg": "SX3.es"
+ },
+ {
+  "id": "clan",
+  "name": "Clan",
+  "category": "Kids",
+  "src": "https://rtvelivestreamv3.akamaized.net/segments/clan/clan_main_720.m3u8",
+  "logo": "https://i.imgur.com/38xIfQ3.png",
+  "epg": "clan.es"
+ },
+ {
+  "id": "la-1",
+  "name": "La 1",
+  "category": "Spanish",
+  "src": "https://rtvelivestreamv3.akamaized.net/segments/la1/la1_main_720.m3u8",
+  "logo": "https://i.imgur.com/NbesiPn.png",
+  "epg": "La1.es"
+ },
+ {
+  "id": "la-2",
+  "name": "La 2",
+  "category": "Spanish",
+  "src": "https://rtvelivestreamv3.akamaized.net/segments/la2/la2_main_1080.m3u8",
+  "logo": "https://i.imgur.com/DmuTwDw.png",
+  "epg": "La2.es"
+ },
+ {
+  "id": "24-horas",
+  "name": "24 Horas",
+  "category": "Spanish",
+  "src": "https://rtvelivestreamv3.akamaized.net/segments/24h/24h_main_720.m3u8",
+  "logo": "https://i.imgur.com/ZKR2jKr.png",
+  "epg": "24h.es"
+ },
+ {
+  "id": "telemadrid",
+  "name": "Telemadrid",
+  "category": "Spanish",
+  "src": "https://telemadridhls2-live-hls.secure2.footprint.net/egress/chandler/telemadrid/telemadrid_1/bitrate_1.m3u8",
+  "logo": "https://imgur.com/VSDsSTZ.png",
+  "epg": "Telemadrid.es"
+ },
+ {
+  "id": "canal-sur",
+  "name": "Canal Sur",
+  "category": "Spanish",
+  "src": "https://cdnlive.codev8.net/rtvalive/smil:channel1.smil/chunklist_b2200000.m3u8",
+  "logo": "https://imgur.com/WcVOXPr.png",
+  "epg": "CanalSurAndalucia.es"
+ }
 ]
