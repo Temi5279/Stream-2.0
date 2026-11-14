@@ -346,3 +346,30 @@ button.btn { font-family: inherit; }
 .auth-alt { text-align: center; margin-top: 18px; color: var(--muted); }
 .auth-alt a { color: var(--glow); font-weight: 600; }
 .list button { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-radius: 18px; font: inherit; color: #ff8d98; cursor: pointer; text-align: left; }
+
+/* ---------- Legal and help pages ---------- */
+.doc { max-width: 760px; margin: 0 auto; padding: 0 16px 20px; }
+.doc article { padding: 26px 22px; border-radius: 26px; line-height: 1.65; }
+.doc h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); margin-bottom: 6px; }
+.doc .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+.doc h2 { font-size: 1.15rem; margin: 26px 0 8px; }
+.doc p, .doc li { color: #d6defa; }
+.doc p { margin-bottom: 12px; }
+.doc ul { margin: 0 0 12px 1.2em; }
+.doc li { margin-bottom: 6px; }
+.doc a { color: var(--glow); text-decoration: underline; }
+.doc details { padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; }
+.doc summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.doc details p { margin: 10px 0 0; }
+mark.todo { background: #ffd166; color: #2a1f00; padding: 0 0.3em; border-radius: 4px; }
+.tbl { overflow-x: auto; margin: 10px 0 14px; }
+.tbl table { border-collapse: collapse; min-width: 520px; width: 100%; font-size: 0.88rem; }
+.tbl th, .tbl td { border: 1px solid var(--glass-edge); padding: 9px 10px; text-align: left; vertical-align: top; }
+.tbl th { background: rgba(91, 125, 255, 0.18); }
+.w-links { display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: center; margin-bottom: 10px; }
+.w-links a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.fine { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 14px; line-height: 1.5; }
+.fine a { color: var(--glow); }
+.list-title { margin: 26px 4px 10px; color: var(--muted); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; }
+.list a span { color: var(--muted); }
+.ver { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 22px; }
