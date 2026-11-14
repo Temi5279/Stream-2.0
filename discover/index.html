@@ -26,10 +26,11 @@
   <script src="../app.js"></script>
   <script>
   Stream.movies().then(function (all) {
+    function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
     var id = new URLSearchParams(location.search).get("id"), root = document.getElementById("m");
     var m = all.filter(function (x) { return x.id === id; })[0];
-    if (!m) { root.innerHTML = '<p class="empty">Film not found.</p>'; return; }
-    function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
+    if (!id) { root.innerHTML = '<p class="empty">No film selected. Open Discover and pick one.</p>'; return; }
+    if (!m) { root.innerHTML = '<p class="empty">Film not found: ' + esc(id) + '</p>'; return; }
     document.title = m.title + " · str▶eam";
     var s = Stream.progress()[id], resume = s && s.t > 5 && s.t < s.d - 30;
     var thumb = Stream.thumb(id);
