@@ -45,9 +45,9 @@
       (m.rating ? '<span class="m-rate">★ ' + esc(m.rating) + ' IMDb</span>' : '') + '</p>' +
       '<a class="btn" href="' + Stream.watchUrl(id) + '">' + (resume ? 'Resume' : 'Play') + '</a>' +
       '<p class="m-desc">' + esc(m.description) + '</p>' +
-      '<dl class="m-dl"><dt>Director</dt><dd>' + esc(m.director) + '</dd>' +
-      '<dt>Cast</dt><dd>' + esc((m.cast || []).join(", ")) + '</dd>' +
-      '<dt>Rights</dt><dd>' + esc(m.rights) + '</dd></dl>' +
+      '<dl class="m-dl">' + (m.director ? '<dt>Director</dt><dd>' + esc(m.director) + '</dd>' : '') +
+      (m.cast && m.cast.length ? '<dt>Cast</dt><dd>' + esc(m.cast.join(", ")) + '</dd>' : '') +
+      (m.rights ? '<dt>Rights</dt><dd>' + esc(m.rights) + '</dd>' : '') + '</dl>' +
       '<a class="m-src" href="https://archive.org/details/' + encodeURIComponent(id) + '" target="_blank" rel="noopener">View on the Internet Archive</a>' +
       '</div></div>';
   });
