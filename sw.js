@@ -1,4 +1,4 @@
-const VERSION = "stream-v12";
+const VERSION = "stream-v13";
 const SHELL = ["./", "live/", "discover/", "profile/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
