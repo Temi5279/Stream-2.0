@@ -7,6 +7,7 @@
   <title>Watch · str▶eam</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="stylesheet" href="../style.css">
+  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
 </head>
 <body class="watch">
   <div id="p"></div>
@@ -48,5 +49,6 @@
     }).catch(function () { pl.say("Could not load this film. Check your connection."); });
   })();
   </script>
+  <script type="module" src="../guard.js"></script>
 </body>
 </html>
