@@ -131,6 +131,9 @@
         else if (e.key === "m") mb.click();
       });
 
+      el.addEventListener("keydown", show);
+      if (document.documentElement.classList.contains("tv")) setTimeout(function () { try { q(".start-btn").focus(); } catch (e) {} }, 400);
+
       return {
         video: v,
         say: say,
