@@ -76,7 +76,7 @@
       v.addEventListener("play", function () { pp.innerHTML = I.pause; pp.setAttribute("aria-label", "Pause"); say(""); show(); });
       v.addEventListener("pause", function () { pp.innerHTML = I.play; pp.setAttribute("aria-label", "Play"); ui.classList.add("on"); save(); });
       v.addEventListener("waiting", function () { say("Buffering…"); });
-      v.addEventListener("playing", function () { say(""); });
+      v.addEventListener("playing", function () { say(""); started = true; start.hidden = true; });
       v.addEventListener("error", function () { if (!hls) say(o.live ? "This channel isn't available right now." : "This video could not be played."); });
       v.addEventListener("timeupdate", function () {
         if (o.live) return;
