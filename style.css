@@ -293,7 +293,7 @@ video::cue { background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 1.05rem; }
 @media (min-width: 1600px) { .chan { flex-basis: 200px; min-height: 170px; } }
 
 /* ---------- Welcome, sign in, sign up ---------- */
-html.auth-wait body { visibility: hidden; }
+html.auth-wait main, html.auth-wait #p { visibility: hidden; }
 body.plain { padding: 0; }
 button.btn { font-family: inherit; }
 .btn.sm { padding: 9px 20px; font-size: 0.95rem; }
@@ -417,3 +417,50 @@ html.tv :focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
 html.tv .helper-fab { display: none; }
 
 html.tv a:focus, html.tv button:focus, html.tv input:focus { outline: 4px solid #fff; outline-offset: 4px; }
+
+/* ---------- Footer like the Keyframe Awards site ---------- */
+.w-foot .w-links { max-width: 540px; margin: 0 auto 26px; gap: 22px 46px; font-size: 1.05rem; }
+.w-foot .w-links a { text-decoration: none; }
+.socials { display: flex; justify-content: center; gap: 26px; margin: 0 0 24px; }
+.socials a { color: var(--muted); }
+.socials svg { width: 28px; height: 28px; display: block; }
+.foot-line { height: 1px; max-width: 760px; margin: 0 auto 18px; background: var(--glass-edge); }
+
+/* ---------- Movie sheet (opens inside the app) ---------- */
+.msheet { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 15; overflow-y: auto; background: #040a22; padding: 70px 18px calc(var(--nav-h) + 44px + env(safe-area-inset-bottom, 0px)); }
+.ms-close { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: 14px; width: 44px; height: 44px; border-radius: 50%; color: var(--text); font: inherit; cursor: pointer; z-index: 2; }
+.ms-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+.ms-actions .btn { align-self: auto; }
+@media (min-width: 768px) { .msheet { left: calc(var(--rail-w) + 28px); padding-bottom: 40px; } }
+html.tv .msheet { left: 0; padding-top: 120px; }
+.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + 40px + env(safe-area-inset-bottom, 0px)); padding: 12px 20px; border-radius: 999px; font-size: 0.95rem; }
+
+/* ---------- Profiles ---------- */
+.av { width: 84px; height: 84px; border-radius: 22px; display: grid; place-items: center; font-size: 2.4rem; border: 1px solid rgba(255, 255, 255, 0.3); flex: none; }
+.av.sm { width: 56px; height: 56px; border-radius: 16px; font-size: 1.6rem; }
+.av.lg { width: 112px; height: 112px; border-radius: 28px; font-size: 3.4rem; }
+.av.add { background: rgba(255, 255, 255, 0.1); font-size: 2.4rem; color: var(--muted); }
+.av.editing { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6); }
+.pf-page { max-width: 720px; margin: 0 auto; padding: 8px 18px 40px; text-align: center; }
+.pf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 22px; margin-top: 18px; }
+.pf-tile { display: grid; justify-items: center; gap: 10px; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; }
+.pf-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.pf-pick button { width: 54px; height: 54px; border-radius: 16px; font-size: 1.7rem; background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; cursor: pointer; }
+.pf-pick button[aria-pressed="true"] { border-color: #fff; }
+.kids-toggle { display: block; margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; text-align: left; }
+.pf-card { position: relative; text-align: center; padding: 24px; border-radius: 28px; margin-bottom: 18px; display: grid; justify-items: center; gap: 8px; }
+.pf-card h2 { font-size: 1.3rem; }
+.pf-card p { color: var(--muted); font-size: 0.9rem; }
+.pf-edit { position: absolute; top: 14px; right: 18px; font-size: 1.4rem; }
+.pf-row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin: 0 0 16px; }
+.pf-mini { display: grid; justify-items: center; gap: 6px; font: inherit; font-size: 0.85rem; background: none; border: 0; color: var(--text); cursor: pointer; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; background: rgba(91, 125, 255, 0.35); }
+.list button.plain { color: var(--text); }
+
+/* ---------- Offline screen and settings ---------- */
+.offline { display: grid; justify-items: center; gap: 12px; text-align: center; padding: 90px 20px; }
+.offline svg { width: 68px; height: 68px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; }
+.offline p { color: var(--muted); max-width: 30ch; line-height: 1.5; }
+.offline .btn { align-self: auto; margin-top: 8px; }
+.set-sec { margin-top: 26px; }
+.set-sec h2 { font-size: 1.1rem; margin-bottom: 12px; }
