@@ -85,7 +85,7 @@
         '<p class="m-meta"><span>' + esc(m.year) + '</span><span>' + esc(m.runtime) + '</span><span>' + esc(m.genre) + '</span>' +
         (m.rating ? '<span class="m-rate">★ ' + esc(m.rating) + ' IMDb</span>' : '') + '</p>' +
         '<div class="ms-actions"><a class="btn" href="' + Stream.watchUrl(id) + '">' + (resume ? "Resume" : "Play") + '</a>' +
-        '<button class="btn ghost" type="button" data-list></button></div>' +
+        '<button class="btn ghost" type="button" data-list></button><button class="btn ghost" type="button" data-dl></button></div>' +
         '<p class="m-desc">' + esc(m.description) + '</p>' +
         '<dl class="m-dl">' + (m.director ? '<dt>Director</dt><dd>' + esc(m.director) + '</dd>' : '') +
         (m.cast && m.cast.length ? '<dt>Cast</dt><dd>' + esc(m.cast.join(", ")) + '</dd>' : '') +
@@ -96,6 +96,20 @@
       function label() { lb.textContent = Stream.mylist.has(id) ? "✓ In My List" : "+ My List"; }
       label();
       lb.onclick = function () { var on = Stream.mylist.toggle(id); label(); toast(on ? "Added to My List" : "Removed from My List"); };
+      var db = el.querySelector("[data-dl]");
+      if (!Stream.dl.ok) db.hidden = true;
+      function dlLabel() { Stream.dl.meta(id).then(function (mm) { db.textContent = !mm ? "⬇ Download" : mm.status === "done" ? "✓ Downloaded" : "Downloading…"; }); }
+      dlLabel();
+      db.onclick = function () {
+        Stream.dl.meta(id).then(function (mm) {
+          if (mm && mm.status === "done") { toast("Already downloaded. Find it in Downloads"); return; }
+          if (mm) { toast("Already downloading. Check Downloads"); return; }
+          Stream.dl.start(m).then(function (mode) {
+            toast(mode === "background" ? "Download started. You can leave this page." : "Downloading. Keep stream open until it finishes.");
+            dlLabel();
+          }, function (err) { toast(err && err.message ? err.message : "Couldn't start the download"); });
+        });
+      };
       el.querySelector(".ms-close").onclick = function () { history.back(); };
       document.body.appendChild(el);
       sheet = el;
@@ -120,10 +134,133 @@
     var b = document.getElementById("retry"); if (b) b.focus();
   }
 
+  // First-time profile setup, shown right on top of whatever page the member is on (no redirects)
+  function profileSetup() {
+    if (document.getElementById("psetup")) return;
+    var sel = Math.floor(Math.random() * AV.length);
+    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+    var wrap = el("div", "psetup"); wrap.id = "psetup";
+    var box = el("div", "auth-card glass");
+    box.appendChild(el("h1", "", "Create your profile"));
+    box.appendChild(el("p", "sub", "Pick an avatar and a name to start watching."));
+    var pick = el("div", "pf-pick");
+    function draw() {
+      pick.innerHTML = "";
+      AV.forEach(function (e, i) {
+        var b = el("button", "", e); b.type = "button"; b.setAttribute("aria-pressed", i === sel); b.setAttribute("aria-label", "Avatar " + (i + 1));
+        b.onclick = function () { sel = i; draw(); }; pick.appendChild(b);
+      });
+    }
+    draw(); box.appendChild(pick);
+    var f = el("div", "field"); f.style.marginTop = "18px";
+    var lab = el("label", "", "Profile name"); lab.setAttribute("for", "psname");
+    var inp = el("input"); inp.id = "psname"; inp.type = "text"; inp.maxLength = 20; inp.autocomplete = "off";
+    var dn = window.StreamUser && window.StreamUser.displayName; inp.value = dn ? dn.split(" ")[0] : "";
+    f.appendChild(lab); f.appendChild(inp); box.appendChild(f);
+    var kl = el("label", "kids-toggle"), kc = el("input"); kc.type = "checkbox";
+    kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror films for now)")); box.appendChild(kl);
+    var msg = el("p", "msg"); box.appendChild(msg);
+    var save = el("button", "btn full", "Save and start watching"); save.type = "button";
+    save.onclick = function () {
+      var name = inp.value.trim();
+      if (!name) { msg.textContent = "Please enter a name."; return; }
+      Profiles.add({ name: name, a: sel, kids: kc.checked });
+      location.reload();
+    };
+    box.appendChild(save); wrap.appendChild(box); document.body.appendChild(wrap);
+    try { inp.focus(); } catch (e) {}
+  }
+
+  // ---------- Downloads: saved inside the app only (not as files on the device) ----------
+  var DLC = "stream-downloads", inflight = {};
+  function dlKey(id) { return new URL("__dl/" + encodeURIComponent(id), ROOT).href; }
+  function metaKey(id) { return dlKey(id) + ".json"; }
+  function jres(o) { return new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json" } }); }
+  function archiveUrl(id, file) { return "https://archive.org/download/" + encodeURIComponent(id) + "/" + file.split("/").map(encodeURIComponent).join("/"); }
+  function pickFile(m) {
+    if (m.file) return Promise.resolve(m.file);
+    return fetch("https://archive.org/metadata/" + encodeURIComponent(m.id)).then(function (r) { return r.json(); }).then(function (meta) {
+      var v = (meta.files || []).filter(function (f) { return /\.(mp4|m4v)$/i.test(f.name) && +f.size > 15e6 && !/sample|trailer/i.test(f.name); })
+        .sort(function (x, y) { return (x.source === "derivative" ? 0 : 1) - (y.source === "derivative" ? 0 : 1) || +x.size - +y.size; });
+      if (!v.length) throw new Error("This film can't be downloaded yet.");
+      return v[0].name;
+    });
+  }
+  var dl = {
+    ok: "caches" in window && "serviceWorker" in navigator,
+    url: dlKey,
+    meta: function (id) {
+      return caches.open(DLC).then(function (c) { return c.match(metaKey(id)); }).then(function (r) { return r ? r.json() : null; }).catch(function () { return null; });
+    },
+    has: function (id) { return dl.meta(id).then(function (m) { return !!(m && m.status === "done"); }); },
+    list: function () {
+      return caches.open(DLC).then(function (c) {
+        return c.keys().then(function (ks) {
+          return Promise.all(ks.filter(function (k) { return /\.json$/.test(k.url); }).map(function (k) { return c.match(k).then(function (r) { return r.json(); }); }));
+        });
+      }).catch(function () { return []; });
+    },
+    progress: function (id) {
+      if (inflight[id]) return Promise.resolve({ done: inflight[id].done, total: inflight[id].total, state: "downloading" });
+      return navigator.serviceWorker.ready.then(function (reg) {
+        if (!reg.backgroundFetch) return null;
+        return reg.backgroundFetch.get(id).then(function (bf) {
+          if (!bf) return null;
+          return { done: bf.downloaded, total: bf.downloadTotal, state: bf.result === "failure" ? "failed" : bf.result === "success" ? "done" : "downloading" };
+        });
+      }).catch(function () { return null; });
+    },
+    start: function (m) {
+      if (!dl.ok) return Promise.reject(new Error("Downloads aren't supported in this browser."));
+      var chain = Promise.resolve();
+      if (navigator.storage && navigator.storage.estimate) chain = navigator.storage.estimate().then(function (e) {
+        if (e.quota && e.quota - e.usage < 700 * 1048576) throw new Error("Not enough free space on this device.");
+      });
+      return chain.then(function () { return pickFile(m); }).then(function (file) {
+        var url = archiveUrl(m.id, file), meta = { id: m.id, title: m.title, year: m.year, genre: m.genre, runtime: m.runtime, size: 0, status: "downloading", ts: Date.now() };
+        return caches.open(DLC).then(function (c) {
+          return c.put(metaKey(m.id), jres(meta)).then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+            if (reg.backgroundFetch) {
+              return reg.backgroundFetch.get(m.id).then(function (old) {
+                if (old && old.result === "") return "background";
+                return reg.backgroundFetch.fetch(m.id, [new Request(url, { mode: "cors" })], {
+                  title: m.title, icons: [{ src: new URL("icons/icon-192.png", ROOT).href, sizes: "192x192", type: "image/png" }]
+                }).then(function () { return "background"; });
+              }).catch(function () { return page(c, m, url, meta); });
+            }
+            return page(c, m, url, meta);
+          });
+        });
+      });
+    },
+    remove: function (id) {
+      if (inflight[id]) { try { inflight[id].ctl.abort(); } catch (e) {} delete inflight[id]; }
+      return navigator.serviceWorker.ready.then(function (reg) {
+        return reg.backgroundFetch ? reg.backgroundFetch.get(id).then(function (bf) { if (bf) return bf.abort(); }) : null;
+      }).catch(function () {}).then(function () { return caches.open(DLC); }).then(function (c) { return Promise.all([c.delete(dlKey(id)), c.delete(metaKey(id))]); });
+    }
+  };
+  // Fallback for browsers without background downloads: works while stream stays open
+  function page(c, m, url, meta) {
+    var ctl = new AbortController(); inflight[m.id] = { done: 0, total: 0, ctl: ctl };
+    fetch(url, { mode: "cors", signal: ctl.signal }).then(function (r) {
+      if (!r.ok) throw new Error("bad response");
+      inflight[m.id].total = +r.headers.get("content-length") || 0;
+      var counter = new TransformStream({ transform: function (ch, ctrl) { inflight[m.id].done += ch.byteLength; ctrl.enqueue(ch); } });
+      return c.put(dlKey(m.id), new Response(r.body.pipeThrough(counter), { headers: { "Content-Type": r.headers.get("content-type") || "video/mp4" } }));
+    }).then(function () {
+      meta.status = "done"; meta.size = inflight[m.id].done; return c.put(metaKey(m.id), jres(meta));
+    }).catch(function () { return Promise.all([c.delete(dlKey(m.id)), c.delete(metaKey(m.id))]); })
+      .then(function () { delete inflight[m.id]; });
+    return "page";
+  }
+
   window.Stream = {
     root: ROOT,
     profiles: Profiles,
     toast: toast,
+    dl: dl,
+    profileSetup: profileSetup,
     openMovie: openMovie,
     movies: function () {
       return fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }).then(function (l) {
