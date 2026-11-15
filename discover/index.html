@@ -34,7 +34,7 @@
 
   <script src="../app.js"></script>
   <script>
-  Stream.movies().then(function (all) {
+  Stream.guardOnline(function () { Stream.movies().then(function (all) {
     var genre = "All", q = document.getElementById("q"), grid = document.getElementById("grid"),
         chips = document.getElementById("chips"), none = document.getElementById("none");
     function draw() {
@@ -59,7 +59,7 @@
       });
     q.addEventListener("input", draw);
     draw();
-  });
+  }); });
   </script>
   <script src="../helper.js"></script>
   <script src="../pwa.js"></script>
