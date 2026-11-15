@@ -1,7 +1,7 @@
 // Opening animation for signed-in members. Plays once per visit (session). Tap to skip.
 (function () {
   try {
-    if (sessionStorage.getItem("stream-intro")) return;
+    if (sessionStorage.getItem("stream-intro") || localStorage.getItem("stream-intro-off")) return;
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   } catch (e) {}
 
