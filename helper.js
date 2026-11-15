@@ -24,7 +24,7 @@
     { k: ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "howdy", "sup"], a: "Hi! 👋 What can I help you with?" },
     { k: ["thanks", "thank you", "thx", "appreciate", "cheers"], a: "You're welcome! 😊 Anything else?" },
     { k: ["bye", "goodbye", "see you", "good night", "goodnight"], a: "Bye! Enjoy watching. 🍿" },
-    { k: ["who are you", "what are you", "are you a bot", "are you human", "are you real", "who made you", "your name", "are you ai"], a: "I'm stream's automated help assistant, not a person. I answer questions about stream. For anything else, check the [Help page](help/)." },
+    { k: ["who are you", "what are you", "are you a bot", "are you human", "are you real", "who made you", "your name", "are you ai"], a: "I'm Astra, stream's automated help assistant, not a person. I answer questions about stream. For anything else, check the [Help page](help/)." },
     { k: ["help", "need help", "assist", "question"], a: "Sure! What do you need help with? Pick one below or type your question.", chips: CHIPS },
     { k: ["what is stream", "how does it work", "how do i use", "how to use", "dont understand", "confused", "lost", "where do i start", "explain", "get started", "new here", "first time", "what can i do", "what does this do"],
       a: "stream is a free app for classic films and live TV. Use Home to continue watching, [Discover](discover/) to find films, and [Live TV](live/) for channels. Tap a film, press Play, and you're watching." },
@@ -45,7 +45,7 @@
     { k: ["tv", "smart tv", "television", "samsung", "lg", "android tv", "fire tv", "firestick", "roku", "chromecast", "cast"], a: "You can open stream in your TV's web browser. If the menu isn't across the top, add ?tv=1 to the end of the address once and it will remember. Casting from a phone isn't supported yet. If the video stays blank, the TV's browser may be too old." },
     { k: ["captions", "subtitles", "cc", "closed caption", "closed captions", "subtitle", "translate", "translation"], a: "Tap the CC button in the player. It only appears when a channel provides captions. Most films don't have captions yet." },
     { k: ["schedule", "tv guide", "whats on", "program", "programme", "epg", "now playing", "what is on", "on now"], a: "Under the player on [Live TV](live/) you'll see what's on now and next, for channels that have schedule data. Not every channel has one yet." },
-    { k: ["continue watching", "resume", "where i stopped", "progress", "history", "pick up", "remember", "watch history", "my list", "watchlist"], a: "stream saves your place in each film on the device you're using and shows it under Continue watching on Home. It doesn't sync between devices yet, and clearing your browser data removes it. My list and Watch history are coming soon." },
+    { k: ["continue watching", "resume", "where i stopped", "progress", "history", "pick up", "remember", "watch history"], a: "stream saves your place in each film on the device you're using and shows it under Continue watching on Home. Each profile has its own. It doesn't sync between devices yet, and clearing your browser data removes it." },
     { k: ["movies", "films", "movie", "film", "what can i watch", "whats available", "library", "catalog", "catalogue", "titles", "how many movies", "how many films", "new movies", "new films", "latest", "more movies", "more films", "request", "add movie", "suggest a movie", "do you have"], a: function () {
         var t = data.movies.map(function (m) { return m.title + " (" + m.year + ")"; }).join(", ");
         return "We have " + data.movies.length + " classic films right now: " + (t || "loading…") + ". More are added over time. Film requests are coming soon. Browse them on [Discover](discover/)."; } },
@@ -63,11 +63,23 @@
     { k: ["quality", "hd", "resolution", "720p", "1080p", "4k", "blurry", "pixelated", "low quality"], a: "Quality depends on the source. Films play at the quality the Internet Archive provides, and channels use their own. There's no quality picker yet." },
     { k: ["devices", "device", "phone", "tablet", "laptop", "computer", "ipad", "iphone", "android", "windows", "mac", "browser", "chrome", "safari", "firefox", "which browser"], a: "stream works on phones, tablets, laptops and TV browsers. Chrome gives the best results. Safari on iPhone works too, but can't auto-rotate." },
     { k: ["kids", "children", "child", "age", "how old", "minimum age", "parental", "parent", "family"], a: "You must be 13+ to create an account, and under 18 need a parent's permission. Some classics contain violence or old-fashioned attitudes, so parents should choose what's suitable. Live TV has a Kids section (Spanish and Catalan channels)." },
-    { k: ["offline", "download", "download movies", "save offline", "no internet", "without internet", "data usage", "how much data", "use data", "mobile data", "save data"], a: "Videos need an internet connection, and there are no downloads yet. A feature film can use several hundred MB, so Wi-Fi is best." },
+    { k: ["offline", "works offline", "offline mode", "no internet", "without internet", "no network", "airplane mode", "data usage", "how much data", "use data", "mobile data", "save data"], a: "Pages you have already opened work offline, but videos need an internet connection. Film downloads are coming soon. A feature film can use several hundred MB, so Wi-Fi is best." },
     { k: ["why sign in", "why account", "need an account", "without account", "without signing in", "skip sign in", "guest"], a: "An account lets us save your details and, soon, sync your progress. It's free and takes about a minute." },
-    { k: ["profile", "profiles", "switch profile", "settings", "avatar", "picture", "photo"], a: "Your name and email show on the [Profile](profile/) tab. Switch profile, My list and Settings are coming soon." },
+    { k: ["profile", "profiles", "switch profile", "settings", "avatar", "picture", "photo"], a: "Open the [Profile](profile/) tab to switch profiles, add one, manage them or see your My List. App settings are coming soon." },
     { k: ["language", "languages", "german", "french", "spanish", "arabic", "english", "dubbed", "dub"], a: "Channels come in several languages including English, German, French and Spanish. Search for a channel in Live TV, and use CC when captions are available. Most films are in English." }
   ];
+  KB.push(
+    { k: ["my list", "add to my list", "watchlist", "save film", "save for later", "favorites", "favourites", "bookmark"], a: "Open a film and tap + My List to save it. Your list shows on Home and on your [Profile](profile/). Each profile has its own list." },
+    { k: ["switch profile", "change profile", "add profile", "create profile", "new profile", "who is watching", "manage profiles", "another profile", "second profile"], a: "Open [Profile](profile/) to switch profiles, add one (up to 5) or manage them. Each profile keeps its own My List and Continue watching." },
+    { k: ["kids mode", "kids profile", "child profile", "kid profile", "parental controls", "parental"], a: "When you create a profile you can mark it as a kids profile. For now it hides horror films, and a full kids design is coming." },
+    { k: ["downloads", "download film", "download films", "download a film", "download a movie", "download movies", "can i download", "downloading", "download to watch offline", "save film offline", "offline films", "download"], a: "Downloads are coming soon. You'll be able to save films inside the app to watch offline. They won't be saved as files on your device." },
+    { k: ["sign out", "log out", "logout", "switch account", "different account"], a: "Open [Profile](profile/) and tap Sign out at the bottom." },
+    { k: ["what is public domain", "public domain mean", "what does public domain mean"], a: "Public domain means the copyright has ended or never applied, so anyone can share and watch the film freely. In the US, films published in 1930 or earlier are in the public domain. See the [Legal notice](legal/)." },
+    { k: ["dark mode", "light mode", "theme", "colour", "color"], a: "stream uses a dark royal-blue look for now. Other themes may come later." },
+    { k: ["notification", "notifications", "alerts", "email updates"], a: "stream doesn't send notifications yet." },
+    { k: ["data saver", "low data", "weak network", "poor network", "slow internet"], a: "On slow data, films take longer to start. Try Wi-Fi, or press play and let it buffer for a minute." },
+    { k: ["astra", "what is astra", "who is astra"], a: "That's me! I'm Astra, stream's automated help assistant. Ask me about accounts, films, live TV, profiles or playback problems." }
+  );
   KB.forEach(function (e) { e.nk = e.k.map(norm); });
 
   function score(e, text, toks) {
@@ -128,9 +140,9 @@
   }
 
   var fab = h("button", "helper-fab glass"); fab.type = "button"; fab.setAttribute("aria-label", "Open help assistant"); fab.textContent = "💬 Help";
-  var panel = h("div", "hp glass"); panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Help assistant");
+  var panel = h("div", "hp glass"); panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Astra, help assistant");
   var head = h("div", "hp-head"), ttl = h("div", ""), close = h("button", "hp-x", "✕");
-  ttl.appendChild(h("strong", "", "Help assistant")); ttl.appendChild(h("small", "", "Automated. What you type here isn't sent anywhere."));
+  ttl.appendChild(h("strong", "", "Astra")); ttl.appendChild(h("small", "", "stream's help assistant. Automated, and nothing you type is sent anywhere."));
   close.type = "button"; close.setAttribute("aria-label", "Close");
   head.appendChild(ttl); head.appendChild(close);
   var msgs = h("div", "hp-msgs"); msgs.setAttribute("aria-live", "polite");
@@ -160,14 +172,15 @@
   var started = false;
   function open() {
     panel.hidden = false; fab.hidden = true;
-    if (!started) { started = true; addMsg("Hi! I'm stream's help assistant 👋 Ask me anything about stream. I'm automated, so I can't help with other topics.", "bot"); setChips(CHIPS); }
+    if (!started) { started = true; addMsg("Hi! I'm Astra, stream's help assistant 👋 Ask me anything about stream. I'm automated, so I can't help with other topics.", "bot"); setChips(CHIPS); }
     setTimeout(function () { input.focus(); }, 50);
   }
   function shut() { panel.hidden = true; fab.hidden = false; }
   fab.onclick = open; close.onclick = shut;
   form.addEventListener("submit", function (e) { e.preventDefault(); var v = input.value; input.value = ""; ask(v); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !panel.hidden) shut(); });
-  document.addEventListener("DOMContentLoaded", function () { document.body.appendChild(fab); document.body.appendChild(panel); });
-  if (document.body) { document.body.appendChild(fab); document.body.appendChild(panel); }
+  // No floating button: Astra opens from the Profile page and the Help page.
+  document.addEventListener("DOMContentLoaded", function () { document.body.appendChild(panel); });
+  if (document.body) document.body.appendChild(panel);
   window.StreamHelper = { open: open, reply: reply };
 })();
