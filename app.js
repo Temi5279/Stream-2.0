@@ -168,7 +168,7 @@
     // Home, Live TV and Discover need the internet. Offline, they show a retry screen instead.
     guardOnline: function (init) {
       window.addEventListener("offline", offlineView);
-      window.addEventListener("online", function () { location.reload(); });
+      window.addEventListener("online", function () { if (document.querySelector(".offline")) location.reload(); });
       if (navigator.onLine === false) { offlineView(); return; }
       init();
       probe().then(function (ok) { if (!ok) offlineView(); });
