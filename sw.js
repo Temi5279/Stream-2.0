@@ -1,5 +1,5 @@
 const DL = "stream-downloads"; // downloaded films live here and survive updates
-const VERSION = "stream-v19";
+const VERSION = "stream-v20";
 const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
