@@ -1,7 +1,40 @@
-const VERSION = "stream-v16";
-const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
+const DL = "stream-downloads"; // downloaded films live here and survive updates
+const VERSION = "stream-v19";
+const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
+// Downloaded films are played from the saved copy, including seeking
+async function serveDownload(req) {
+  const cache = await caches.open(DL);
+  const hit = await cache.match(req.url);
+  if (!hit) return new Response("Not downloaded", { status: 404 });
+  const type = hit.headers.get("Content-Type") || "video/mp4";
+  const range = req.headers.get("range");
+  if (!range) return hit;
+  const blob = await hit.blob(), size = blob.size, m = /bytes=(\d*)-(\d*)/.exec(range) || [];
+  let start = m[1] ? +m[1] : 0, end = m[2] ? Math.min(+m[2], size - 1) : size - 1;
+  if (!m[1] && m[2]) { start = Math.max(0, size - +m[2]); end = size - 1; }
+  return new Response(blob.slice(start, end + 1), { status: 206, headers: { "Content-Type": type, "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes" } });
+}
+const dlMeta = (id) => new URL("__dl/" + id + ".json", self.registration.scope).href;
+
+self.addEventListener("backgroundfetchsuccess", (e) => {
+  const bf = e.registration;
+  e.waitUntil((async () => {
+    const cache = await caches.open(DL);
+    for (const r of await bf.matchAll()) await cache.put(new URL("__dl/" + encodeURIComponent(bf.id), self.registration.scope).href, await r.responseReady);
+    const mr = await cache.match(dlMeta(encodeURIComponent(bf.id)));
+    const meta = mr ? await mr.json() : { id: bf.id };
+    meta.status = "done"; meta.size = bf.downloaded;
+    await cache.put(dlMeta(encodeURIComponent(bf.id)), new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
+    await e.updateUI({ title: "Download complete" });
+  })());
+});
+const dropDownload = (e) => e.waitUntil(caches.open(DL).then((c) => c.delete(dlMeta(encodeURIComponent(e.registration.id)))));
+self.addEventListener("backgroundfetchfail", dropDownload);
+self.addEventListener("backgroundfetchabort", dropDownload);
+self.addEventListener("backgroundfetchclick", (e) => e.waitUntil(clients.openWindow(new URL("downloads/", self.registration.scope).href)));
+
 const ONLINE_ONLY = /\/(help|privacy|terms|cookies|legal|welcome|signin|signup|check)(\/|$)/;
 function offlinePage() {
   return new Response('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#040a22"><title>No internet connection</title></head>' +
@@ -20,7 +53,7 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION && k !== DL).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -30,6 +63,10 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   // Only handle our own files. Videos and other sites go straight to the network.
   // Keep the sign-in and live-TV libraries so they also work offline
+  if (req.method === "GET" && url.origin === location.origin && url.pathname.indexOf("/__dl/") > -1 && !/\.json$/.test(url.pathname)) {
+    e.respondWith(serveDownload(req));
+    return;
+  }
   if (req.method === "GET" && /^(www\.gstatic\.com\/firebasejs|cdn\.jsdelivr\.net\/npm\/hls\.js)/.test(url.host + url.pathname)) {
     e.respondWith(caches.open(VERSION).then(async (c) => {
       const hit = await c.match(req);
@@ -48,7 +85,7 @@ self.addEventListener("fetch", (e) => {
     // Show the saved page straight away and refresh it in the background, so slow data never freezes a page
     e.respondWith((async () => {
       const cache = await caches.open(VERSION);
-      const hit = await cache.match(req);
+      const hit = (await cache.match(req)) || (/\/(watch|movie)\/$/.test(url.pathname) ? await cache.match(req, { ignoreSearch: true }) : null);
       const net = fetch(req).then((res) => { if (res.ok) cache.put(req, res.clone()); return res; });
       if (hit) { try { e.waitUntil(net.catch(() => {})); } catch (err) {} return hit; }
       return net.catch(async () => (await cache.match("./")) || offlinePage());
