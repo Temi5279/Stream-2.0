@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040a22">
+  <title>Downloads · str▶eam</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <link rel="stylesheet" href="../style.css">
+  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
+</head>
+<body>
+
+  <nav class="nav glass" aria-label="Main">
+    <a class="logo" href="../" aria-label="stream home">str<span>▶</span>eam</a>
+    <ul>
+      <li><a href="../"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Home</a></li>
+      <li><a href="../live/"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 2l4 4 4-4"/></svg>Live TV</a></li>
+      <li>
+        <a href="../downloads/" aria-current="page">
+          <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 11l4.5 4.5 4.5-4.5M5 20h14"/></svg>
+          Downloads
+        </a>
+      </li>
+      <li><a href="../discover/"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Discover</a></li>
+      <li><a href="../profile/"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profile</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1 class="page-title">Downloads</h1>
+    <p class="empty" id="store"></p>
+    <div id="list"></div>
+    <p class="empty" id="empty" hidden>Films you download appear here. Open a film and tap Download.</p>
+    <p class="empty" style="font-size:.85rem">Downloads stay inside stream and work offline. They can't be saved as files or shared. All downloads are free.</p>
+  </main>
+
+  <script src="../app.js"></script>
+  <script>
+  Stream.whenUser(function () {
+    var list = document.getElementById("list"), busy = false;
+    function mb(n) { return Math.round((n || 0) / 1048576) + " MB"; }
+    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+
+    function row(m, p) {
+      var r = el("div", "dl-row glass");
+      var poster = el("div", "dl-poster"); poster.style.backgroundImage = "url(" + Stream.thumb(m.id) + ")"; r.appendChild(poster);
+      var info = el("div", "dl-info"); info.appendChild(el("b", "", m.title));
+      var failed = m.status !== "done" && (!p || p.state === "failed");
+      var sub = m.status === "done" ? [m.year, m.runtime, mb(m.size)].filter(Boolean).join(" · ") :
+        failed ? "Download failed" : "Downloading… " + (p.total ? Math.round(p.done / p.total * 100) + "%" : mb(p.done));
+      info.appendChild(el("small", "", sub));
+      if (m.status !== "done" && !failed && p.total) { var bar = el("div", "dl-bar"), i = el("i"); i.style.width = Math.round(p.done / p.total * 100) + "%"; bar.appendChild(i); info.appendChild(bar); }
+      r.appendChild(info);
+      var act = el("div", "dl-act");
+      if (m.status === "done") { var pl = el("a", "btn sm", "Play"); pl.href = Stream.watchUrl(m.id); act.appendChild(pl); }
+      var rm = el("button", "btn sm ghost", m.status === "done" ? "Remove" : failed ? "Remove" : "Cancel"); rm.type = "button";
+      rm.onclick = function () { if (m.status !== "done" && !failed || confirm("Remove " + m.title + "?")) Stream.dl.remove(m.id).then(render); };
+      act.appendChild(rm); r.appendChild(act);
+      return r;
+    }
+    function render() {
+      if (busy) return; busy = true;
+      Stream.dl.list().then(function (items) {
+        items.sort(function (a, b) { return b.ts - a.ts; });
+        return Promise.all(items.map(function (m) { return m.status === "done" ? null : Stream.dl.progress(m.id); })).then(function (ps) {
+          list.innerHTML = "";
+          items.forEach(function (m, i) { list.appendChild(row(m, ps[i])); });
+          document.getElementById("empty").hidden = items.length > 0;
+          var going = items.some(function (m, i) { return m.status !== "done" && ps[i] && ps[i].state === "downloading"; });
+          if (going && !render.t) render.t = setInterval(render, 1500);
+          if (!going && render.t) { clearInterval(render.t); render.t = null; }
+        });
+      }).then(function () { busy = false; }, function () { busy = false; });
+    }
+    render();
+    if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) {
+      document.getElementById("store").textContent = "Storage used by stream on this device: " + mb(e.usage);
+    });
+  });
+  </script>
+  <script src="../pwa.js"></script>
+  <script type="module" src="../guard.js"></script>
+</body>
+</html>
