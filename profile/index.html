@@ -25,19 +25,25 @@
   </nav>
 
   <main>
-    <h1 class="page-title">Profile</h1>
-    <div class="profile-head glass">
-      <div class="avatar" data-user-initial>G</div>
-      <div>
-        <h2 data-user-name>Guest</h2>
-        <p data-user-email></p>
-      </div>
+    <div class="pf-card glass">
+      <div id="pfAv"></div>
+      <a class="pf-edit" id="pfEdit" href="../profiles/" aria-label="Edit profile">✎</a>
+      <h2 id="pfName"></h2>
+      <p data-user-email></p>
     </div>
-    <ul class="list">
-      <li><a class="glass" href="#">Switch profile <span aria-hidden="true">›</span></a></li>
-      <li><a class="glass" href="#">My list <span aria-hidden="true">›</span></a></li>
-      <li><a class="glass" href="#">Watch history <span aria-hidden="true">›</span></a></li>
-      <li><a class="glass" href="#">Settings <span aria-hidden="true">›</span></a></li>
+    <div class="pf-row" id="pfOthers"></div>
+    <a class="btn ghost" href="../profiles/?manage=1" style="display:block;text-align:center;margin:0 auto 8px;max-width:260px">Manage profiles</a>
+
+    <section class="row" id="mlsec" aria-labelledby="ml1">
+      <h2 id="ml1">My List</h2>
+      <div class="cards" id="mlist"></div>
+      <p class="empty" id="mlnone" hidden>Open a film and tap + My List to save it here.</p>
+    </section>
+
+    <ul class="list" style="margin-top:18px">
+      <li><a class="glass" href="../settings/">App settings <span aria-hidden="true">›</span></a></li>
+      <li><button class="glass plain" type="button" data-soon>Account <span aria-hidden="true">›</span></button></li>
+      <li><button class="glass plain" type="button" onclick="StreamHelper &amp;&amp; StreamHelper.open()">Ask Astra, our help assistant <span aria-hidden="true">›</span></button></li>
     </ul>
 
     <h2 class="list-title">Help and legal</h2>
@@ -52,9 +58,42 @@
     <ul class="list" style="margin-top:22px">
       <li><button class="glass" type="button" data-signout>Sign out</button></li>
     </ul>
-    <p class="ver">str▶eam · Version 1.0 · © 2026</p>
+    <p class="ver">str▶eam · Version 1.1 · © 2026</p>
   </main>
 
+  <script src="../app.js"></script>
+  <script>
+  Stream.whenUser(function () {
+    var P = Stream.profiles, cur = P.active();
+    if (!cur) { location.replace("../profiles/?new=1"); return; }
+    var $ = function (id) { return document.getElementById(id); };
+    $("pfAv").appendChild(P.avatar(cur, "lg"));
+    $("pfName").textContent = cur.name;
+    if (cur.kids) { var k = document.createElement("span"); k.className = "badge"; k.textContent = "Kids"; $("pfName").appendChild(document.createTextNode(" ")); $("pfName").appendChild(k); }
+    $("pfEdit").href = "../profiles/?edit=" + encodeURIComponent(cur.id);
+    P.list().filter(function (p) { return p.id !== cur.id; }).forEach(function (p) {
+      var b = document.createElement("button"); b.className = "pf-mini"; b.type = "button";
+      b.appendChild(P.avatar(p, "sm")); var s = document.createElement("span"); s.textContent = p.name; b.appendChild(s);
+      b.onclick = function () { P.setActive(p.id); location.reload(); };
+      $("pfOthers").appendChild(b);
+    });
+    if (P.list().length < 5) {
+      var add = document.createElement("a"); add.className = "pf-mini"; add.href = "../profiles/?new=1";
+      var plus = document.createElement("div"); plus.className = "av sm add"; plus.textContent = "+";
+      add.appendChild(plus); var t = document.createElement("span"); t.textContent = "Add"; add.appendChild(t);
+      $("pfOthers").appendChild(add);
+    }
+    Stream.movies().then(function (all) {
+      var n = 0;
+      Stream.mylist.ids().forEach(function (id) {
+        var m = all.filter(function (x) { return x.id === id; })[0];
+        if (m) { $("mlist").appendChild(Stream.card(m)); n++; }
+      });
+      $("mlnone").hidden = n > 0;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-soon]"), function (b) { b.onclick = function () { Stream.toast("Coming soon"); }; });
+  });
+  </script>
   <script src="../helper.js"></script>
   <script src="../pwa.js"></script>
   <script type="module" src="../guard.js"></script>
