@@ -4,7 +4,7 @@ Stream 2.0 is an advanced branded streaming platform currently under deep develo
 
 It is the largest and most ambitious version of the Stream project.
 
-Live site: https://temi5279.github.io/Stream-2.0/stream-home.html
+Live site: https://watchstream.app
 
 Stream 2.0 is being built as a full-featured streaming experience with a modern interface, multiple content sections, and expanded functionality compared to the earlier version.
 
@@ -19,7 +19,7 @@ Clean and modern navigation
 Responsive design foundation
 
 Project Status
-In Deep Development
+In Deep Development almost complete 
 This is an ongoing major project and the biggest investment for Temi so far.
 
 Features and structure are still being actively expanded and refined.
