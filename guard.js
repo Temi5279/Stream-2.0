@@ -20,7 +20,7 @@ onAuthStateChanged(auth, function (user) {
   document.querySelectorAll("[data-user-initial]").forEach(function (el) { el.textContent = name.charAt(0).toUpperCase(); });
   if (user && !hasProfile(user.uid) && !onProfilesPage()) {
     var n = 0; try { n = +sessionStorage.getItem("stream-pfr") || 0; } catch (e) {}
-    if (n < 2) {
+    if (n < 1) {
       try { sessionStorage.setItem("stream-pfr", n + 1); } catch (e) {}
       location.replace(new URL("profiles/?new=1", root).href); return;
     }
