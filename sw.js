@@ -1,4 +1,4 @@
-const VERSION = "stream-v15";
+const VERSION = "stream-v16";
 const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
@@ -45,15 +45,16 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (req.mode === "navigate") {
-    // Pages: network first, cached copy when offline
-    e.respondWith(
-      fetch(req)
-        .then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; })
-        .catch(() => caches.match(req).then((r) => r || caches.match("./")))
-    );
+    // Show the saved page straight away and refresh it in the background, so slow data never freezes a page
+    e.respondWith((async () => {
+      const cache = await caches.open(VERSION);
+      const hit = await cache.match(req);
+      const net = fetch(req).then((res) => { if (res.ok) cache.put(req, res.clone()); return res; });
+      if (hit) { try { e.waitUntil(net.catch(() => {})); } catch (err) {} return hit; }
+      return net.catch(async () => (await cache.match("./")) || offlinePage());
+    })());
     return;
   }
-  // Movie list: always try the network first so new films show up
   if (/(movies|channels|epg)\.json$/.test(url.pathname)) {
     e.respondWith(fetch(req).then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; }).catch(() => caches.match(req)));
     return;
