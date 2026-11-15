@@ -52,7 +52,10 @@
   <script>
   Stream.whenUser(function () {
     var P = Stream.profiles, cur = P.active(), $ = function (id) { return document.getElementById(id); };
-    if (!cur) { location.replace("../profiles/?new=1"); return; }
+    if (!cur) {
+      document.querySelector("main").innerHTML = '<div class="offline"><h2>Create your profile</h2><p>Pick a name and an avatar to start watching.</p><a class="btn" href="../profiles/?new=1">Create profile</a></div>';
+      return;
+    }
     $("sp").textContent = cur.name; $("sn").value = cur.name;
     $("sv").onclick = function () {
       var n = $("sn").value.trim();
