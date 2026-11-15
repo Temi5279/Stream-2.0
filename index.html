@@ -60,46 +60,62 @@
       <div class="cards" id="cw"></div>
     </section>
 
+    <section class="row" id="mlrow" aria-labelledby="ml1" hidden>
+      <h2 id="ml1">My List</h2>
+      <div class="cards" id="mlist"></div>
+    </section>
+
     <div id="rows"></div>
   </main>
 
   <script src="app.js"></script>
   <script>
-  Stream.movies().then(function (all) {
-    var prog = Stream.progress(), byId = {}, rows = document.getElementById("rows");
-    all.forEach(function (m, i) { m._i = i; byId[m.id] = m; });
-    function addRow(title, list) {
-      if (!list.length) return;
-      var sec = document.createElement("section"); sec.className = "row";
-      var h2 = document.createElement("h2"); h2.textContent = title; sec.appendChild(h2);
-      var box = document.createElement("div"); box.className = "cards";
-      list.forEach(function (m) { box.appendChild(Stream.card(m)); });
-      sec.appendChild(box); rows.appendChild(sec);
+  Stream.guardOnline(function () { Stream.whenUser(function () {
+    var prof = Stream.profiles.active(), top = document.querySelector(".top");
+    if (prof && top) {
+      var pa = document.createElement("a"); pa.href = "profile/"; pa.setAttribute("aria-label", "Profile");
+      pa.appendChild(Stream.profiles.avatar(prof, "sm")); top.appendChild(pa);
     }
-    var watched = Object.keys(prog).filter(function (id) { return byId[id] && prog[id].t > 5; })
-      .sort(function (a, b) { return prog[b].ts - prog[a].ts; });
-    var cw = document.getElementById("cw");
-    watched.filter(function (id) { return prog[id].t < prog[id].d - 30; }).forEach(function (id) {
-      cw.appendChild(Stream.card(byId[id], Math.round(prog[id].t / prog[id].d * 100)));
-    });
-    if (cw.children.length) document.getElementById("cwrow").hidden = false;
-
-    var seen = {}; watched.forEach(function (id) { seen[id] = 1; });
-    if (watched.length) {
-      var last = byId[watched[0]];
-      addRow("Because you watched " + last.title, all.filter(function (m) { return m.genre === last.genre && !seen[m.id]; }).slice(0, 15));
-      var score = {}; watched.forEach(function (id) { var g = byId[id].genre; score[g] = (score[g] || 0) + 1; });
-      addRow("Recommended for you", all.filter(function (m) { return !seen[m.id]; })
-        .sort(function (a, b) { return (score[b.genre] || 0) - (score[a.genre] || 0) || a._i - b._i; }).slice(0, 15));
-    } else addRow("Popular on stream", all.slice(0, 15));
-
-    var counts = {}; all.forEach(function (m) { counts[m.genre] = (counts[m.genre] || 0) + 1; });
-    Object.keys(counts).filter(function (g) { return counts[g] >= 3; })
-      .sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6)
-      .forEach(function (g) {
-        addRow(g === "Horror" ? "For horror fans" : "Popular in " + g, all.filter(function (m) { return m.genre === g; }).slice(0, 15));
+    Stream.movies().then(function (all) {
+      var prog = Stream.progress(), byId = {}, rows = document.getElementById("rows");
+      all.forEach(function (m, i) { m._i = i; byId[m.id] = m; });
+      function addRow(title, list) {
+        if (!list.length) return;
+        var sec = document.createElement("section"); sec.className = "row";
+        var h2 = document.createElement("h2"); h2.textContent = title; sec.appendChild(h2);
+        var box = document.createElement("div"); box.className = "cards";
+        list.forEach(function (m) { box.appendChild(Stream.card(m)); });
+        sec.appendChild(box); rows.appendChild(sec);
+      }
+      var watched = Object.keys(prog).filter(function (id) { return byId[id] && prog[id].t > 5; })
+        .sort(function (a, b) { return prog[b].ts - prog[a].ts; });
+      var cw = document.getElementById("cw");
+      watched.filter(function (id) { return prog[id].t < prog[id].d - 30; }).forEach(function (id) {
+        cw.appendChild(Stream.card(byId[id], Math.round(prog[id].t / prog[id].d * 100)));
       });
-  });
+      if (cw.children.length) document.getElementById("cwrow").hidden = false;
+
+      var ml = document.getElementById("mlist");
+      Stream.mylist.ids().forEach(function (id) { if (byId[id]) ml.appendChild(Stream.card(byId[id])); });
+      if (ml.children.length) document.getElementById("mlrow").hidden = false;
+
+      var seen = {}; watched.forEach(function (id) { seen[id] = 1; });
+      if (watched.length) {
+        var last = byId[watched[0]];
+        addRow("Because you watched " + last.title, all.filter(function (m) { return m.genre === last.genre && !seen[m.id]; }).slice(0, 15));
+        var score = {}; watched.forEach(function (id) { var g = byId[id].genre; score[g] = (score[g] || 0) + 1; });
+        addRow("Recommended for you", all.filter(function (m) { return !seen[m.id]; })
+          .sort(function (a, b) { return (score[b.genre] || 0) - (score[a.genre] || 0) || a._i - b._i; }).slice(0, 15));
+      } else addRow("Popular on stream", all.slice(0, 15));
+
+      var counts = {}; all.forEach(function (m) { counts[m.genre] = (counts[m.genre] || 0) + 1; });
+      Object.keys(counts).filter(function (g) { return counts[g] >= 3; })
+        .sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6)
+        .forEach(function (g) {
+          addRow(g === "Horror" ? "For horror fans" : "Popular in " + g, all.filter(function (m) { return m.genre === g; }).slice(0, 15));
+        });
+    });
+  }); });
   </script>
   <script src="helper.js"></script>
   <script src="pwa.js"></script>
