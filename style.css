@@ -494,3 +494,17 @@ html.tv .msheet { left: 0; padding-top: 120px; }
 .dl-pct strong { color: var(--text); font-size: 1.05rem; }
 .dl-fail { color: #ff8d98 !important; font-weight: 600; }
 .dl-info small { display: block; margin-top: 2px; line-height: 1.35; }
+
+/* ---------- Account, dialogs, avatars ---------- */
+.btn.danger { background: linear-gradient(180deg, #ff6b76, #c0262f); box-shadow: 0 8px 22px rgba(192,38,47,.45); }
+.dlg { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 90; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 20, 0.82); }
+.dlg[hidden] { display: none; }
+.dlg-box { width: 100%; max-width: 420px; padding: 24px; border-radius: 24px; background: rgba(8, 20, 76, 0.98); }
+.dlg-box h2 { margin-bottom: 10px; }
+.dlg-box p { color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+.dlg-row { display: flex; gap: 10px; justify-content: flex-end; }
+.dlg-row .btn { align-self: auto; }
+.acct-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.acct-row .btn { align-self: auto; }
+.pf-card .av { cursor: pointer; }
+.pf-pick.big button { width: 48px; height: 48px; font-size: 1.5rem; }
