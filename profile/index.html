@@ -48,7 +48,7 @@
 
     <ul class="list" style="margin-top:18px">
       <li><a class="glass" href="../settings/">App settings <span aria-hidden="true">›</span></a></li>
-      <li><button class="glass plain" type="button" data-soon>Account <span aria-hidden="true">›</span></button></li>
+      <li><a class="glass" href="../account/">Account <span aria-hidden="true">›</span></a></li>
       <li><button class="glass plain" type="button" onclick="StreamHelper &amp;&amp; StreamHelper.open()">Ask Astra, our help assistant <span aria-hidden="true">›</span></button></li>
     </ul>
 
@@ -74,6 +74,7 @@
     if (!cur) { Stream.profileSetup(); return; }
     var $ = function (id) { return document.getElementById(id); };
     $("pfAv").appendChild(P.avatar(cur, "lg"));
+    $("pfAv").onclick = function () { location.href = $("pfEdit").href; };
     $("pfName").textContent = cur.name;
     if (cur.kids) { var k = document.createElement("span"); k.className = "badge"; k.textContent = "Kids"; $("pfName").appendChild(document.createTextNode(" ")); $("pfName").appendChild(k); }
     $("pfEdit").href = "../profiles/?edit=" + encodeURIComponent(cur.id);
