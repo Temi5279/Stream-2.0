@@ -1,496 +1,186 @@
-:root {
-  --ink: #040a22;
-  --deep: #0a1a5c;
-  --royal: #1d3fd8;
-  --glow: #5b7dff;
-  --text: #eaf0ff;
-  --muted: #94a3d9;
-  --glass: rgba(20, 40, 120, 0.38);
-  --glass-edge: rgba(150, 175, 255, 0.28);
-  --nav-h: 68px;
-  --rail-w: 92px;
-}
+// stream help assistant. It answers common questions on the device itself:
+// nothing typed here is sent anywhere or saved.
+(function () {
+  var ROOT = new URL(".", document.currentScript.src);
+  var data = { movies: [], channels: [] };
+  fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }).then(function (m) { data.movies = m; }).catch(function () {});
+  fetch(new URL("channels.json", ROOT)).then(function (r) { return r.json(); }).then(function (c) { data.channels = c; }).catch(function () {});
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { color-scheme: dark; }
-
-body {
-  min-height: 100vh;
-  font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(900px 500px at 85% -5%, rgba(29, 63, 216, 0.55), transparent 70%),
-    radial-gradient(700px 500px at -10% 40%, rgba(91, 125, 255, 0.22), transparent 70%),
-    var(--ink);
-  background-attachment: fixed;
-  padding-bottom: calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px));
-}
-
-a { color: inherit; text-decoration: none; }
-:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 10px; }
-
-/* ---------- Logo ---------- */
-.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.02em; }
-.logo span { color: var(--glow); font-size: 0.85em; }
-
-/* ---------- Glass ---------- */
-.glass {
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 10px 30px rgba(0, 0, 20, 0.45);
-}
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .glass {
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    backdrop-filter: blur(18px) saturate(150%);
+  function norm(s) { return " " + String(s).toLowerCase().replace(/['’`]/g, "").replace(/[^a-z0-9]+/g, " ").trim() + " "; }
+  function stem(w) { return w.length > 4 ? w.replace(/(ing|ed|es|s)$/, "") : w; }
+  function lev(a, b) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) { d[i] = [i]; }
+    for (j = 1; j <= n; j++) { d[0][j] = j; }
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[m][n];
   }
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass { background: rgba(12, 28, 96, 0.92); }
-}
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
-/* ---------- Nav: bottom on phones ---------- */
-.nav {
-  position: fixed;
-  z-index: 20;
-  left: 12px; right: 12px;
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  height: var(--nav-h);
-  border-radius: 26px;
-  display: flex;
-  align-items: center;
-}
-.nav .logo { display: none; }
-.nav ul { list-style: none; display: flex; width: 100%; justify-content: space-around; }
-.nav a {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 8px 14px; border-radius: 18px;
-  font-size: 0.72rem; color: var(--muted);
-  transition: background 0.2s, color 0.2s;
-}
-.nav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.nav a[aria-current="page"] { color: var(--text); background: rgba(91, 125, 255, 0.3); }
+  var CHIPS = ["How does stream work?", "Video won't play", "Live TV channels", "Forgot password"];
 
-/* ---------- Main ---------- */
-main { padding: 18px 16px 0; max-width: 1400px; margin: 0 auto; }
-.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  var KB = [
+    { k: ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "howdy", "sup"], a: "Hi! 👋 What can I help you with?" },
+    { k: ["thanks", "thank you", "thx", "appreciate", "cheers"], a: "You're welcome! 😊 Anything else?" },
+    { k: ["bye", "goodbye", "see you", "good night", "goodnight"], a: "Bye! Enjoy watching. 🍿" },
+    { k: ["who are you", "what are you", "are you a bot", "are you human", "are you real", "who made you", "your name", "are you ai"], a: "I'm Astra, stream's automated help assistant, not a person. I answer questions about stream. For anything else, check the [Help page](help/)." },
+    { k: ["help", "need help", "assist", "question"], a: "Sure! What do you need help with? Pick one below or type your question.", chips: CHIPS },
+    { k: ["what is stream", "how does it work", "how do i use", "how to use", "dont understand", "confused", "lost", "where do i start", "explain", "get started", "new here", "first time", "what can i do", "what does this do"],
+      a: "stream is a free app for classic films and live TV. Use Home to continue watching, [Discover](discover/) to find films, and [Live TV](live/) for channels. Tap a film, press Play, and you're watching." },
+    { k: ["free", "cost", "price", "how much", "pay", "paid", "subscription", "subscribe", "charge", "money", "premium", "plan", "plans"], a: "stream is free. You don't pay anything to watch. We may add ads in the future to cover running costs." },
+    { k: ["install", "add to home screen", "download app", "apk", "app store", "play store", "get the app", "home screen"], a: "stream is a web app, so there's no app store. On Android: browser menu, then Install app or Add to Home screen. On iPhone: Share, then Add to Home Screen. On a laptop: use the install icon in the address bar." },
+    { k: ["sign up", "signup", "create account", "register", "new account", "join", "make an account"], a: "Tap [Get started](signup/), enter your name, date of birth, email and a password, or choose Continue with Google. It takes about a minute." },
+    { k: ["forgot password", "forgot my password", "reset password", "lost password", "change password", "password reset", "forgot"], a: "Go to [Sign in](signin/), type your email, and tap Forgot password. We'll email you a reset link (check your spam folder)." },
+    { k: ["sign in", "signin", "log in", "login", "cant log in", "cant sign in", "wrong password", "cant login", "password wrong", "invalid"], a: "Check your email and password for typos (tap Show to see the password). If you signed up with Google, use Continue with Google instead. Still stuck? Use Forgot password on the [sign-in page](signin/)." },
+    { k: ["google sign in", "continue with google", "gmail", "popup", "pop up"], a: "If the Google window doesn't open, allow pop-ups for this site and try again. Open stream in Chrome or Safari, not inside another app like Instagram." },
+    { k: ["delete account", "delete my account", "remove account", "change name", "change email", "change my name", "update profile", "close account", "deactivate"], a: "That isn't available inside the app yet. For now it's handled by request, and contact options are coming soon on the [Help page](help/). Your rights are explained in the [Privacy Policy](privacy/)." },
+    { k: ["error", "something went wrong", "failed", "crash", "crashes", "broken", "not loading", "wont load", "white screen"], a: "Sorry about that! Refresh the page. If it keeps happening, close all stream tabs, reopen it and refresh twice. Tell me what you were doing and what you saw.", chips: ["A film won't play", "A channel won't play"] },
+    { k: ["channel not working", "channel wont play", "channel offline", "live tv not working", "channel wont load", "channel not playing", "isnt available right now", "channel is blank", "channel blank", "channel doesnt work", "a channel wont play"],
+      a: "Live channels come from third parties, so some only work in their own country and some go offline or change address. Try another channel, or come back later. We update the list when we can." },
+    { k: ["not playing", "wont play", "cant play", "video", "buffering", "buffer", "loading", "stuck", "freezing", "freeze", "black screen", "blank", "lag", "laggy", "slow", "keeps stopping", "no sound", "no picture", "playback", "film wont play", "a film wont play"],
+      a: "Try this: refresh the page, check your connection (Wi-Fi works better than weak data), close other tabs and apps, then try again in a few minutes. Films stream from the Internet Archive and can be slow at busy times. Is it a film or a live channel?", chips: ["A film", "A live channel"] },
+    { k: ["a film", "film problem"], a: "For a film: wait a few seconds for it to buffer, then press play again. If it's still stuck, refresh and try again later. Films are large, so a slow connection can take a while." },
+    { k: ["a live channel", "live channel problem"], a: "For a live channel: try another channel first. If only one fails, it's probably offline or blocked in your country. Check again later." },
+    { k: ["tv", "smart tv", "television", "samsung", "lg", "android tv", "fire tv", "firestick", "roku", "chromecast", "cast"], a: "You can open stream in your TV's web browser. If the menu isn't across the top, add ?tv=1 to the end of the address once and it will remember. Casting from a phone isn't supported yet. If the video stays blank, the TV's browser may be too old." },
+    { k: ["captions", "subtitles", "cc", "closed caption", "closed captions", "subtitle", "translate", "translation"], a: "Tap the CC button in the player. It only appears when a channel provides captions. Most films don't have captions yet." },
+    { k: ["schedule", "tv guide", "whats on", "program", "programme", "epg", "now playing", "what is on", "on now"], a: "Under the player on [Live TV](live/) you'll see what's on now and next, for channels that have schedule data. Not every channel has one yet." },
+    { k: ["continue watching", "resume", "where i stopped", "progress", "history", "pick up", "remember", "watch history"], a: "stream saves your place in each film on the device you're using and shows it under Continue watching on Home. Each profile has its own. It doesn't sync between devices yet, and clearing your browser data removes it." },
+    { k: ["movies", "films", "movie", "film", "what can i watch", "whats available", "library", "catalog", "catalogue", "titles", "how many movies", "how many films", "new movies", "new films", "latest", "more movies", "more films", "request", "add movie", "suggest a movie", "do you have"], a: function () {
+        var t = data.movies.map(function (m) { return m.title + " (" + m.year + ")"; }).join(", ");
+        return "We have " + data.movies.length + " classic films right now: " + (t || "loading…") + ". More are added over time. Film requests are coming soon. Browse them on [Discover](discover/)."; } },
+    { k: ["channels", "channel list", "what channels", "which channels", "live tv", "tv channels", "categories", "news channel", "kids channel", "music channel"], a: function () {
+        var cats = []; data.channels.forEach(function (c) { if (cats.indexOf(c.category) < 0) cats.push(c.category); });
+        return "We have " + data.channels.length + " live channels in these sections: " + (cats.join(", ") || "loading…") + ". Open [Live TV](live/) and use the search box to find one."; } },
+    { k: ["sports", "football", "soccer", "fifa", "world cup", "match", "basketball", "racing", "live match", "score"], a: "Open [Live TV](live/) and look in the Sports section (FIFA+, Stadium, Racing.com and Teledeporte). What's showing depends on each channel." },
+    { k: ["where do films come from", "where from", "source", "legal", "is it legal", "copyright", "public domain", "internet archive", "pirated", "piracy", "illegal", "dmca", "takedown", "licence", "license", "rights"], a: "Films come from the Internet Archive's public-domain collection, and live channels come from their owners or distributors. We don't host the videos. Read the [Legal notice](legal/), including how to report a copyright issue." },
+    { k: ["privacy", "my data", "personal information", "cookies", "cookie", "analytics", "tracking", "safe", "secure", "security", "gdpr", "information"], a: "We use your name, email and date of birth to run your account, and we don't sell your information. Read the [Privacy Policy](privacy/) and [Cookie Policy](cookies/) for details." },
+    { k: ["terms", "terms of service", "conditions", "rules", "agreement"], a: "Our [Terms of Service](terms/) explain the rules for using stream." },
+    { k: ["contact", "support", "email", "report", "complain", "feedback", "talk to someone", "human", "real person", "admin", "owner", "developer"], a: "Contact options are coming soon on the [Help page](help/). Until then, check the questions there. Most problems are answered." },
+    { k: ["ads", "ad", "advert", "advertising", "adverts", "commercials", "sponsor"], a: "stream doesn't show ads right now. We may add some in the future to cover running costs, and we'll update our policies first." },
+    { k: ["rotate", "landscape", "sideways", "fullscreen", "full screen", "portrait", "auto rotate"], a: "On Android, fullscreen turns the screen sideways automatically. iPhones don't allow that, so rotate the phone yourself (make sure rotation lock is off)." },
+    { k: ["search", "find", "looking for", "where is"], a: "Use the search box on [Discover](discover/) for films and on [Live TV](live/) for channels." },
+    { k: ["quality", "hd", "resolution", "720p", "1080p", "4k", "blurry", "pixelated", "low quality"], a: "Quality depends on the source. Films play at the quality the Internet Archive provides, and channels use their own. There's no quality picker yet." },
+    { k: ["devices", "device", "phone", "tablet", "laptop", "computer", "ipad", "iphone", "android", "windows", "mac", "browser", "chrome", "safari", "firefox", "which browser"], a: "stream works on phones, tablets, laptops and TV browsers. Chrome gives the best results. Safari on iPhone works too, but can't auto-rotate." },
+    { k: ["kids", "children", "child", "age", "how old", "minimum age", "parental", "parent", "family"], a: "You must be 13+ to create an account, and under 18 need a parent's permission. Some classics contain violence or old-fashioned attitudes, so parents should choose what's suitable. Live TV has a Kids section (Spanish and Catalan channels)." },
+    { k: ["offline", "works offline", "offline mode", "no internet", "without internet", "no network", "airplane mode", "data usage", "how much data", "use data", "mobile data", "save data"], a: "Your downloaded films play offline, and so do Profile, Settings and Downloads. Home, Live TV and Discover need the internet. A feature film can use several hundred MB, so Wi-Fi is best." },
+    { k: ["why sign in", "why account", "need an account", "without account", "without signing in", "skip sign in", "guest"], a: "An account lets us save your details and, soon, sync your progress. It's free and takes about a minute." },
+    { k: ["profile", "profiles", "switch profile", "settings", "avatar", "picture", "photo"], a: "Open the [Profile](profile/) tab to switch profiles, add one, manage them or see your My List. App settings are coming soon." },
+    { k: ["language", "languages", "german", "french", "spanish", "arabic", "english", "dubbed", "dub"], a: "Channels come in several languages including English, German, French and Spanish. Search for a channel in Live TV, and use CC when captions are available. Most films are in English." }
+  ];
+  KB.push(
+    { k: ["my list", "add to my list", "watchlist", "save film", "save for later", "favorites", "favourites", "bookmark"], a: "Open a film and tap + My List to save it. Your list shows on Home and on your [Profile](profile/). Each profile has its own list." },
+    { k: ["switch profile", "change profile", "add profile", "create profile", "new profile", "who is watching", "manage profiles", "another profile", "second profile"], a: "Open [Profile](profile/) to switch profiles, add one (up to 5) or manage them. Each profile keeps its own My List and Continue watching." },
+    { k: ["kids mode", "kids profile", "child profile", "kid profile", "parental controls", "parental"], a: "When you create a profile you can mark it as a kids profile. For now it hides horror films, and a full kids design is coming." },
+    { k: ["downloads", "download film", "download films", "download a film", "download a movie", "download movies", "can i download", "downloading", "download to watch offline", "save film offline", "offline films", "download"], a: "Open a film and tap Download. Find it under [Downloads](downloads/), and it plays without internet. Downloads are free, stay inside stream, and can't be saved as files. They aren't available in TV browsers. They need free space on your phone, and a film can be several hundred MB." },
+    { k: ["sign out", "log out", "logout", "switch account", "different account"], a: "Open [Profile](profile/) and tap Sign out at the bottom." },
+    { k: ["what is public domain", "public domain mean", "what does public domain mean"], a: "Public domain means the copyright has ended or never applied, so anyone can share and watch the film freely. In the US, films published in 1930 or earlier are in the public domain. See the [Legal notice](legal/)." },
+    { k: ["dark mode", "light mode", "theme", "colour", "color"], a: "stream uses a dark royal-blue look for now. Other themes may come later." },
+    { k: ["notification", "notifications", "alerts", "email updates"], a: "stream doesn't send notifications yet." },
+    { k: ["data saver", "low data", "weak network", "poor network", "slow internet"], a: "On slow data, films take longer to start. Try Wi-Fi, or press play and let it buffer for a minute." },
+    { k: ["astra", "what is astra", "who is astra"], a: "That's me! I'm Astra, stream's automated help assistant. Ask me about accounts, films, live TV, profiles or playback problems." }
+  );
+  KB.forEach(function (e) { e.nk = e.k.map(norm); });
 
-.hero {
-  position: relative;
-  min-height: 300px;
-  border-radius: 28px;
-  padding: 24px;
-  display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
-  overflow: hidden;
-  background:
-    linear-gradient(to top, rgba(4, 10, 34, 0.92), rgba(4, 10, 34, 0.1) 70%),
-    linear-gradient(135deg, var(--royal), var(--deep) 60%, #02061a);
-  border: 1px solid var(--glass-edge);
-}
-.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.1; max-width: 16ch; }
-.hero p { color: var(--muted); max-width: 46ch; line-height: 1.5; }
-.btn {
-  align-self: flex-start;
-  padding: 12px 26px; border-radius: 999px;
-  font-weight: 700; font-size: 1rem;
-  background: linear-gradient(180deg, #7f98ff, var(--royal));
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 22px rgba(29, 63, 216, 0.5);
-  color: #fff; cursor: pointer;
-}
-
-/* ---------- Rows ---------- */
-.row { margin-top: 28px; }
-.row h2 { font-size: 1.15rem; margin-bottom: 12px; }
-.cards {
-  display: flex; gap: 12px;
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  padding-bottom: 8px; scrollbar-width: none;
-}
-.cards::-webkit-scrollbar { display: none; }
-.card {
-  flex: 0 0 132px; aspect-ratio: 2 / 3;
-  border-radius: 18px; scroll-snap-align: start;
-  display: flex; align-items: flex-end; padding: 10px;
-  font-size: 0.8rem; font-weight: 600;
-  background: linear-gradient(160deg, var(--royal), var(--deep) 70%);
-  border: 1px solid var(--glass-edge);
-}
-.card:nth-child(2n) { background: linear-gradient(160deg, #3a5bff, #0a1a5c 75%); }
-.card:nth-child(3n) { background: linear-gradient(160deg, #162a8c, #040a22 80%); }
-
-/* ---------- Tablet and laptop: side rail ---------- */
-@media (min-width: 768px) {
-  body { padding-bottom: 40px; padding-left: calc(var(--rail-w) + 28px); }
-  .nav {
-    left: 14px; right: auto; top: 14px; bottom: 14px;
-    width: var(--rail-w); height: auto;
-    flex-direction: column; justify-content: flex-start;
-    padding: 20px 0; gap: 26px; border-radius: 30px;
+  function score(e, text, toks) {
+    var s = 0;
+    e.nk.forEach(function (k) {
+      var kt = k.trim();
+      if (text.indexOf(k) > -1) { s += 2 + kt.split(" ").length; return; }
+      if (kt.indexOf(" ") < 0) {
+        var ks = stem(kt);
+        for (var i = 0; i < toks.length; i++) {
+          if (stem(toks[i]) === ks) { s += 2; return; }
+          if (kt.length >= 5 && Math.abs(toks[i].length - kt.length) <= 1 && lev(toks[i], kt) <= 1) { s += 1.5; return; }
+        }
+      }
+    });
+    return s;
   }
-  .nav .logo { display: block; font-size: 1rem; }
-  .nav ul { flex-direction: column; gap: 10px; align-items: center; }
-  .top .logo { display: none; }
-  .card { flex-basis: 168px; }
-}
 
-/* ---------- TV: top bar ---------- */
-@media (min-width: 1600px) {
-  body { padding-left: 0; padding-top: 110px; font-size: 1.15rem; }
-  .nav {
-    left: 40px; right: 40px; top: 20px; bottom: auto;
-    width: auto; height: 80px;
-    flex-direction: row; padding: 0 36px; gap: 48px; border-radius: 40px;
+  var OFF = {
+    math: ["Ha, I'm not much of a calculator! 😄 I'm here for stream. Want to find a film or a live channel?"],
+    rival: ["I can't speak for other services, so I'll stick to stream: free classic films and live TV. Want to see what's on?"],
+    other: ["That's outside what I can help with. I'm just stream's help assistant, so I stick to stream questions. Try asking about films, live channels, your account or playback."]
+  };
+
+  function reply(raw) {
+    var low = raw.toLowerCase();
+    if (/(kill myself|suicide|end my life|want to die|hurt myself|self.?harm)/.test(low))
+      return { t: "I'm really sorry you're feeling this way. I'm only a simple help assistant, but you deserve real support. Please talk to someone you trust, or contact your local emergency number or a crisis line in your country. You don't have to go through this alone." };
+    if (/(stupid bot|idiot|useless|trash|dumb bot|fuck|shit|bitch|hate you|you suck)/.test(low))
+      return { t: "I'm sorry this is frustrating. Tell me what isn't working and I'll do my best to help." , chips: CHIPS };
+    var text = norm(raw), toks = text.trim().split(" ").filter(Boolean);
+    // Is a film from our list mentioned?
+    for (var i = 0; i < data.movies.length; i++) {
+      var tt = norm(data.movies[i].title);
+      if (tt.trim().length > 3 && text.indexOf(tt) > -1)
+        return { t: "Yes! " + data.movies[i].title + " (" + data.movies[i].year + ") is on stream. [Open it](movie/?id=" + encodeURIComponent(data.movies[i].id) + ")" };
+    }
+    if (/\d+\s*[+\-x×*\/÷]\s*\d+/.test(low) || /(calculate|square root|plus|minus|times)/.test(low)) return { t: pick(OFF.math), chips: CHIPS };
+    if (/(netflix|disney|hulu|prime video|amazon prime|hbo|apple tv|peacock|paramount|showmax|dstv|youtube tv|spotify|tiktok|instagram|whatsapp|facebook)/.test(low)) return { t: pick(OFF.rival), chips: CHIPS };
+    if (/(joke|weather|president|capital of|recipe|homework|bitcoin|crypto|stock|lottery|girlfriend|boyfriend|marry|meaning of life|favorite|favourite|write (me )?(a|an|some)|poem|sing |sports? score|news today)/.test(low)) return { t: pick(OFF.other), chips: CHIPS };
+
+    var best = null, bs = 0;
+    KB.forEach(function (e) { var s = score(e, text, toks); if (s > bs) { bs = s; best = e; } });
+    if (best && bs >= 2) return { t: typeof best.a === "function" ? best.a() : best.a, chips: best.chips };
+    return { t: "Hmm, I'm not sure I understood that. 🤔 I can help with accounts, films, live TV, playback problems and installing the app. Try one of these, or ask in other words.", chips: CHIPS };
   }
-  .nav .logo { font-size: 1.7rem; }
-  .nav ul { flex-direction: row; width: auto; gap: 18px; }
-  .nav a { flex-direction: row; gap: 10px; font-size: 1.05rem; padding: 10px 22px; }
-  .card { flex-basis: 220px; }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; scroll-behavior: auto !important; }
-}
+  // ---------- Interface ----------
+  function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  function richText(box, s) {
+    var re = /\[([^\]]+)\]\(([^)]+)\)/g, last = 0, m;
+    while ((m = re.exec(s))) {
+      if (m.index > last) box.appendChild(document.createTextNode(s.slice(last, m.index)));
+      var a = h("a", "", m[1]); a.href = new URL(m[2], ROOT).href; box.appendChild(a);
+      last = re.lastIndex;
+    }
+    if (last < s.length) box.appendChild(document.createTextNode(s.slice(last)));
+  }
 
-/* ---------- Inner pages ---------- */
-.page-title { font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 16px; }
-.player-box {
-  aspect-ratio: 16 / 9; border-radius: 24px;
-  display: grid; place-items: center; text-align: center; padding: 16px;
-  color: var(--muted); border: 1px solid var(--glass-edge);
-  background: linear-gradient(135deg, var(--deep), #02061a);
-}
-.search {
-  width: 100%; padding: 14px 18px; border-radius: 999px;
-  font: inherit; color: var(--text); margin-bottom: 14px;
-}
-.search::placeholder { color: var(--muted); }
-.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; margin-bottom: 18px; }
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-  flex: 0 0 auto; padding: 8px 16px; border-radius: 999px;
-  font-size: 0.9rem; color: var(--muted); cursor: pointer;
-}
-.chip[aria-pressed="true"] { color: var(--text); background: rgba(91, 125, 255, 0.35); }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-.grid .card { flex: none; width: 100%; }
-.list { list-style: none; display: grid; gap: 10px; }
-.list a, .list li > div {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 18px; border-radius: 18px;
-}
-.profile-head { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; padding: 20px; border-radius: 24px; }
-.avatar {
-  width: 68px; height: 68px; border-radius: 50%; flex: none;
-  display: grid; place-items: center; font-size: 1.6rem; font-weight: 800;
-  background: linear-gradient(160deg, #7f98ff, var(--royal));
-  border: 1px solid rgba(255, 255, 255, 0.35);
-}
-.profile-head p { color: var(--muted); margin-top: 4px; }
-@media (min-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
+  var fab = h("button", "helper-fab glass"); fab.type = "button"; fab.setAttribute("aria-label", "Open help assistant"); fab.textContent = "💬 Help";
+  var panel = h("div", "hp glass"); panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Astra, help assistant");
+  var head = h("div", "hp-head"), ttl = h("div", ""), close = h("button", "hp-x", "✕");
+  ttl.appendChild(h("strong", "", "Astra")); ttl.appendChild(h("small", "", "stream's help assistant. Automated, and nothing you type is sent anywhere."));
+  close.type = "button"; close.setAttribute("aria-label", "Close");
+  head.appendChild(ttl); head.appendChild(close);
+  var msgs = h("div", "hp-msgs"); msgs.setAttribute("aria-live", "polite");
+  var chips = h("div", "hp-chips");
+  var form = h("form", "hp-form"), input = h("input"), send = h("button", "", "Send");
+  input.type = "text"; input.placeholder = "Ask a question…"; input.setAttribute("aria-label", "Your question"); input.autocomplete = "off"; input.maxLength = 200;
+  send.type = "submit"; form.appendChild(input); form.appendChild(send);
+  panel.appendChild(head); panel.appendChild(msgs); panel.appendChild(chips); panel.appendChild(form);
 
-/* ---------- Install button ---------- */
-.install-btn {
-  position: fixed; z-index: 30;
-  right: 16px; top: calc(14px + env(safe-area-inset-top, 0px));
-  padding: 10px 18px; border-radius: 999px;
-  font: inherit; font-weight: 600; color: var(--text); cursor: pointer;
-}
-.install-btn[hidden] { display: none; }
-
-/* ---------- Posters ---------- */
-.card { position: relative; overflow: hidden; }
-.card span { text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
-.prog { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255, 255, 255, 0.25); }
-.prog i { display: block; height: 100%; background: var(--glow); }
-.empty { color: var(--muted); padding: 24px 0; }
-
-/* ---------- Player ---------- */
-body.watch { padding: 0; background: #000; overflow: hidden; }
-.player { position: relative; background: #000; overflow: hidden; border-radius: 24px; aspect-ratio: 16 / 9; border: 1px solid var(--glass-edge); user-select: none; -webkit-user-select: none; }
-.player.full { position: fixed; top: 0; right: 0; bottom: 0; left: 0; border-radius: 0; border: 0; aspect-ratio: auto; }
-.player:fullscreen { border-radius: 0; border: 0; aspect-ratio: auto; }
-.player video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
-.start {
-  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; cursor: pointer;
-  background: linear-gradient(rgba(4,10,34,.55), rgba(4,10,34,.8)) center / cover, var(--deep) center / cover;
-}
-.start[hidden], .p-msg[hidden] { display: none; }
-.start-btn {
-  width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; color: #fff; cursor: pointer;
-  background: linear-gradient(180deg, #7f98ff, var(--royal)); border: 1px solid rgba(255,255,255,.4);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 10px 30px rgba(29,63,216,.55);
-}
-.start-btn svg { width: 36px; height: 36px; }
-.start-ttl { font-weight: 700; font-size: 1.1rem; padding: 0 16px; }
-.start-sub { color: var(--muted); font-size: 0.9rem; }
-.ui {
-  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 30%, transparent 55%, rgba(0,0,0,.85));
-  opacity: 0; pointer-events: none; transition: opacity .25s;
-}
-.ui.on { opacity: 1; pointer-events: auto; }
-.p-top { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; min-height: 44px; }
-.p-mid { display: flex; justify-content: center; align-items: center; gap: clamp(20px, 9vw, 72px); }
-.p-bot { display: grid; gap: 2px; }
-.p-row { display: flex; justify-content: space-between; align-items: center; font-size: .85rem; font-variant-numeric: tabular-nums; }
-.p-btn {
-  min-width: 44px; height: 44px; padding: 0; border-radius: 50%; display: inline-grid; place-items: center;
-  font: inherit; color: #fff; cursor: pointer; background: transparent; border: 0;
-}
-.p-btn svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.p-btn.skip svg { width: 38px; height: 38px; }
-.p-btn.big { width: 68px; height: 68px; background: rgba(255,255,255,.16); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.p-btn.big svg { width: 34px; height: 34px; }
-.p-btn.sm svg { width: 24px; height: 24px; }
-.live .seek, .live .skip { display: none; }
-.live-badge { color: #ff5d6c; font-weight: 700; letter-spacing: .04em; }
-.seek { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; cursor: pointer; }
-.seek::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to right, var(--glow) var(--pct, 0%), rgba(255,255,255,.3) var(--pct, 0%)); }
-.seek::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(91,125,255,.4); }
-.seek::-moz-range-track { height: 4px; border-radius: 4px; background: rgba(255,255,255,.3); }
-.seek::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--glow); }
-.seek::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: #fff; }
-.p-msg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 12px 20px; border-radius: 16px; background: rgba(4,10,34,.88); text-align: center; max-width: 80%; pointer-events: none; }
-
-/* ---------- Live channels ---------- */
-.chan { flex: 0 0 170px; aspect-ratio: 16 / 9; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 2px; font: inherit; color: inherit; cursor: pointer; text-align: left; }
-.chan small { color: var(--muted); font-weight: 400; }
-.chan[aria-pressed="true"] { outline: 2px solid var(--glow); }
-.live-now { margin: 12px 4px 0; color: var(--muted); }
-
-/* ---------- Movie page ---------- */
-.m-bg { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; background-size: cover; background-position: center; filter: blur(40px) saturate(1.3); transform: scale(1.3); opacity: .35; }
-.m-wrap { display: grid; gap: 22px; max-width: 980px; margin: 0 auto; }
-.m-poster { width: min(60%, 260px); aspect-ratio: 2 / 3; object-fit: cover; border-radius: 22px; border: 1px solid var(--glass-edge); box-shadow: 0 16px 40px rgba(0,0,20,.6); justify-self: center; background: var(--deep); }
-.m-info h1 { font-size: clamp(1.7rem, 5vw, 2.6rem); line-height: 1.1; }
-.m-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); margin: 10px 0 18px; }
-.m-rate { color: #ffd166; font-weight: 700; }
-.m-desc { margin-top: 18px; line-height: 1.6; }
-.m-dl { margin-top: 18px; display: grid; gap: 4px; }
-.m-dl dt { color: var(--muted); font-size: .85rem; margin-top: 10px; }
-.m-src { display: inline-block; margin-top: 22px; color: var(--glow); }
-@media (min-width: 768px) { .m-wrap { grid-template-columns: 260px 1fr; align-items: start; } .m-poster { width: 100%; } }
-
-/* ---------- Live TV: channel cards, search, schedule ---------- */
-.p-btn[hidden] { display: none; }
-.p-btn[aria-pressed="true"] { color: var(--glow); }
-video::cue { background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 1.05rem; }
-.chan {
-  flex: 0 0 150px; aspect-ratio: auto; min-height: 138px; padding: 12px; gap: 6px;
-  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;
-}
-.chan img { width: 54px; height: 54px; object-fit: contain; padding: 5px; border-radius: 12px; background: rgba(255, 255, 255, 0.92); }
-.chan .ph { width: 54px; height: 54px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; background: rgba(91, 125, 255, 0.35); }
-.chan b { font-weight: 600; font-size: 0.9rem; line-height: 1.2; }
-.chan small { color: var(--muted); font-weight: 400; font-size: 0.75rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.sched { list-style: none; display: grid; gap: 6px; margin-top: 10px; }
-.sched li { display: flex; gap: 12px; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; }
-.sched time { color: var(--muted); flex: none; min-width: 3.4em; font-variant-numeric: tabular-nums; }
-.sched .now { background: rgba(91, 125, 255, 0.28); }
-.search + .live-now { margin-top: 0; }
-@media (min-width: 1600px) { .chan { flex-basis: 200px; min-height: 170px; } }
-
-/* ---------- Welcome, sign in, sign up ---------- */
-html.auth-wait main, html.auth-wait #p { visibility: hidden; }
-body.plain { padding: 0; }
-button.btn { font-family: inherit; }
-.btn.sm { padding: 9px 20px; font-size: 0.95rem; }
-.btn.ghost { background: var(--glass); box-shadow: none; border: 1px solid var(--glass-edge); }
-.btn.full { width: 100%; text-align: center; padding: 14px; align-self: auto; }
-.w-top { display: flex; justify-content: space-between; align-items: center; padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 14px; max-width: 1100px; margin: 0 auto; }
-.w-main { max-width: 1100px; margin: 0 auto; padding: 0 18px 20px; }
-.w-hero { text-align: center; padding: 34px 0 26px; }
-.w-hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); line-height: 1.08; max-width: 18ch; margin: 0 auto 14px; }
-.w-hero p { color: var(--muted); max-width: 52ch; margin: 0 auto 24px; line-height: 1.55; }
-.w-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.w-cta .btn { align-self: auto; }
-.w-sec { margin-top: 38px; }
-.w-sec > h2 { font-size: 1.3rem; margin-bottom: 14px; }
-.features { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.feat { padding: 20px; border-radius: 22px; }
-.feat h3 { margin-bottom: 6px; font-size: 1.05rem; }
-.feat p { color: var(--muted); line-height: 1.5; font-size: 0.93rem; }
-.logos { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
-.logos::-webkit-scrollbar { display: none; }
-.logos img { width: 64px; height: 64px; flex: none; object-fit: contain; padding: 7px; border-radius: 16px; background: rgba(255, 255, 255, 0.92); }
-.steps { counter-reset: s; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); list-style: none; }
-.steps li { padding: 18px; border-radius: 20px; line-height: 1.45; }
-.steps li::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--royal); margin-bottom: 10px; font-weight: 700; }
-.faq details { padding: 16px 18px; border-radius: 18px; margin-bottom: 10px; }
-.faq summary { cursor: pointer; font-weight: 600; }
-.faq p { color: var(--muted); margin-top: 10px; line-height: 1.5; }
-.w-final { text-align: center; padding: 34px 20px; border-radius: 28px; margin-top: 38px; }
-.w-final h2 { margin-bottom: 14px; }
-.w-foot { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 26px 18px calc(30px + env(safe-area-inset-bottom, 0px)); }
-.auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
-.auth-card { width: 100%; max-width: 420px; padding: 28px 22px; border-radius: 28px; }
-.auth-card .logo { display: inline-block; margin-bottom: 8px; }
-.auth-card h1 { font-size: 1.6rem; margin: 6px 0 4px; }
-.auth-card .sub { color: var(--muted); margin-bottom: 20px; }
-.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 13px; border-radius: 999px; font: inherit; font-weight: 600; color: #1f1f1f; background: #fff; border: 0; cursor: pointer; }
-.btn-google svg { width: 20px; height: 20px; }
-.divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.85rem; margin: 18px 0; }
-.divider::before, .divider::after { content: ""; height: 1px; flex: 1; background: var(--glass-edge); }
-.field { display: grid; gap: 6px; margin-bottom: 14px; }
-.field label { font-size: 0.85rem; color: var(--muted); }
-.field input { width: 100%; padding: 14px 16px; border-radius: 14px; font: inherit; color: var(--text); background: rgba(4, 10, 34, 0.55); border: 1px solid var(--glass-edge); }
-.pw { position: relative; }
-.pw input { padding-right: 72px; }
-.pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--glow); font: inherit; font-size: 0.85rem; cursor: pointer; padding: 10px; }
-.linkbtn { background: none; border: 0; color: var(--glow); font: inherit; font-size: 0.9rem; cursor: pointer; padding: 0; }
-.row-end { display: flex; justify-content: flex-end; margin: -6px 0 14px; }
-.msg { min-height: 1.3em; margin-bottom: 10px; font-size: 0.9rem; color: #ff8d98; }
-.msg.ok { color: #8be0a4; }
-.auth-alt { text-align: center; margin-top: 18px; color: var(--muted); }
-.auth-alt a { color: var(--glow); font-weight: 600; }
-.list button { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-radius: 18px; font: inherit; color: #ff8d98; cursor: pointer; text-align: left; }
-
-/* ---------- Legal and help pages ---------- */
-.doc { max-width: 760px; margin: 0 auto; padding: 0 16px 20px; }
-.doc article { padding: 26px 22px; border-radius: 26px; line-height: 1.65; }
-.doc h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); margin-bottom: 6px; }
-.doc .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
-.doc h2 { font-size: 1.15rem; margin: 26px 0 8px; }
-.doc p, .doc li { color: #d6defa; }
-.doc p { margin-bottom: 12px; }
-.doc ul { margin: 0 0 12px 1.2em; }
-.doc li { margin-bottom: 6px; }
-.doc a { color: var(--glow); text-decoration: underline; }
-.doc details { padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; }
-.doc summary { cursor: pointer; font-weight: 600; color: var(--text); }
-.doc details p { margin: 10px 0 0; }
-mark.todo { background: #ffd166; color: #2a1f00; padding: 0 0.3em; border-radius: 4px; }
-.tbl { overflow-x: auto; margin: 10px 0 14px; }
-.tbl table { border-collapse: collapse; min-width: 520px; width: 100%; font-size: 0.88rem; }
-.tbl th, .tbl td { border: 1px solid var(--glass-edge); padding: 9px 10px; text-align: left; vertical-align: top; }
-.tbl th { background: rgba(91, 125, 255, 0.18); }
-.w-links { display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: center; margin-bottom: 10px; }
-.w-links a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
-.fine { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 14px; line-height: 1.5; }
-.fine a { color: var(--glow); }
-.list-title { margin: 26px 4px 10px; color: var(--muted); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; }
-.list a span { color: var(--muted); }
-.ver { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 22px; }
-
-/* ---------- TV mode (html.tv): top bar, bigger cards, clear focus ring for remotes ---------- */
-html.tv body:not(.plain) { padding-left: 0; padding-top: 112px; padding-bottom: 40px; font-size: 1.15rem; }
-html.tv .nav { left: 40px; right: 40px; top: 20px; bottom: auto; width: auto; height: 80px; flex-direction: row; justify-content: flex-start; padding: 0 36px; gap: 48px; border-radius: 40px; }
-html.tv .nav .logo { display: block; font-size: 1.7rem; }
-html.tv .nav ul { flex-direction: row; width: auto; gap: 18px; }
-html.tv .nav a { flex-direction: row; gap: 10px; font-size: 1.05rem; padding: 10px 22px; }
-html.tv .top .logo { display: none; }
-html.tv .card { flex-basis: 220px; }
-html.tv .chan { flex-basis: 210px; min-height: 170px; }
-html.tv :focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
-
-/* ---------- Older browsers (many TVs): fallbacks for aspect-ratio ---------- */
-@supports not (aspect-ratio: 1) {
-  .player:not(.full)::before { content: ""; display: block; padding-top: 56.25%; }
-  .player:not(.full) video { position: absolute; top: 0; left: 0; }
-  .card { min-height: 200px; }
-  .m-poster { height: 340px; }
-}
-
-/* ---------- Help assistant ---------- */
-.helper-fab { position: fixed; z-index: 30; right: 14px; bottom: calc(var(--nav-h) + 26px + env(safe-area-inset-bottom, 0px)); padding: 12px 18px; border-radius: 999px; font: inherit; font-weight: 600; color: var(--text); cursor: pointer; }
-.helper-fab[hidden], .hp[hidden] { display: none; }
-.hp { position: fixed; z-index: 40; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); height: min(78vh, 560px); display: flex; flex-direction: column; border-radius: 26px; overflow: hidden; background: rgba(8, 20, 76, 0.96); }
-.hp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 16px 16px 12px; border-bottom: 1px solid var(--glass-edge); }
-.hp-head small { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
-.hp-x { background: none; border: 0; color: var(--text); font-size: 1.1rem; cursor: pointer; padding: 6px 10px; }
-.hp-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-.hp-m { max-width: 85%; padding: 10px 14px; border-radius: 18px; line-height: 1.45; font-size: 0.95rem; }
-.hp-m.bot { align-self: flex-start; background: rgba(91, 125, 255, 0.22); border-bottom-left-radius: 6px; }
-.hp-m.user { align-self: flex-end; background: var(--royal); border-bottom-right-radius: 6px; }
-.hp-m a { color: #fff; text-decoration: underline; }
-.hp-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 14px 10px; }
-.hp-chips button { padding: 8px 14px; border-radius: 999px; font: inherit; font-size: 0.85rem; color: var(--text); background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-edge); cursor: pointer; }
-.hp-form { display: flex; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--glass-edge); }
-.hp-form input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 999px; font: inherit; color: var(--text); background: rgba(4, 10, 34, 0.6); border: 1px solid var(--glass-edge); }
-.hp-form button { padding: 0 18px; border-radius: 999px; font: inherit; font-weight: 700; color: #fff; background: var(--royal); border: 0; cursor: pointer; }
-@media (min-width: 768px) {
-  .helper-fab { bottom: 24px; right: 24px; }
-  .hp { left: auto; right: 24px; bottom: 24px; width: 380px; }
-}
-html.tv .helper-fab { display: none; }
-
-html.tv a:focus, html.tv button:focus, html.tv input:focus { outline: 4px solid #fff; outline-offset: 4px; }
-
-/* ---------- Footer like the Keyframe Awards site ---------- */
-.w-foot .w-links { max-width: 540px; margin: 0 auto 26px; gap: 22px 46px; font-size: 1.05rem; }
-.w-foot .w-links a { text-decoration: none; }
-.socials { display: flex; justify-content: center; gap: 26px; margin: 0 0 24px; }
-.socials a { color: var(--muted); }
-.socials svg { width: 28px; height: 28px; display: block; }
-.foot-line { height: 1px; max-width: 760px; margin: 0 auto 18px; background: var(--glass-edge); }
-
-/* ---------- Movie sheet (opens inside the app) ---------- */
-.msheet { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 15; overflow-y: auto; background: #040a22; padding: 70px 18px calc(var(--nav-h) + 44px + env(safe-area-inset-bottom, 0px)); }
-.ms-close { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: 14px; width: 44px; height: 44px; border-radius: 50%; color: var(--text); font: inherit; cursor: pointer; z-index: 2; }
-.ms-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
-.ms-actions .btn { align-self: auto; }
-@media (min-width: 768px) { .msheet { left: calc(var(--rail-w) + 28px); padding-bottom: 40px; } }
-html.tv .msheet { left: 0; padding-top: 120px; }
-.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + 40px + env(safe-area-inset-bottom, 0px)); padding: 12px 20px; border-radius: 999px; font-size: 0.95rem; }
-
-/* ---------- Profiles ---------- */
-.av { width: 84px; height: 84px; border-radius: 22px; display: grid; place-items: center; font-size: 2.4rem; border: 1px solid rgba(255, 255, 255, 0.3); flex: none; }
-.av.sm { width: 56px; height: 56px; border-radius: 16px; font-size: 1.6rem; }
-.av.lg { width: 112px; height: 112px; border-radius: 28px; font-size: 3.4rem; }
-.av.add { background: rgba(255, 255, 255, 0.1); font-size: 2.4rem; color: var(--muted); }
-.av.editing { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6); }
-.pf-page { max-width: 720px; margin: 0 auto; padding: 8px 18px 40px; text-align: center; }
-.pf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 22px; margin-top: 18px; }
-.pf-tile { display: grid; justify-items: center; gap: 10px; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; }
-.pf-pick { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-.pf-pick button { width: 54px; height: 54px; border-radius: 16px; font-size: 1.7rem; background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; cursor: pointer; }
-.pf-pick button[aria-pressed="true"] { border-color: #fff; }
-.kids-toggle { display: block; margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; text-align: left; }
-.pf-card { position: relative; text-align: center; padding: 24px; border-radius: 28px; margin-bottom: 18px; display: grid; justify-items: center; gap: 8px; }
-.pf-card h2 { font-size: 1.3rem; }
-.pf-card p { color: var(--muted); font-size: 0.9rem; }
-.pf-edit { position: absolute; top: 14px; right: 18px; font-size: 1.4rem; }
-.pf-row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin: 0 0 16px; }
-.pf-mini { display: grid; justify-items: center; gap: 6px; font: inherit; font-size: 0.85rem; background: none; border: 0; color: var(--text); cursor: pointer; }
-.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; background: rgba(91, 125, 255, 0.35); }
-.list button.plain { color: var(--text); }
-
-/* ---------- Offline screen and settings ---------- */
-.offline { display: grid; justify-items: center; gap: 12px; text-align: center; padding: 90px 20px; }
-.offline svg { width: 68px; height: 68px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; }
-.offline p { color: var(--muted); max-width: 30ch; line-height: 1.5; }
-.offline .btn { align-self: auto; margin-top: 8px; }
-.set-sec { margin-top: 26px; }
-.set-sec h2 { font-size: 1.1rem; margin-bottom: 12px; }
-
-/* ---------- Cookie choices banner ---------- */
-.consent { position: fixed; z-index: 70; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 16px 18px; border-radius: 22px; display: grid; gap: 12px; background: rgba(8, 20, 76, 0.97); font-size: 0.92rem; line-height: 1.45; }
-.consent a { color: var(--glow); text-decoration: underline; }
-.consent-row { display: flex; gap: 10px; justify-content: flex-end; }
-.consent-row .btn { align-self: auto; }
-@media (min-width: 768px) { .consent { left: auto; right: 24px; bottom: 24px; max-width: 420px; } }
-
-/* ---------- First-time profile setup ---------- */
-.psetup { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 80; overflow-y: auto; display: grid; place-items: center; padding: 24px 16px; background: radial-gradient(900px 500px at 85% -5%, rgba(29,63,216,.55), transparent 70%), #040a22; }
-
-/* ---------- Downloads ---------- */
-.dl-row { display: flex; gap: 14px; align-items: center; padding: 12px; border-radius: 20px; margin-bottom: 12px; }
-.dl-poster { width: 62px; height: 92px; border-radius: 12px; flex: none; background: #0a1a5c center / cover; border: 1px solid var(--glass-edge); }
-.dl-info { flex: 1; min-width: 0; }
-.dl-info b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dl-info small { color: var(--muted); }
-.dl-bar { height: 4px; border-radius: 4px; margin-top: 8px; background: rgba(255, 255, 255, 0.25); }
-.dl-bar i { display: block; height: 100%; border-radius: 4px; background: var(--glow); }
-.dl-act { display: grid; gap: 8px; }
-.dl-act .btn { align-self: auto; text-align: center; }
-@media (max-width: 420px) { .nav a { padding: 8px 8px; } }
-
-.dl-bar { height: 8px; border-radius: 8px; margin-top: 10px; overflow: hidden; }
-.dl-bar i { border-radius: 8px; transition: width .6s ease; background: linear-gradient(90deg, var(--royal), #8fa6ff); }
-.dl-bar.ind i { width: 35%; animation: ind 1.4s ease-in-out infinite; }
-@keyframes ind { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
-.dl-pct strong { color: var(--text); font-size: 1.05rem; }
-.dl-fail { color: #ff8d98 !important; font-weight: 600; }
-.dl-info small { display: block; margin-top: 2px; line-height: 1.35; }
+  function addMsg(text, who) {
+    var b = h("div", "hp-m " + who); if (who === "bot") richText(b, text); else b.textContent = text;
+    msgs.appendChild(b); msgs.scrollTop = msgs.scrollHeight; return b;
+  }
+  function setChips(list) {
+    chips.innerHTML = "";
+    (list || []).forEach(function (c) { var b = h("button", "", c); b.type = "button"; b.onclick = function () { ask(c); }; chips.appendChild(b); });
+  }
+  function ask(text) {
+    text = text.trim(); if (!text) return;
+    addMsg(text, "user"); setChips([]);
+    var typing = addMsg("…", "bot");
+    setTimeout(function () {
+      var r = reply(text);
+      msgs.removeChild(typing); addMsg(r.t, "bot"); setChips(r.chips || CHIPS);
+    }, 350);
+  }
+  var started = false;
+  function open() {
+    panel.hidden = false; fab.hidden = true;
+    if (!started) { started = true; addMsg("Hi! I'm Astra, stream's help assistant 👋 Ask me anything about stream. I'm automated, so I can't help with other topics.", "bot"); setChips(CHIPS); }
+    setTimeout(function () { input.focus(); }, 50);
+  }
+  function shut() { panel.hidden = true; fab.hidden = false; }
+  fab.onclick = open; close.onclick = shut;
+  form.addEventListener("submit", function (e) { e.preventDefault(); var v = input.value; input.value = ""; ask(v); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !panel.hidden) shut(); });
+  // No floating button: Astra opens from the Profile page and the Help page.
+  document.addEventListener("DOMContentLoaded", function () { document.body.appendChild(panel); });
+  if (document.body) document.body.appendChild(panel);
+  window.StreamHelper = { open: open, reply: reply };
+})();
