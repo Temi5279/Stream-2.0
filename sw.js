@@ -1,5 +1,5 @@
 const DL = "stream-downloads"; // downloaded films live here and survive updates
-const VERSION = "stream-v20";
+const VERSION = "stream-v21";
 const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
@@ -19,20 +19,29 @@ async function serveDownload(req) {
 const dlMeta = (id) => new URL("__dl/" + id + ".json", self.registration.scope).href;
 
 self.addEventListener("backgroundfetchsuccess", (e) => {
-  const bf = e.registration;
+  const bf = e.registration, fid = encodeURIComponent(bf.id.split("~")[0]);
   e.waitUntil((async () => {
     const cache = await caches.open(DL);
-    for (const r of await bf.matchAll()) await cache.put(new URL("__dl/" + encodeURIComponent(bf.id), self.registration.scope).href, await r.responseReady);
-    const mr = await cache.match(dlMeta(encodeURIComponent(bf.id)));
-    const meta = mr ? await mr.json() : { id: bf.id };
+    for (const r of await bf.matchAll()) await cache.put(new URL("__dl/" + fid, self.registration.scope).href, await r.responseReady);
+    const mr = await cache.match(dlMeta(fid));
+    const meta = mr ? await mr.json() : { id: bf.id.split("~")[0] };
     meta.status = "done"; meta.size = bf.downloaded;
-    await cache.put(dlMeta(encodeURIComponent(bf.id)), new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
+    await cache.put(dlMeta(fid), new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
     await e.updateUI({ title: "Download complete" });
-  })());
+  })().catch(async (err) => {
+    // Saving the film failed (for example the phone ran out of space): keep a note so the app can say so
+    const cache = await caches.open(DL), mr = await cache.match(dlMeta(fid));
+    if (mr) { const meta = await mr.json(); meta.status = "failed"; meta.reason = "storage"; await cache.put(dlMeta(fid), new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } })); }
+  }));
 });
-const dropDownload = (e) => e.waitUntil(caches.open(DL).then((c) => c.delete(dlMeta(encodeURIComponent(e.registration.id)))));
-self.addEventListener("backgroundfetchfail", dropDownload);
-self.addEventListener("backgroundfetchabort", dropDownload);
+async function markFailed(e) {
+  const fid = encodeURIComponent(e.registration.id.split("~")[0]), cache = await caches.open(DL), mr = await cache.match(dlMeta(fid));
+  if (!mr) return; // the member already removed it
+  const meta = await mr.json(); meta.status = "failed"; meta.reason = e.registration.failureReason || "cancelled";
+  await cache.put(dlMeta(fid), new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
+}
+self.addEventListener("backgroundfetchfail", (e) => e.waitUntil(markFailed(e)));
+self.addEventListener("backgroundfetchabort", (e) => e.waitUntil(markFailed(e)));
 self.addEventListener("backgroundfetchclick", (e) => e.waitUntil(clients.openWindow(new URL("downloads/", self.registration.scope).href)));
 
 const ONLINE_ONLY = /\/(help|privacy|terms|cookies|legal|welcome|signin|signup|check)(\/|$)/;
