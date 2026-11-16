@@ -41,7 +41,7 @@
       var q = function (s) { return el.querySelector(s); };
       var v = q("video"), ui = q(".ui"), pp = q(".pp"), seek = q(".seek"), tm = q(".tm"), msg = q(".p-msg"),
           start = q(".start"), ttl = q(".p-title"), fsb = q(".fs"), mb = q(".mute"), cc = q(".cc");
-      var ccIdx = 0, ccOpts = [], toastT, hls = null, hideT, started = false, startAt = 0, dragging = false, lastSave = 0;
+      var autoCC = false, ccIdx = 0, ccOpts = [], toastT, hls = null, hideT, started = false, startAt = 0, dragging = false, lastSave = 0;
 
       function say(t) { msg.textContent = t || ""; msg.hidden = !t; }
       function show() { ui.classList.add("on"); clearTimeout(hideT); if (!v.paused) hideT = setTimeout(function () { ui.classList.remove("on"); }, 5000); }
@@ -57,6 +57,7 @@
           list.push({ label: t.label || t.language || "Captions " + (list.length + 1), kind: "native", track: t });
         }
         ccOpts = list; cc.hidden = !list.length;
+        if (list.length && ccIdx === 0 && !autoCC) { autoCC = true; try { if (localStorage.getItem("stream-cc-default")) { ccIdx = 1; applyCC(); } } catch (e) {} }
       }
       function applyCC() {
         for (var i = 0; i < v.textTracks.length; i++) if (v.textTracks[i].mode === "showing") v.textTracks[i].mode = "disabled";
@@ -143,7 +144,7 @@
         setStart: function (t) { q(".start-sub").textContent = t || ""; },
         poster: function (url) { if (url) start.style.backgroundImage = "linear-gradient(rgba(4,10,34,.55), rgba(4,10,34,.85)), url(" + url + ")"; },
         load: function (src, at) {
-          startAt = at || 0; say(""); ccIdx = 0; ccOpts = []; cc.hidden = true; cc.setAttribute("aria-pressed", "false");
+          startAt = at || 0; say(""); ccIdx = 0; ccOpts = []; autoCC = false; cc.hidden = true; cc.setAttribute("aria-pressed", "false");
           if (hls) { hls.destroy(); hls = null; }
           if (/\.m3u8(\?|$)/i.test(src) && !v.canPlayType("application/vnd.apple.mpegurl")) {
             if (window.Hls && Hls.isSupported()) {
