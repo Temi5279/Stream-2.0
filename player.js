@@ -30,17 +30,20 @@
         '<video playsinline preload="metadata"></video>' +
         '<div class="start"><button class="start-btn" aria-label="Play">' + I.play + '</button><p class="start-ttl"></p><p class="start-sub"></p></div>' +
         '<div class="ui">' +
-          '<div class="p-top">' + (o.back ? '<a class="p-btn" href="' + o.back + '" aria-label="Back">' + I.back + "</a>" : "") + '<span class="p-title"></span></div>' +
+          '<div class="p-top">' + (o.back ? '<a class="p-btn" href="' + o.back + '" aria-label="Back">' + I.back + "</a>" : "") + '<span class="p-title"></span>' + (o.report ? '<button class="p-btn rep" type="button" aria-label="Report a problem" style="margin-left:auto">⚑</button>' : "") + '</div>' +
           '<div class="p-mid"><button class="p-btn skip b10" aria-label="Back 10 seconds">' + I.back10 + '</button><button class="p-btn big pp" aria-label="Play">' + I.play + '</button><button class="p-btn skip f10" aria-label="Forward 10 seconds">' + I.fwd10 + "</button></div>" +
           '<div class="p-bot"><input class="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">' +
             '<div class="p-row"><span class="tm">' + (o.live ? '<span class="live-badge">● LIVE</span>' : "0:00 / 0:00") + "</span>" +
-            '<span><button class="p-btn sm cc" aria-label="Captions" aria-pressed="false" hidden>' + I.cc + '</button><button class="p-btn sm mute" aria-label="Mute">' + I.vol + '</button><button class="p-btn sm fs" aria-label="Fullscreen">' + I.fs + "</button></span></div></div>" +
+            '<span><button class="p-btn sm spd" type="button" aria-label="Playback speed">1×</button><button class="p-btn sm cc" aria-label="Captions" aria-pressed="false" hidden>' + I.cc + '</button><button class="p-btn sm mute" aria-label="Mute">' + I.vol + '</button><button class="p-btn sm fs" aria-label="Fullscreen">' + I.fs + "</button></span></div></div>" +
         "</div>" +
         '<div class="p-msg" hidden></div>';
 
       var q = function (s) { return el.querySelector(s); };
       var v = q("video"), ui = q(".ui"), pp = q(".pp"), seek = q(".seek"), tm = q(".tm"), msg = q(".p-msg"),
-          start = q(".start"), ttl = q(".p-title"), fsb = q(".fs"), mb = q(".mute"), cc = q(".cc");
+          start = q(".start"), ttl = q(".p-title"), fsb = q(".fs"), mb = q(".mute"), cc = q(".cc"), spd = q(".spd");
+      var SPEEDS = [1, 1.25, 1.5, 2, 0.75], si = 0;
+      if (o.report) q(".rep").addEventListener("click", o.report);
+      spd.addEventListener("click", function () { si = (si + 1) % SPEEDS.length; v.playbackRate = SPEEDS[si]; spd.textContent = SPEEDS[si] + "×"; toast("Speed " + SPEEDS[si] + "×"); show(); });
       var autoCC = false, ccIdx = 0, ccOpts = [], toastT, hls = null, hideT, started = false, startAt = 0, dragging = false, lastSave = 0;
 
       function say(t) { msg.textContent = t || ""; msg.hidden = !t; }
@@ -144,7 +147,7 @@
         setStart: function (t) { q(".start-sub").textContent = t || ""; },
         poster: function (url) { if (url) start.style.backgroundImage = "linear-gradient(rgba(4,10,34,.55), rgba(4,10,34,.85)), url(" + url + ")"; },
         load: function (src, at) {
-          startAt = at || 0; say(""); ccIdx = 0; ccOpts = []; autoCC = false; cc.hidden = true; cc.setAttribute("aria-pressed", "false");
+          startAt = at || 0; say(""); ccIdx = 0; ccOpts = []; autoCC = false; si = 0; v.playbackRate = 1; spd.textContent = "1×"; cc.hidden = true; cc.setAttribute("aria-pressed", "false");
           if (hls) { hls.destroy(); hls = null; }
           if (/\.m3u8(\?|$)/i.test(src) && !v.canPlayType("application/vnd.apple.mpegurl")) {
             if (window.Hls && Hls.isSupported()) {
