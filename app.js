@@ -98,12 +98,12 @@
       lb.onclick = function () { var on = Stream.mylist.toggle(id); label(); toast(on ? "Added to My List" : "Removed from My List"); };
       var db = el.querySelector("[data-dl]");
       if (!Stream.dl.ok) db.hidden = true;
-      function dlLabel() { Stream.dl.meta(id).then(function (mm) { db.textContent = !mm ? "⬇ Download" : mm.status === "done" ? "✓ Downloaded" : "Downloading…"; }); }
+      function dlLabel() { Stream.dl.meta(id).then(function (mm) { db.textContent = !mm ? "⬇ Download" : mm.status === "done" ? "✓ Downloaded" : mm.status === "failed" ? "⬇ Retry download" : "Downloading…"; }); }
       dlLabel();
       db.onclick = function () {
         Stream.dl.meta(id).then(function (mm) {
           if (mm && mm.status === "done") { toast("Already downloaded. Find it in Downloads"); return; }
-          if (mm) { toast("Already downloading. Check Downloads"); return; }
+          if (mm && mm.status !== "failed") { toast("Already downloading. Check Downloads"); return; }
           Stream.dl.start(m).then(function (mode) {
             toast(mode === "background" ? "Download started. You can leave this page." : "Downloading. Keep stream open until it finishes.");
             dlLabel();
@@ -176,22 +176,24 @@
   function dlKey(id) { return new URL("__dl/" + encodeURIComponent(id), ROOT).href; }
   function metaKey(id) { return dlKey(id) + ".json"; }
   function jres(o) { return new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json" } }); }
+  function putMeta(c, meta) { return c.put(metaKey(meta.id), jres(meta)); }
   function archiveUrl(id, file) { return "https://archive.org/download/" + encodeURIComponent(id) + "/" + file.split("/").map(encodeURIComponent).join("/"); }
+  // Finds the video file and its exact size (the size gives a real percent)
   function pickFile(m) {
-    if (m.file) return Promise.resolve(m.file);
     return fetch("https://archive.org/metadata/" + encodeURIComponent(m.id)).then(function (r) { return r.json(); }).then(function (meta) {
-      var v = (meta.files || []).filter(function (f) { return /\.(mp4|m4v)$/i.test(f.name) && +f.size > 15e6 && !/sample|trailer/i.test(f.name); })
-        .sort(function (x, y) { return (x.source === "derivative" ? 0 : 1) - (y.source === "derivative" ? 0 : 1) || +x.size - +y.size; });
-      if (!v.length) throw new Error("This film can't be downloaded yet.");
-      return v[0].name;
-    });
+      var files = (meta.files || []).filter(function (f) { return /\.(mp4|m4v)$/i.test(f.name) && +f.size > 15e6 && !/sample|trailer/i.test(f.name); });
+      var hit = m.file ? files.filter(function (f) { return f.name === m.file; })[0] : null;
+      if (!hit) hit = files.sort(function (x, y) { return (x.source === "derivative" ? 0 : 1) - (y.source === "derivative" ? 0 : 1) || +x.size - +y.size; })[0];
+      if (!hit) { if (m.file) return { name: m.file, size: 0 }; throw new Error("This film can't be downloaded yet."); }
+      return { name: hit.name, size: +hit.size || 0 };
+    }, function (err) { if (m.file) return { name: m.file, size: 0 }; throw err; });
   }
   var dl = {
-    ok: "caches" in window && "serviceWorker" in navigator,
     url: dlKey,
     meta: function (id) {
       return caches.open(DLC).then(function (c) { return c.match(metaKey(id)); }).then(function (r) { return r ? r.json() : null; }).catch(function () { return null; });
     },
+    update: function (meta) { return caches.open(DLC).then(function (c) { return putMeta(c, meta); }); },
     has: function (id) { return dl.meta(id).then(function (m) { return !!(m && m.status === "done"); }); },
     list: function () {
       return caches.open(DLC).then(function (c) {
@@ -200,58 +202,77 @@
         });
       }).catch(function () { return []; });
     },
-    progress: function (id) {
-      if (inflight[id]) return Promise.resolve({ done: inflight[id].done, total: inflight[id].total, state: "downloading" });
+    progress: function (m) {
+      if (inflight[m.id]) return Promise.resolve({ done: inflight[m.id].done, total: inflight[m.id].total || m.total || 0, state: "downloading" });
+      if (!m.bg) return Promise.resolve(null);
       return navigator.serviceWorker.ready.then(function (reg) {
         if (!reg.backgroundFetch) return null;
-        return reg.backgroundFetch.get(id).then(function (bf) {
+        return reg.backgroundFetch.get(m.bg).then(function (bf) {
           if (!bf) return null;
-          return { done: bf.downloaded, total: bf.downloadTotal, state: bf.result === "failure" ? "failed" : bf.result === "success" ? "done" : "downloading" };
+          return { done: bf.downloaded, total: bf.downloadTotal || m.total || 0, state: bf.result === "failure" ? "failed" : bf.result === "success" ? "done" : "downloading" };
         });
       }).catch(function () { return null; });
     },
+    // Works out why a download failed: "ok" (connection dropped), "blocked" (the Archive refuses apps), "network", "slow"
+    diagnose: function (m) {
+      if (!m.url) return Promise.resolve("");
+      var c1 = new AbortController(), c2 = new AbortController();
+      var test = fetch(m.url, { mode: "cors", signal: c1.signal }).then(function (r) { c1.abort(); return r.ok ? "ok" : "status " + r.status; }, function () {
+        return fetch(m.url, { mode: "no-cors", signal: c2.signal }).then(function () { c2.abort(); return "blocked"; }, function () { return "network"; });
+      });
+      return Promise.race([test, new Promise(function (res) { setTimeout(function () { c1.abort(); c2.abort(); res("slow"); }, 15000); })]);
+    },
     start: function (m) {
-      if (!dl.ok) return Promise.reject(new Error("Downloads aren't supported in this browser."));
+      if (!dl.ok) return Promise.reject(new Error("Downloads aren't available on this device."));
       var chain = Promise.resolve();
       if (navigator.storage && navigator.storage.estimate) chain = navigator.storage.estimate().then(function (e) {
         if (e.quota && e.quota - e.usage < 700 * 1048576) throw new Error("Not enough free space on this device.");
       });
-      return chain.then(function () { return pickFile(m); }).then(function (file) {
-        var url = archiveUrl(m.id, file), meta = { id: m.id, title: m.title, year: m.year, genre: m.genre, runtime: m.runtime, size: 0, status: "downloading", ts: Date.now() };
+      return chain.then(function () { return pickFile(m); }).then(function (f) {
+        var url = archiveUrl(m.id, f.name), bg = m.id + "~" + Date.now().toString(36);
+        var meta = { id: m.id, title: m.title, year: m.year, genre: m.genre, runtime: m.runtime, size: 0, total: f.size, url: url, bg: bg, status: "downloading", ts: Date.now() };
         return caches.open(DLC).then(function (c) {
-          return c.put(metaKey(m.id), jres(meta)).then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
-            if (reg.backgroundFetch) {
-              return reg.backgroundFetch.get(m.id).then(function (old) {
-                if (old && old.result === "") return "background";
-                return reg.backgroundFetch.fetch(m.id, [new Request(url, { mode: "cors" })], {
-                  title: m.title, icons: [{ src: new URL("icons/icon-192.png", ROOT).href, sizes: "192x192", type: "image/png" }]
-                }).then(function () { return "background"; });
-              }).catch(function () { return page(c, m, url, meta); });
-            }
-            return page(c, m, url, meta);
+          return c.delete(dlKey(m.id)).then(function () { return putMeta(c, meta); }).then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+            if (!reg.backgroundFetch) return page(c, m, url, meta);
+            return reg.backgroundFetch.fetch(bg, [new Request(url, { mode: "cors" })], {
+              title: m.title, icons: [{ src: new URL("icons/icon-192.png", ROOT).href, sizes: "192x192", type: "image/png" }], downloadTotal: f.size || 0
+            }).then(function () { return "background"; }, function () { return page(c, m, url, meta); });
           });
         });
       });
     },
     remove: function (id) {
-      if (inflight[id]) { try { inflight[id].ctl.abort(); } catch (e) {} delete inflight[id]; }
-      return navigator.serviceWorker.ready.then(function (reg) {
-        return reg.backgroundFetch ? reg.backgroundFetch.get(id).then(function (bf) { if (bf) return bf.abort(); }) : null;
-      }).catch(function () {}).then(function () { return caches.open(DLC); }).then(function (c) { return Promise.all([c.delete(dlKey(id)), c.delete(metaKey(id))]); });
+      return dl.meta(id).then(function (meta) {
+        if (inflight[id]) { try { inflight[id].ctl.abort(); } catch (e) {} delete inflight[id]; }
+        return caches.open(DLC).then(function (c) { return Promise.all([c.delete(dlKey(id)), c.delete(metaKey(id))]); }).then(function () {
+          if (!meta || !meta.bg) return;
+          return navigator.serviceWorker.ready.then(function (reg) {
+            return reg.backgroundFetch ? reg.backgroundFetch.get(meta.bg).then(function (bf) { if (bf) return bf.abort(); }) : null;
+          });
+        }).catch(function () {});
+      });
     }
   };
+  // Downloads are not offered on TV browsers
+  Object.defineProperty(dl, "ok", { get: function () {
+    return "caches" in window && "serviceWorker" in navigator && !document.documentElement.classList.contains("tv");
+  } });
   // Fallback for browsers without background downloads: works while stream stays open
   function page(c, m, url, meta) {
-    var ctl = new AbortController(); inflight[m.id] = { done: 0, total: 0, ctl: ctl };
+    var ctl = new AbortController(); inflight[m.id] = { done: 0, total: meta.total || 0, ctl: ctl };
     fetch(url, { mode: "cors", signal: ctl.signal }).then(function (r) {
-      if (!r.ok) throw new Error("bad response");
-      inflight[m.id].total = +r.headers.get("content-length") || 0;
+      if (!r.ok) throw new Error("status " + r.status);
+      inflight[m.id].total = +r.headers.get("content-length") || meta.total || 0;
       var counter = new TransformStream({ transform: function (ch, ctrl) { inflight[m.id].done += ch.byteLength; ctrl.enqueue(ch); } });
       return c.put(dlKey(m.id), new Response(r.body.pipeThrough(counter), { headers: { "Content-Type": r.headers.get("content-type") || "video/mp4" } }));
     }).then(function () {
-      meta.status = "done"; meta.size = inflight[m.id].done; return c.put(metaKey(m.id), jres(meta));
-    }).catch(function () { return Promise.all([c.delete(dlKey(m.id)), c.delete(metaKey(m.id))]); })
-      .then(function () { delete inflight[m.id]; });
+      meta.status = "done"; meta.size = inflight[m.id].done; return putMeta(c, meta);
+    }).catch(function (err) {
+      return c.delete(dlKey(m.id)).then(function () {
+        if (ctl.signal.aborted) return c.delete(metaKey(m.id));
+        meta.status = "failed"; meta.reason = (err && err.message) || "network"; return putMeta(c, meta);
+      });
+    }).then(function () { delete inflight[m.id]; });
     return "page";
   }
 
