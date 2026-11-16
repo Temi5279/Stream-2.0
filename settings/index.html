@@ -40,8 +40,24 @@
     </section>
 
     <section class="set-sec">
+      <h2>Avatar</h2>
+      <div class="pf-pick big" id="avpick" style="justify-content:flex-start"></div>
+    </section>
+
+    <section class="set-sec">
       <h2>Animation</h2>
       <label class="kids-toggle"><input type="checkbox" id="intro"> Play the opening animation</label>
+    </section>
+
+    <section class="set-sec">
+      <h2>Playback and downloads</h2>
+      <label class="kids-toggle"><input type="checkbox" id="cc"> Turn captions on by default (when a channel provides them)</label>
+      <label class="kids-toggle"><input type="checkbox" id="wf"> Download over Wi-Fi only (Android)</label>
+    </section>
+
+    <section class="set-sec">
+      <h2>Notifications</h2>
+      <p class="empty">Push notifications are coming soon.</p>
     </section>
 
     <section class="set-sec" id="privsec" hidden>
@@ -70,6 +86,21 @@
       if (!n) { Stream.toast("Please enter a name"); return; }
       P.update(cur.id, { name: n }); $("sp").textContent = n; Stream.toast("Name saved");
     };
+    function drawAv() {
+      var box = $("avpick"); box.innerHTML = "";
+      P.avatars.forEach(function (e, i) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = e;
+        b.setAttribute("aria-pressed", i === cur.a); b.setAttribute("aria-label", "Avatar " + (i + 1));
+        b.onclick = function () { cur.a = i; P.update(cur.id, { a: i }); drawAv(); Stream.toast("Avatar updated"); };
+        box.appendChild(b);
+      });
+    }
+    drawAv();
+    function flag(id, key) {
+      $(id).checked = !!localStorage.getItem(key);
+      $(id).onchange = function () { try { if (this.checked) localStorage.setItem(key, "1"); else localStorage.removeItem(key); } catch (e) {} };
+    }
+    flag("cc", "stream-cc-default"); flag("wf", "stream-wifi-only");
     $("intro").checked = !localStorage.getItem("stream-intro-off");
     $("intro").onchange = function () { try { if (this.checked) localStorage.removeItem("stream-intro-off"); else localStorage.setItem("stream-intro-off", "1"); } catch (e) {} };
     $("ch").onclick = function () { if (confirm("Clear watch history for " + cur.name + "?")) { Stream.clearProgress(); Stream.toast("Watch history cleared"); } };
