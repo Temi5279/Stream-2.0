@@ -486,3 +486,11 @@ html.tv .msheet { left: 0; padding-top: 120px; }
 .dl-act { display: grid; gap: 8px; }
 .dl-act .btn { align-self: auto; text-align: center; }
 @media (max-width: 420px) { .nav a { padding: 8px 8px; } }
+
+.dl-bar { height: 8px; border-radius: 8px; margin-top: 10px; overflow: hidden; }
+.dl-bar i { border-radius: 8px; transition: width .6s ease; background: linear-gradient(90deg, var(--royal), #8fa6ff); }
+.dl-bar.ind i { width: 35%; animation: ind 1.4s ease-in-out infinite; }
+@keyframes ind { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
+.dl-pct strong { color: var(--text); font-size: 1.05rem; }
+.dl-fail { color: #ff8d98 !important; font-weight: 600; }
+.dl-info small { display: block; margin-top: 2px; line-height: 1.35; }
