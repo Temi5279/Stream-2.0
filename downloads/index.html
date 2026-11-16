@@ -41,24 +41,46 @@
   <script src="../app.js"></script>
   <script>
   Stream.whenUser(function () {
-    var list = document.getElementById("list"), busy = false;
+    if (document.documentElement.classList.contains("tv")) { location.replace("../"); return; }
+    var list = document.getElementById("list"), busy = false, timer = null;
     function mb(n) { return Math.round((n || 0) / 1048576) + " MB"; }
     function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+    var REASONS = { "bad-status": "The Internet Archive refused the download.", "fetch-error": "The connection was lost.", "quota-exceeded": "Not enough storage space.", "download-total-exceeded": "The file was bigger than expected.", storage: "There wasn't enough space to save the film.", cancelled: "The download was cancelled.", aborted: "The download was cancelled.", network: "The connection was lost." };
+    var DIAG = { ok: "The Internet Archive is reachable, so your connection probably dropped. Try again on Wi-Fi.", blocked: "The Internet Archive doesn't allow downloads inside apps.", network: "Can't reach the Internet Archive. Check your data.", slow: "Your connection is too slow right now." };
 
     function row(m, p) {
+      var state = m.status === "done" ? "done" : (m.status === "failed" || (p && p.state === "failed") || !p) ? "failed" : "going";
       var r = el("div", "dl-row glass");
       var poster = el("div", "dl-poster"); poster.style.backgroundImage = "url(" + Stream.thumb(m.id) + ")"; r.appendChild(poster);
       var info = el("div", "dl-info"); info.appendChild(el("b", "", m.title));
-      var failed = m.status !== "done" && (!p || p.state === "failed");
-      var sub = m.status === "done" ? [m.year, m.runtime, mb(m.size)].filter(Boolean).join(" · ") :
-        failed ? "Download failed" : "Downloading… " + (p.total ? Math.round(p.done / p.total * 100) + "%" : mb(p.done));
-      info.appendChild(el("small", "", sub));
-      if (m.status !== "done" && !failed && p.total) { var bar = el("div", "dl-bar"), i = el("i"); i.style.width = Math.round(p.done / p.total * 100) + "%"; bar.appendChild(i); info.appendChild(bar); }
-      r.appendChild(info);
       var act = el("div", "dl-act");
-      if (m.status === "done") { var pl = el("a", "btn sm", "Play"); pl.href = Stream.watchUrl(m.id); act.appendChild(pl); }
-      var rm = el("button", "btn sm ghost", m.status === "done" ? "Remove" : failed ? "Remove" : "Cancel"); rm.type = "button";
-      rm.onclick = function () { if (m.status !== "done" && !failed || confirm("Remove " + m.title + "?")) Stream.dl.remove(m.id).then(render); };
+      if (state === "done") {
+        info.appendChild(el("small", "", [m.year, m.runtime, mb(m.size)].filter(Boolean).join(" · ")));
+        var pl = el("a", "btn sm", "Play"); pl.href = Stream.watchUrl(m.id); act.appendChild(pl);
+      } else if (state === "going") {
+        var total = p.total || m.total || 0, pct = total ? Math.min(100, Math.floor(p.done / total * 100)) : null;
+        var line = el("small", "dl-pct"); line.appendChild(el("strong", "", pct !== null ? pct + "%" : "Starting…"));
+        line.appendChild(document.createTextNode(total ? "  ·  " + mb(p.done) + " of " + mb(total) : "  ·  " + mb(p.done)));
+        info.appendChild(line);
+        var bar = el("div", "dl-bar" + (pct === null ? " ind" : "")), fill = el("i"); if (pct !== null) fill.style.width = pct + "%";
+        bar.appendChild(fill); info.appendChild(bar);
+      } else {
+        info.appendChild(el("small", "dl-fail", "Download failed"));
+        info.appendChild(el("small", "", REASONS[m.reason] || (m.reason ? "Reason: " + m.reason : "")));
+        var dg = el("small", "", m.diag ? (DIAG[m.diag] || "Reason: " + m.diag) : "Checking why…"); info.appendChild(dg);
+        if (!m.diag) Stream.dl.diagnose(m).then(function (k) { if (!k) return; m.diag = k; dg.textContent = DIAG[k] || "The Internet Archive answered: " + k; Stream.dl.update(m); });
+        var rt = el("button", "btn sm", "Retry"); rt.type = "button";
+        rt.onclick = function () {
+          Stream.movies().then(function (all) {
+            var film = all.filter(function (x) { return x.id === m.id; })[0];
+            if (!film) { Stream.toast("Film not found"); return; }
+            return Stream.dl.start(film).then(render, function (e) { Stream.toast(e && e.message ? e.message : "Couldn't start"); });
+          });
+        };
+        act.appendChild(rt);
+      }
+      var rm = el("button", "btn sm ghost", state === "going" ? "Cancel" : "Remove"); rm.type = "button";
+      rm.onclick = function () { if (state === "going" || confirm("Remove " + m.title + "?")) Stream.dl.remove(m.id).then(render); };
       act.appendChild(rm); r.appendChild(act);
       return r;
     }
@@ -66,13 +88,13 @@
       if (busy) return; busy = true;
       Stream.dl.list().then(function (items) {
         items.sort(function (a, b) { return b.ts - a.ts; });
-        return Promise.all(items.map(function (m) { return m.status === "done" ? null : Stream.dl.progress(m.id); })).then(function (ps) {
+        return Promise.all(items.map(function (m) { return m.status === "done" ? null : Stream.dl.progress(m); })).then(function (ps) {
           list.innerHTML = "";
           items.forEach(function (m, i) { list.appendChild(row(m, ps[i])); });
           document.getElementById("empty").hidden = items.length > 0;
-          var going = items.some(function (m, i) { return m.status !== "done" && ps[i] && ps[i].state === "downloading"; });
-          if (going && !render.t) render.t = setInterval(render, 1500);
-          if (!going && render.t) { clearInterval(render.t); render.t = null; }
+          var going = items.some(function (m, i) { return m.status === "downloading" && ps[i] && ps[i].state === "downloading"; });
+          if (going && !timer) timer = setInterval(render, 1200);
+          if (!going && timer) { clearInterval(timer); timer = null; }
         });
       }).then(function () { busy = false; }, function () { busy = false; });
     }
