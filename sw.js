@@ -1,5 +1,5 @@
 const DL = "stream-downloads"; // downloaded films live here and survive updates
-const VERSION = "stream-v21";
+const VERSION = "stream-v22";
 const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
@@ -44,7 +44,7 @@ self.addEventListener("backgroundfetchfail", (e) => e.waitUntil(markFailed(e)));
 self.addEventListener("backgroundfetchabort", (e) => e.waitUntil(markFailed(e)));
 self.addEventListener("backgroundfetchclick", (e) => e.waitUntil(clients.openWindow(new URL("downloads/", self.registration.scope).href)));
 
-const ONLINE_ONLY = /\/(help|privacy|terms|cookies|legal|welcome|signin|signup|check)(\/|$)/;
+const ONLINE_ONLY = /\/(help|privacy|terms|cookies|legal|welcome|signin|signup|check|account)(\/|$)/;
 function offlinePage() {
   return new Response('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#040a22"><title>No internet connection</title></head>' +
     '<body style="margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;background:radial-gradient(900px 500px at 50% 0,#10299e,#040a22 70%);color:#eaf0ff;font-family:Segoe UI,Roboto,system-ui,sans-serif;padding:24px">' +
