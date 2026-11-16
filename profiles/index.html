@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040a22">
+  <title>Who's watching? · str▶eam</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="stylesheet" href="../style.css">
+  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+</head>
+<body class="plain">
+  <header class="w-top"><a class="logo" href="../" aria-label="stream home">str<span>▶</span>eam</a></header>
+  <main class="pf-page" id="app"></main>
+
+  <script src="../app.js"></script>
+  <script>
+  Stream.whenUser(function () {
+    var P = Stream.profiles, q = new URLSearchParams(location.search), app = document.getElementById("app");
+    function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+    function home() { location.replace("../"); }
+
+    function select(manage) {
+      app.innerHTML = "";
+      app.appendChild(el("h1", "page-title", manage ? "Manage profiles" : "Who's watching?"));
+      var grid = el("div", "pf-grid");
+      P.list().forEach(function (p) {
+        var b = el("button", "pf-tile"); b.type = "button";
+        var av = P.avatar(p, "lg"); if (manage) av.classList.add("editing");
+        b.appendChild(av); b.appendChild(el("span", "", p.name + (p.kids ? " (Kids)" : "")));
+        b.onclick = function () { if (manage) form(p); else { P.setActive(p.id); home(); } };
+        grid.appendChild(b);
+      });
+      if (P.list().length < 5) {
+        var add = el("button", "pf-tile add"); add.type = "button";
+        add.appendChild(el("div", "av lg add", "+")); add.appendChild(el("span", "", "Add profile"));
+        add.onclick = function () { form(null); };
+        grid.appendChild(add);
+      }
+      app.appendChild(grid);
+      var m = el("button", "btn ghost", manage ? "Done" : "Manage profiles"); m.type = "button";
+      m.style.cssText = "display:block;margin:26px auto 0";
+      m.onclick = function () { select(!manage); };
+      app.appendChild(m);
+    }
+
+    function form(p) {
+      var first = P.list().length === 0, sel = p ? p.a : Math.floor(Math.random() * P.avatars.length);
+      app.innerHTML = "";
+      app.appendChild(el("h1", "page-title", p ? "Edit profile" : first ? "Create your profile" : "Add profile"));
+      var box = el("div", "auth-card glass"); box.style.margin = "0 auto";
+      var pick = el("div", "pf-pick");
+      function drawPick() {
+        pick.innerHTML = "";
+        P.avatars.forEach(function (e, i) {
+          var b = el("button", "", e); b.type = "button"; b.setAttribute("aria-pressed", i === sel); b.setAttribute("aria-label", "Avatar " + (i + 1));
+          b.onclick = function () { sel = i; drawPick(); };
+          pick.appendChild(b);
+        });
+      }
+      drawPick(); box.appendChild(pick);
+      var f = el("div", "field"); f.style.marginTop = "18px";
+      var lab = el("label", "", "Profile name"); lab.setAttribute("for", "pname");
+      var inp = el("input"); inp.id = "pname"; inp.type = "text"; inp.maxLength = 20; inp.autocomplete = "off";
+      inp.value = p ? p.name : ((window.StreamUser && (window.StreamUser.displayName || "").split(" ")[0]) || "");
+      f.appendChild(lab); f.appendChild(inp); box.appendChild(f);
+      var kl = el("label", "kids-toggle"); var kc = el("input"); kc.type = "checkbox"; kc.checked = !!(p && p.kids);
+      kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror and 18+ films)")); box.appendChild(kl);
+      var msg = el("p", "msg"); box.appendChild(msg);
+      var save = el("button", "btn full", "Save"); save.type = "button";
+      save.onclick = function () {
+        var name = inp.value.trim();
+        if (!name) { msg.textContent = "Please enter a name."; return; }
+        if (p) { P.update(p.id, { name: name, a: sel, kids: kc.checked }); select(true); }
+        else {
+          P.add({ name: name, a: sel, kids: kc.checked });
+          if (first) home(); else select(false);
+        }
+      };
+      box.appendChild(save);
+      if (!first) {
+        var cancel = el("button", "btn full ghost", "Cancel"); cancel.type = "button"; cancel.style.marginTop = "10px";
+        cancel.onclick = function () { select(!!p); }; box.appendChild(cancel);
+      }
+      if (p && P.list().length > 1) {
+        var del = el("button", "linkbtn", "Delete profile"); del.type = "button"; del.style.cssText = "display:block;margin:16px auto 0;color:#ff8d98";
+        del.onclick = function () { if (confirm("Delete " + p.name + "? Their My List and progress will be removed.")) { P.remove(p.id); select(true); } };
+        box.appendChild(del);
+      }
+      app.appendChild(box);
+    }
+
+    if (q.get("edit")) { var ep = P.list().filter(function (x) { return x.id === q.get("edit"); })[0]; ep ? form(ep) : select(false); }
+    else if (q.get("new") || !P.list().length) form(null);
+    else select(!!q.get("manage"));
+  });
+  </script>
+  <script type="module" src="../guard.js"></script>
+</body>
+</html>
