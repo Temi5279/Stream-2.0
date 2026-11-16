@@ -2,11 +2,24 @@
 (function () {
   var ROOT = new URL(".", document.currentScript.src);
   function get(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
-  function put(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function put(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    // Tell the sync layer something changed (profiles, My List or progress)
+    var p = k.split(":");
+    if (p[0] === "stream-profiles" || p[0] === "stream-list" || p[0] === "stream-progress") {
+      if (p[0] !== "stream-progress") {
+        var mk = "stream-sync:" + p[1], m = get(mk, { pts: 0, lts: {} });
+        if (p[0] === "stream-profiles") m.pts = Date.now(); else { m.lts = m.lts || {}; m.lts[p[2]] = Date.now(); }
+        try { localStorage.setItem(mk, JSON.stringify(m)); } catch (e) {}
+      }
+      window.dispatchEvent(new Event("stream:dirty"));
+    }
+  }
+  function flush() { window.dispatchEvent(new Event("stream:flush")); }
   function uid() { return (window.StreamUser && window.StreamUser.uid) || localStorage.getItem("stream-uid") || "guest"; }
   function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : t; return d.innerHTML; }
 
-  var AV = ["🦊", "🐼", "🦁", "🐸", "🐙", "🦄", "🐯", "🐵"];
+  var AV = ["🦊", "🐼", "🦁", "🐸", "🐙", "🦄", "🐯", "🐵", "🐧", "🦉", "🐲", "🐺", "🦋", "🐬", "🐢", "🦖"];
   var COL = ["#e5484d", "#30a46c", "#f76b15", "#3e63dd", "#12a594", "#7b2ff7", "#d6409f", "#1d3fd8"];
 
   // ---------- Profiles (saved on this device for now) ----------
@@ -36,6 +49,7 @@
       try { localStorage.removeItem("stream-progress:" + uid() + ":" + id); localStorage.removeItem("stream-list:" + uid() + ":" + id); } catch (e) {}
       var left = Profiles.list();
       if (left.length) Profiles.setActive(left[0].id);
+      flush();
     },
     avatar: function (p, cls) {
       var d = document.createElement("div");
@@ -158,7 +172,7 @@
     var dn = window.StreamUser && window.StreamUser.displayName; inp.value = dn ? dn.split(" ")[0] : "";
     f.appendChild(lab); f.appendChild(inp); box.appendChild(f);
     var kl = el("label", "kids-toggle"), kc = el("input"); kc.type = "checkbox";
-    kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror films for now)")); box.appendChild(kl);
+    kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror and 18+ films)")); box.appendChild(kl);
     var msg = el("p", "msg"); box.appendChild(msg);
     var save = el("button", "btn full", "Save and start watching"); save.type = "button";
     save.onclick = function () {
@@ -224,6 +238,7 @@
     },
     start: function (m) {
       if (!dl.ok) return Promise.reject(new Error("Downloads aren't available on this device."));
+      if (localStorage.getItem("stream-wifi-only") && navigator.connection && navigator.connection.type === "cellular") return Promise.reject(new Error("Wi-Fi only is on. Connect to Wi-Fi to download."));
       var chain = Promise.resolve();
       if (navigator.storage && navigator.storage.estimate) chain = navigator.storage.estimate().then(function (e) {
         if (e.quota && e.quota - e.usage < 700 * 1048576) throw new Error("Not enough free space on this device.");
@@ -286,7 +301,7 @@
     movies: function () {
       return fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }).then(function (l) {
         var p = Profiles.active();
-        return p && p.kids ? l.filter(function (m) { return m.genre !== "Horror"; }) : l;
+        return p && p.kids ? l.filter(function (m) { return m.genre !== "Horror" && !m.mature; }) : l;
       });
     },
     channels: function () { return fetch(new URL("channels.json", ROOT)).then(function (r) { return r.json(); }); },
@@ -332,8 +347,8 @@
       probe().then(function (ok) { if (!ok) offlineView(); });
     },
     offlineView: offlineView,
-    clearProgress: function () { put(pkey("progress"), {}); },
-    clearList: function () { put(pkey("list"), []); },
+    clearProgress: function () { put(pkey("progress"), {}); flush(); },
+    clearList: function () { put(pkey("list"), []); flush(); },
     card: function (m, pct) {
       var a = document.createElement("a");
       a.className = "card";
