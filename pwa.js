@@ -1,3 +1,10 @@
+// Load analytics (it stays off until a Measurement ID is set and the visitor accepts)
+(function () {
+  var s = document.createElement("script"); s.async = true;
+  s.src = new URL("analytics.js", document.currentScript.src).href;
+  document.head.appendChild(s);
+})();
+
 // TV mode: top navigation bar and larger controls. Open the site once with ?tv=1 to turn it on (?tv=0 turns it off).
 (function () {
   var here = document.currentScript && document.currentScript.src;
@@ -9,6 +16,7 @@
       /SmartTV|SMART-TV|Tizen|Web0S|webOS|NetCast|BRAVIA|AFT[A-Z]|GoogleTV|Android.*TV|CrKey|HbbTV|Roku|VIDAA/i.test(navigator.userAgent);
     if (onTV) {
       document.documentElement.classList.add("tv");
+      Array.prototype.forEach.call(document.querySelectorAll('.nav a[href$="downloads/"]'), function (a) { var li = a.parentNode; if (li && li.parentNode) li.parentNode.removeChild(li); });
       if (here) { var s = document.createElement("script"); s.src = new URL("tvnav.js", here).href; document.body.appendChild(s); }
     }
   } catch (e) {}
