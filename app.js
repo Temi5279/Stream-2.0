@@ -63,7 +63,7 @@
 
   // ---------- Posters load as they scroll into view ----------
   var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) { e.target.style.backgroundImage = e.target.getAttribute("data-bg"); io.unobserve(e.target); } });
+    es.forEach(function (e) { if (e.isIntersecting) { var th = e.target.getAttribute("data-thumb"); if (th) e.target.style.setProperty("--thumb", th); io.unobserve(e.target); } });
   }, { rootMargin: "300px" }) : null;
 
   // ---------- Movie sheet: opens inside the app, so the menu stays put ----------
@@ -94,18 +94,25 @@
       el.innerHTML =
         '<div class="m-bg" style="background-image:url(' + thumb + ')"></div>' +
         '<button class="ms-close glass" type="button" aria-label="Close">✕</button>' +
-        '<div class="m-wrap"><img class="m-poster" src="' + thumb + '" alt="">' +
+        '<div class="m-wrap"><div class="m-poster-slot"></div>' +
         '<div class="m-info"><h1>' + esc(m.title) + '</h1>' +
         '<p class="m-meta"><span>' + esc(m.year) + '</span><span>' + esc(m.runtime) + '</span><span>' + esc(m.genre) + '</span>' +
         (m.rating ? '<span class="m-rate">★ ' + esc(m.rating) + ' IMDb</span>' : '') + '</p>' +
         '<div class="ms-actions"><a class="btn" href="' + Stream.watchUrl(id) + '">' + (resume ? "Resume" : "Play") + '</a>' +
-        '<button class="btn ghost" type="button" data-list></button><button class="btn ghost" type="button" data-dl></button></div>' +
+        '<button class="btn ghost" type="button" data-list></button><button class="btn ghost" type="button" data-dl></button><button class="btn ghost" type="button" data-share>↗ Share</button></div>' +
         '<p class="m-desc">' + esc(m.description) + '</p>' +
         '<dl class="m-dl">' + (m.director ? '<dt>Director</dt><dd>' + esc(m.director) + '</dd>' : '') +
         (m.cast && m.cast.length ? '<dt>Cast</dt><dd>' + esc(m.cast.join(", ")) + '</dd>' : '') +
         (m.rights ? '<dt>Rights</dt><dd>' + esc(m.rights) + '</dd>' : '') + '</dl>' +
         '<a class="m-src" href="https://archive.org/details/' + encodeURIComponent(id) + '" target="_blank" rel="noopener">View on the Internet Archive</a>' +
         '</div></div>';
+      var slot = el.querySelector(".m-poster-slot"); slot.parentNode.replaceChild(posterEl(m, "m-poster", "div", true), slot);
+      el.querySelector("[data-share]").onclick = function () {
+        var url = Stream.shareUrl(id), data = { title: m.title + " on stream", text: "Watch " + m.title + (m.year ? " (" + m.year + ")" : "") + " free on stream", url: url };
+        if (navigator.share) navigator.share(data).catch(function () {});
+        else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { toast("Link copied"); }, function () { prompt("Copy this link", url); });
+        else prompt("Copy this link", url);
+      };
       var lb = el.querySelector("[data-list]");
       function label() { lb.textContent = Stream.mylist.has(id) ? "✓ In My List" : "+ My List"; }
       label();
@@ -291,11 +298,60 @@
     return "page";
   }
 
+  // ---------- Designed posters (colour by genre, with the film's own frame blended in) ----------
+  var PAL = { Horror: ["#b3202a", "#14040a"], Comedy: ["#f5a524", "#a4400c"], "Sci-Fi": ["#14b8a6", "#3b1a8c"], Drama: ["#4a6bff", "#1b1464"], Western: ["#e0701f", "#3d1a05"], Animation: ["#f0489a", "#5b21b6"], Documentary: ["#22b45a", "#053f35"], War: ["#8a9a22", "#18200f"], Romance: ["#e11d74", "#3d0b2a"], Adventure: ["#fb8c1d", "#0b6b66"] };
+  function posterEl(m, cls, tag, thumbNow) {
+    var pal = PAL[m.genre] || ["#2f4cdd", "#0a1a5c"];
+    var d = document.createElement(tag || "div"); d.className = "poster " + (cls || "");
+    d.style.setProperty("--c1", pal[0]); d.style.setProperty("--c2", pal[1]);
+    var t = "url(" + Stream.thumb(m.id) + ")";
+    if (io && !thumbNow) { d.setAttribute("data-thumb", t); io.observe(d); } else d.style.setProperty("--thumb", t);
+    if (m.genre) { var g = document.createElement("span"); g.className = "pg"; g.textContent = m.genre; d.appendChild(g); }
+    var tt = document.createElement("span"); tt.className = "pt"; tt.textContent = m.title; d.appendChild(tt);
+    if (m.year) { var y = document.createElement("small"); y.className = "py"; y.textContent = m.year; d.appendChild(y); }
+    return d;
+  }
+
+  function reportDialog(what, detail) {
+    var reasons = ["It won't play", "No sound or the wrong audio", "Wrong film or channel", "Bad picture or captions", "Something else"], sel = reasons[0];
+    var wrap = document.createElement("div"); wrap.className = "dlg";
+    var box = document.createElement("div"); box.className = "dlg-box glass"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Report a problem");
+    var h = document.createElement("h2"); h.textContent = "Report a problem";
+    var p = document.createElement("p"); p.textContent = "What's wrong with " + what + "?";
+    var list = document.createElement("div"); list.className = "rs-list";
+    function draw() {
+      list.innerHTML = "";
+      reasons.forEach(function (r) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "rsn"; b.textContent = r; b.setAttribute("aria-pressed", r === sel);
+        b.onclick = function () { sel = r; draw(); }; list.appendChild(b);
+      });
+    }
+    draw();
+    var row = document.createElement("div"); row.className = "dlg-row";
+    function close() { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+    var no = document.createElement("button"); no.type = "button"; no.className = "btn ghost"; no.textContent = "Cancel"; no.onclick = close;
+    var yes = document.createElement("button"); yes.type = "button"; yes.className = "btn"; yes.textContent = "Send report";
+    yes.onclick = function () {
+      close();
+      location.href = "mailto:support@watchstream.app?subject=" + encodeURIComponent("Problem: " + what) +
+        "&body=" + encodeURIComponent("Problem: " + sel + "\n\n" + (detail || "") + "\n\nPage: " + location.href + "\nBrowser: " + navigator.userAgent + "\n\nAnything else you'd like to tell us:\n");
+    };
+    row.appendChild(no); row.appendChild(yes);
+    box.appendChild(h); box.appendChild(p); box.appendChild(list); box.appendChild(row); wrap.appendChild(box); document.body.appendChild(wrap);
+  }
+
   window.Stream = {
     root: ROOT,
     profiles: Profiles,
     toast: toast,
     dl: dl,
+    poster: function (m, cls) { return posterEl(m, cls, "div", true); },
+    reportDialog: reportDialog,
+    shareUrl: function (id) { return new URL("f/" + encodeURIComponent(id) + "/", ROOT).href; },
+    requestFilm: function (q) {
+      location.href = "mailto:contact@watchstream.app?subject=" + encodeURIComponent("Film request") +
+        "&body=" + encodeURIComponent("Film title and year: " + (q || "") + "\nArchive.org link (optional): \n\nThanks!");
+    },
     profileSetup: profileSetup,
     openMovie: openMovie,
     movies: function () {
@@ -350,14 +406,8 @@
     clearProgress: function () { put(pkey("progress"), {}); flush(); },
     clearList: function () { put(pkey("list"), []); flush(); },
     card: function (m, pct) {
-      var a = document.createElement("a");
-      a.className = "card";
+      var a = posterEl(m, "card", "a");
       a.href = Stream.movieUrl(m.id);
-      var bg = "linear-gradient(to top, rgba(4,10,34,.92), rgba(4,10,34,0) 55%), url(" + Stream.thumb(m.id) + ")";
-      if (io) { a.setAttribute("data-bg", bg); io.observe(a); } else a.style.backgroundImage = bg;
-      a.style.backgroundSize = "cover";
-      a.style.backgroundPosition = "center";
-      var s = document.createElement("span"); s.textContent = m.title; a.appendChild(s);
       if (pct) {
         var bar = document.createElement("div"); bar.className = "prog";
         var fill = document.createElement("i"); fill.style.width = pct + "%";
