@@ -23,6 +23,11 @@
     .small { margin-top: 26px; font-size: .9rem; }
     .small a { color: #5b7dff; }
   </style>
+  <script>
+    // A shared film link (/f/<film>/) opens the film even before its preview page exists
+    var fm = location.pathname.match(/^\/f\/([^\/]+)\/?$/);
+    if (fm) location.replace("/movie/?id=" + fm[1]);
+  </script>
 </head>
 <body>
   <main>
