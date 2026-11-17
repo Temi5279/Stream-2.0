@@ -49,6 +49,8 @@
     var DIAG = { ok: "The Internet Archive is reachable, so your connection probably dropped. Try again on Wi-Fi.", blocked: "The Internet Archive doesn't allow downloads inside apps.", network: "Can't reach the Internet Archive. Check your data.", slow: "Your connection is too slow right now." };
 
     function row(m, p) {
+      var age = Date.now() - (m.ts || 0);
+      if (m.status !== "done" && !p && age < 45000) p = { done: 0, total: m.total || 0, state: "downloading" };   // just started
       var state = m.status === "done" ? "done" : (m.status === "failed" || (p && p.state === "failed") || !p) ? "failed" : "going";
       var r = el("div", "dl-row glass");
       r.appendChild(Stream.poster(m, "dl-poster"));
@@ -66,9 +68,12 @@
         bar.appendChild(fill); info.appendChild(bar);
       } else {
         info.appendChild(el("small", "dl-fail", "Download failed"));
-        info.appendChild(el("small", "", REASONS[m.reason] || (m.reason ? "Reason: " + m.reason : "")));
+        info.appendChild(el("small", "", REASONS[m.reason] || (m.reason ? "Reason: " + m.reason : "The download was interrupted before it finished.")));
         var dg = el("small", "", m.diag ? (DIAG[m.diag] || "Reason: " + m.diag) : "Checking why…"); info.appendChild(dg);
         if (!m.diag) Stream.dl.diagnose(m).then(function (k) { if (!k) return; m.diag = k; dg.textContent = DIAG[k] || "The Internet Archive answered: " + k; Stream.dl.update(m); });
+        var tech = el("small", "", "Details: " + [m.status, m.reason || "no reason given", m.diag || "no test result yet", ("backgroundFetch" in (self.ServiceWorkerRegistration ? ServiceWorkerRegistration.prototype : {})) ? "background downloads supported" : "background downloads not supported", navigator.onLine ? "online" : "offline"].join(" · "));
+        tech.style.opacity = ".7"; tech.style.fontSize = ".72rem"; info.appendChild(tech);
+        var tip = el("small", "", "Tip: some networks block the Internet Archive. Try Wi-Fi or another network."); info.appendChild(tip);
         var rt = el("button", "btn sm", "Retry"); rt.type = "button";
         rt.onclick = function () {
           Stream.movies().then(function (all) {
