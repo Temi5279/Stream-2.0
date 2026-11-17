@@ -51,7 +51,7 @@
     function row(m, p) {
       var state = m.status === "done" ? "done" : (m.status === "failed" || (p && p.state === "failed") || !p) ? "failed" : "going";
       var r = el("div", "dl-row glass");
-      var poster = el("div", "dl-poster"); poster.style.backgroundImage = "url(" + Stream.thumb(m.id) + ")"; r.appendChild(poster);
+      r.appendChild(Stream.poster(m, "dl-poster"));
       var info = el("div", "dl-info"); info.appendChild(el("b", "", m.title));
       var act = el("div", "dl-act");
       if (state === "done") {
