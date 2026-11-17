@@ -34,6 +34,7 @@
     <h1 class="page-title">Live TV</h1>
     <div id="lp"></div>
     <p class="live-now" id="now"></p>
+    <p class="empty" style="margin:6px 4px 0"><button class="linkbtn" type="button" id="rep">Report a problem with this channel</button></p>
     <ul class="sched" id="sched"></ul>
 
     <input class="search glass" id="q" type="search" placeholder="Search channels" aria-label="Search channels" style="margin-top:22px">
@@ -125,6 +126,7 @@
       if (channels.length) pick(channels[0]);
     });
     $("q").addEventListener("input", draw);
+    $("rep").onclick = function () { if (cur) Stream.reportDialog(cur.name, "Channel: " + cur.name + "\nStream: " + cur.src); else Stream.toast("Pick a channel first"); };
     setInterval(function () { drawInfo(); }, 60000);
   })();
   });
