@@ -11,6 +11,14 @@
   <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+  <meta name="description" content="Classic films and free live TV. Watch free on your phone, tablet, laptop and TV.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="stream">
+  <meta property="og:title" content="stream · Classic films and free live TV">
+  <meta property="og:description" content="Silent classics, golden-age horror, news, sports and more. Free to watch on your phone, tablet, laptop and TV.">
+  <meta property="og:image" content="https://watchstream.app/og.png">
+  <meta property="og:url" content="https://watchstream.app/">
+  <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 
@@ -105,11 +113,15 @@
       Stream.mylist.ids().forEach(function (id) { if (byId[id]) ml.appendChild(Stream.card(byId[id])); });
       if (ml.children.length) document.getElementById("mlrow").hidden = false;
 
+      var fresh = all.filter(function (m) { return m.added && Date.now() - m.added < 14 * 864e5; }).sort(function (a, b) { return b.added - a.added; }).slice(0, 15);
+      if (fresh.length >= 3 && fresh.length < all.length * 0.6) addRow("New on stream", fresh);
+
       var seen = {}; watched.forEach(function (id) { seen[id] = 1; });
       if (watched.length) {
         var last = byId[watched[0]];
         addRow("Because you watched " + last.title, all.filter(function (m) { return m.genre === last.genre && !seen[m.id]; }).slice(0, 15));
         var score = {}; watched.forEach(function (id) { var g = byId[id].genre; score[g] = (score[g] || 0) + 1; });
+        Stream.mylist.ids().forEach(function (id) { var f = byId[id]; if (f) score[f.genre] = (score[f.genre] || 0) + 2; });
         addRow("Recommended for you", all.filter(function (m) { return !seen[m.id]; })
           .sort(function (a, b) { return (score[b.genre] || 0) - (score[a.genre] || 0) || a._i - b._i; }).slice(0, 15));
       } else addRow("Popular on stream", all.slice(0, 15));
