@@ -1,8 +1,12 @@
 name: Update movie list
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
 permissions:
   contents: write
+
 jobs:
   movies:
     runs-on: ubuntu-latest
@@ -11,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/build-movies.mjs
+      - run: node build-movies.mjs
       - run: |
           git config user.name "stream-bot"
           git config user.email "bot@users.noreply.github.com"
