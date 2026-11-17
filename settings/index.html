@@ -110,6 +110,11 @@
       $("privsec").hidden = false; $("an").checked = window.StreamAnalytics.get() === "yes";
       $("an").onchange = function () { window.StreamAnalytics.set(this.checked ? "yes" : "no"); Stream.toast(this.checked ? "Analytics on" : "Analytics off"); };
     }, 1500);
+    if (window.caches) caches.keys().then(function (ks) {
+      var v = ks.filter(function (k) { return /^stream-v/.test(k); })[0];
+      var p = document.createElement("p"); p.className = "empty"; p.style.fontSize = ".8rem";
+      p.textContent = "App version: " + (v || "not installed yet"); document.querySelector("main").appendChild(p);
+    });
     if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) {
       $("store").textContent = "Storage used by stream on this device: " + Math.round((e.usage || 0) / 1048576) + " MB";
     });
