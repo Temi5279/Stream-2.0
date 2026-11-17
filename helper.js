@@ -69,6 +69,7 @@
     { k: ["language", "languages", "german", "french", "spanish", "arabic", "english", "dubbed", "dub"], a: "Channels come in several languages including English, German, French and Spanish. Search for a channel in Live TV, and use CC when captions are available. Most films are in English." }
   ];
   KB.push(
+    { k: ["download failed", "downloads not working", "download not working", "cant download", "download error", "download stuck", "download keeps failing", "download wont start"], a: "Open [Downloads](downloads/) to see why it failed. Try Wi-Fi or another network, because some networks block the Internet Archive, where the films are stored. Check you have at least 1.5 GB of free space, then tap Retry. If it still fails, email support@watchstream.app with the details shown on that page." },
     { k: ["change avatar", "change my avatar", "profile picture", "change picture", "change photo", "avatar"], a: "Open [Settings](settings/) and pick a new avatar, or tap your avatar on the [Profile](profile/) page." },
     { k: ["sync", "synced", "other device", "another device", "new phone", "different device", "my data", "lost my list"], a: "Your profiles, My List and watch progress are saved to your account, so they follow you when you sign in on another device." },
     { k: ["my list", "add to my list", "watchlist", "save film", "save for later", "favorites", "favourites", "bookmark"], a: "Open a film and tap + My List to save it. Your list shows on Home and on your [Profile](profile/). Each profile has its own list." },
