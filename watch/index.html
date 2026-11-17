@@ -18,11 +18,12 @@
   <script src="../player.js"></script>
   <script>
   (function () {
-    var id = new URLSearchParams(location.search).get("id");
+    var id = new URLSearchParams(location.search).get("id"), curFilm = null;
     var pl = Player.mount(document.getElementById("p"), {
       full: true, fullscreenOnPlay: true, keys: true,
       back: "../movie/?id=" + encodeURIComponent(id || ""),
-      onProgress: function (t, d) { Stream.save(id, t, d); }
+      onProgress: function (t, d) { Stream.save(id, t, d); },
+      report: function () { Stream.reportDialog(curFilm ? curFilm.title : "this film", "Film: " + (curFilm ? curFilm.title : "") + "\nID: " + id); }
     });
     if (!id) { pl.say("No movie selected."); return; }
 
@@ -30,7 +31,24 @@
       var m = all.filter(function (x) { return x.id === id; })[0];
       if (!m) { pl.say("Film not found."); return; }
       document.title = m.title + " · str▶eam";
-      pl.setTitle(m.title);
+      pl.setTitle(m.title); curFilm = m;
+      var pa = Stream.progress();
+      var nxt = all.filter(function (x) { return x.id !== id && !(pa[x.id] && pa[x.id].d && pa[x.id].t > pa[x.id].d - 30); })
+        .sort(function (a, b) { return (b.genre === m.genre ? 1 : 0) - (a.genre === m.genre ? 1 : 0); })[0];
+      pl.video.addEventListener("ended", function () {
+        if (pl.video.duration) Stream.save(id, pl.video.duration, pl.video.duration);
+        if (!nxt) return;
+        var box = document.createElement("div"); box.className = "upnext glass";
+        box.appendChild(Stream.poster(nxt, "un-poster"));
+        var info = document.createElement("div"); info.className = "un-info";
+        var s1 = document.createElement("small"); s1.textContent = "Up next";
+        var b = document.createElement("b"); b.textContent = nxt.title;
+        var row = document.createElement("div"); row.className = "un-row";
+        var play = document.createElement("a"); play.className = "btn sm"; play.textContent = "Play now"; play.href = Stream.watchUrl(nxt.id);
+        var cl = document.createElement("button"); cl.type = "button"; cl.className = "btn sm ghost"; cl.textContent = "Close"; cl.onclick = function () { if (box.parentNode) box.parentNode.removeChild(box); };
+        row.appendChild(play); row.appendChild(cl); info.appendChild(s1); info.appendChild(b); info.appendChild(row); box.appendChild(info);
+        document.getElementById("p").appendChild(box);
+      });
       pl.poster(Stream.thumb(id));
       var s = Stream.progress()[id], at = s && s.t > 5 && s.t < s.d - 30 ? s.t : 0;
       pl.setStart(at ? "Resume from " + Player.fmt(at) : "Tap to play");
