@@ -49,5 +49,8 @@
     saved.prompt();
     saved.userChoice.then(function () { saved = null; btn.hidden = true; });
   });
-  window.addEventListener("appinstalled", function () { btn.hidden = true; });
+  window.addEventListener("appinstalled", function () {
+    btn.hidden = true;
+    try { if (window.gtag) window.gtag("event", "pwa_install"); } catch (e) {}
+  });
 })();
