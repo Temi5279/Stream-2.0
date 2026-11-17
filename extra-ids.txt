@@ -1,0 +1,3 @@
+# Add your own films here: paste an archive.org link (or just the identifier), one per line.
+# Lines starting with # are ignored. Then run: Actions > Update movie list > Run workflow.
+# The robot checks that each film really plays before adding it, and tells you in scripts/last-run.txt.
