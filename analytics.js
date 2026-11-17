@@ -31,6 +31,11 @@
       var g = document.createElement("script"); g.async = true;
       g.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(GTM_ID);
       document.head.appendChild(g);
+      // Count visits that come from the installed app (works on Android, iPhone and laptops)
+      try {
+        var installed = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone;
+        if (installed && !sessionStorage.getItem("stream-pwa-open")) { sessionStorage.setItem("stream-pwa-open", "1"); gtag("event", "pwa_open"); }
+      } catch (e) {}
       return;
     }
     gtag("consent", "update", { analytics_storage: "granted" });
