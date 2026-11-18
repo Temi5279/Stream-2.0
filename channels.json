@@ -1,92 +1,36 @@
-[
- {
-  "id": "sky-news",
-  "name": "Sky News",
-  "category": "News",
-  "yt": "UCoMdktPbSTixAyNGwb-UYkQ"
- },
- {
-  "id": "aljazeera-english",
-  "name": "Al Jazeera English",
-  "category": "News",
-  "yt": "UCNye-wNBqNL5ZzHSJj3l8Bg"
- },
- {
-  "id": "dw-news",
-  "name": "DW News",
-  "category": "News",
-  "yt": "UCknLrEdhRCp1aegoMqRaCZg"
- },
- {
-  "id": "france-24-english",
-  "name": "France 24 English",
-  "category": "News",
-  "yt": "UCQfwfsi5VrQ8yKZ-UWmAEFg"
- },
- {
-  "id": "euronews-english",
-  "name": "Euronews English",
-  "category": "News",
-  "yt": "UCSrZ3UV4jOidv8ppoVuvW9Q"
- },
- {
-  "id": "trt-world",
-  "name": "TRT World",
-  "category": "News",
-  "yt": "UC7fWeaHhqgM4Ry-RMpM2YYw"
- },
- {
-  "id": "wion",
-  "name": "WION",
-  "category": "News",
-  "yt": "UC_gUM8rL-Lrg6O3adPW9K1g"
- },
- {
-  "id": "cna",
-  "name": "CNA",
-  "category": "News",
-  "yt": "UC83jt4dlz1Gjl58fzQrrKZg"
- },
- {
-  "id": "africanews",
-  "name": "Africanews",
-  "category": "News",
-  "yt": "UC1_E8NeF5QHY2dtdLRBCCLg"
- },
- {
-  "id": "abc-news",
-  "name": "ABC News Live",
-  "category": "News",
-  "yt": "UCBi2mrWuNuyYy4gbM6fU18Q"
- },
- {
-  "id": "nbc-news",
-  "name": "NBC News NOW",
-  "category": "News",
-  "yt": "UCeY0bbntWzzVIaj2z3QigXg"
- },
- {
-  "id": "cbs-news",
-  "name": "CBS News 24/7",
-  "category": "News",
-  "yt": "UC8p1vwvWtl6T73JiExfWs1g"
- },
- {
-  "id": "cgtn",
-  "name": "CGTN",
-  "category": "News",
-  "yt": "UCgrNz-aDmcr2uuto8_DL2jg"
- },
- {
-  "id": "nasa",
-  "name": "NASA Live",
-  "category": "Docs & Science",
-  "yt": "UCLA_DiR1FfKNvjuUpBHmylQ"
- },
- {
-  "id": "lofi-girl",
-  "name": "Lofi Girl Radio",
-  "category": "Music",
-  "yt": "UCSJ4gkVC6NrvII8umztf0Ow"
- }
-]
+{
+    "id": "red-bull-tv",
+    "name": "Red Bull TV",
+    "category": "Sports & Action",
+    "url": "https://0b73ace69ebb45eaa249bb87837cb958.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-644-WORBUSENFAST-LG_US/644/lgtv/hls/master/playlist.m3u8"
+  },
+  {
+    "id": "bloomberg-originals",
+    "name": "Bloomberg Originals",
+    "category": "News",
+    "url": "https://86fdc85a.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctZ2JfQmxvb21iZXJnT3JpZ2luYWxzX0hMUw/playlist.m3u8"
+  },
+  {
+    "id": "reuters-now",
+    "name": "Reuters TV",
+    "category": "News",
+    "url": "https://reuters-reutersnow-1-eu.rakuten.wurl.tv/playlist.m3u8"
+  },
+  {
+    "id": "cbs-news-live",
+    "name": "CBS News 24/7",
+    "category": "News",
+    "url": "https://cbsnews.akamaized.net/hls/live/2020607/cbsnlineup_8/master.m3u8"
+  },
+  {
+    "id": "trace-sport-stars",
+    "name": "TRACE Sport Stars",
+    "category": "Sports",
+    "url": "https://trace-sportstars-tcl.amagi.tv/playlist.m3u8"
+  },
+  {
+    "id": "trace-urban",
+    "name": "TRACE Urban",
+    "category": "Music",
+    "url": "https://trace-urban-lg-uk.amagi.tv/playlist.m3u8"
+  }
