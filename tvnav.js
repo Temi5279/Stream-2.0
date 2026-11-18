@@ -1,53 +1,120 @@
-// TV remote navigation: arrow keys jump between cards and menu items, OK opens, Back goes back.
 (function () {
-  var SEL = "a[href], button:not([disabled]), input, [tabindex]:not([tabindex='-1'])";
-  function visible(el) {
-    var r = el.getBoundingClientRect();
-    if (r.width < 4 || r.height < 4) return false;
-    var s = getComputedStyle(el);
-    return s.visibility !== "hidden" && s.display !== "none";
-  }
-  function dist(a, b, dir) {
-    var dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
-    if ((dir === "right" && dx <= 4) || (dir === "left" && dx >= -4) || (dir === "down" && dy <= 4) || (dir === "up" && dy >= -4)) return null;
-    var horiz = dir === "left" || dir === "right";
-    return (horiz ? Math.abs(dx) : Math.abs(dy)) + (horiz ? Math.abs(dy) : Math.abs(dx)) * 2.5;
-  }
-  function go(dir) {
-    var cur = document.activeElement;
-    if (!cur || cur === document.body) {
-      var first = document.querySelector("main a, main button, .nav a");
-      if (first) first.focus();
-      return;
-    }
-    var a = cur.getBoundingClientRect(), best = null, bd = Infinity;
-    Array.prototype.forEach.call(document.querySelectorAll(SEL), function (el) {
-      if (el === cur || !visible(el)) return;
-      var d = dist(a, el.getBoundingClientRect(), dir);
-      if (d !== null && d < bd) { bd = d; best = el; }
+  // Selectors for everything a user can click on watchstream.app
+  const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"]), .movie-card';
+  let currentFocused = null;
+
+  function getFocusableElements() {
+    return Array.from(document.querySelectorAll(FOCUSABLE_SELECTOR)).filter(el => {
+      const rect = el.getBoundingClientRect();
+      const style = window.getComputedStyle(el);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
     });
-    if (best) {
-      best.focus();
-      try { best.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }); } catch (e) { best.scrollIntoView(false); }
-    }
   }
-  var KEYS = { ArrowRight: "right", ArrowLeft: "left", ArrowDown: "down", ArrowUp: "up" };
-  document.addEventListener("keydown", function (e) {
-    var t = e.target, typing = t && t.tagName === "INPUT" && /text|search|email|password/.test(t.type);
-    var dir = KEYS[e.key] || ({ 39: "right", 37: "left", 40: "down", 38: "up" })[e.keyCode];
-    if (dir) {
-      if (typing && (dir === "left" || dir === "right")) return;
-      e.preventDefault(); go(dir); return;
+
+  function setFocus(el) {
+    if (!el) return;
+    if (currentFocused) {
+      currentFocused.classList.remove('tv-focused');
     }
-    // Back button on common TV remotes
-    if (!typing && (e.key === "Escape" || e.key === "Backspace" || e.key === "GoBack" || e.keyCode === 10009 || e.keyCode === 461 || e.keyCode === 4)) {
-      if (history.length > 1) { e.preventDefault(); history.back(); }
+    currentFocused = el;
+    currentFocused.classList.add('tv-focused');
+    currentFocused.focus({ preventScroll: true });
+    
+    // Smoothly scroll the movie row or page so the selected card stays in view
+    currentFocused.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
+
+  function findNextElement(direction) {
+    const elements = getFocusableElements();
+    if (!elements.length) return null;
+
+    // If nothing is selected yet, select the first visible item
+    if (!currentFocused || !document.body.contains(currentFocused)) {
+      return elements[0];
+    }
+
+    const currentRect = currentFocused.getBoundingClientRect();
+    const currentCenter = {
+      x: currentRect.left + currentRect.width / 2,
+      y: currentRect.top + currentRect.height / 2
+    };
+
+    let bestCandidate = null;
+    let bestScore = Infinity;
+
+    elements.forEach(el => {
+      if (el === currentFocused) return;
+      const rect = el.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+
+      const dx = center.x - currentCenter.x;
+      const dy = center.y - currentCenter.y;
+
+      // Filter by direction
+      if (direction === 'ArrowRight' && dx <= 10) return;
+      if (direction === 'ArrowLeft' && dx >= -10) return;
+      if (direction === 'ArrowDown' && dy <= 10) return;
+      if (direction === 'ArrowUp' && dy >= -10) return;
+
+      // Weight perpendicular distance heavier so Left/Right stays on the same movie row
+      let distance;
+      if (direction === 'ArrowLeft' || direction === 'ArrowRight') {
+        distance = Math.abs(dx) + Math.abs(dy) * 3.5;
+      } else {
+        distance = Math.abs(dy) + Math.abs(dx) * 2.5;
+      }
+
+      if (distance < bestScore) {
+        bestScore = distance;
+        bestCandidate = el;
+      }
+    });
+
+    return bestCandidate;
+  }
+
+  document.addEventListener('keydown', function (e) {
+    const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+    if (navKeys.includes(e.key)) {
+      // Allow normal typing cursor movement inside text inputs unless at edges
+      if (document.activeElement && document.activeElement.tagName === 'INPUT' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        return;
+      }
+
+      e.preventDefault();
+      const next = findNextElement(e.key);
+      if (next) setFocus(next);
+    }
+
+    // Handle TV Remote "OK" / "Enter" button (keyCode 13 or 23 on Android/Linux TVs)
+    if (e.key === 'Enter' || e.keyCode === 13 || e.keyCode === 23) {
+      if (currentFocused && document.activeElement !== currentFocused) {
+        e.preventDefault();
+        currentFocused.click();
+      }
+    }
+
+    // Handle TV Remote "Back" button (Backspace or Escape)
+    if (e.key === 'Escape' || e.keyCode === 461 || e.keyCode === 10009) {
+      if (window.history.length > 1) {
+        window.history.back();
+      }
     }
   });
-  setTimeout(function () {
-    if (!document.activeElement || document.activeElement === document.body) {
-      var f = document.querySelector(".hero .btn, main .card, main a, main button, .nav a");
-      if (f) f.focus();
+
+  // Remove TV focus ring if someone uses a touchscreen or mouse
+  document.addEventListener('pointerdown', () => {
+    if (currentFocused) {
+      currentFocused.classList.remove('tv-focused');
+      currentFocused = null;
     }
-  }, 700);
+  });
 })();
