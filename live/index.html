@@ -33,6 +33,7 @@
   <main>
     <h1 class="page-title">Live TV</h1>
     <div id="lp"></div>
+    <div class="ytw" id="ytw" hidden><iframe id="yt" title="Live channel" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <p class="live-now" id="now"></p>
     <p class="empty" style="margin:6px 4px 0"><button class="linkbtn" type="button" id="rep">Report a problem with this channel</button></p>
     <ul class="sched" id="sched"></ul>
@@ -80,7 +81,14 @@
 
     function pick(c) {
       cur = c;
-      pl.setTitle(c.name); pl.setStart("Tap to watch live"); pl.load(c.src);
+      if (c.yt) {
+        try { pl.video.pause(); } catch (e) {}
+        $("lp").hidden = true; $("ytw").hidden = false;
+        $("yt").src = "https://www.youtube-nocookie.com/embed/live_stream?channel=" + encodeURIComponent(c.yt) + "&rel=0&playsinline=1";
+      } else {
+        $("ytw").hidden = true; $("yt").src = "about:blank"; $("lp").hidden = false;
+        pl.setTitle(c.name); pl.setStart("Tap to watch live"); pl.load(c.src);
+      }
       drawInfo(); mark();
     }
     function mark() {
@@ -126,7 +134,7 @@
       if (channels.length) pick(channels[0]);
     });
     $("q").addEventListener("input", draw);
-    $("rep").onclick = function () { if (cur) Stream.reportDialog(cur.name, "Channel: " + cur.name + "\nStream: " + cur.src); else Stream.toast("Pick a channel first"); };
+    $("rep").onclick = function () { if (cur) Stream.reportDialog(cur.name, "Channel: " + cur.name + "\nStream: " + (cur.yt ? "YouTube channel " + cur.yt : cur.src)); else Stream.toast("Pick a channel first"); };
     setInterval(function () { drawInfo(); }, 60000);
   })();
   });
