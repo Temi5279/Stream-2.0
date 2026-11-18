@@ -1,0 +1,3 @@
+# Playlists the channel robot reads. One link per line. Lines starting with # are ignored.
+# Free-TV/IPTV is a curated list of free-to-air channels. The robot only keeps streams that really work in a browser.
+https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8
