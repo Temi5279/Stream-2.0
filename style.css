@@ -545,3 +545,15 @@ html.tv .msheet { left: 0; padding-top: 120px; }
 .ytw[hidden] { display: none; }
 .ytw::before { content: ""; display: block; padding-top: 56.25%; }
 .ytw iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+/* TV Remote Focus Highlight */
+.tv-focused,
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #60a5fa !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.7) !important;
+  transform: scale(1.04);
+  transition: transform 0.15s ease, outline 0.15s ease;
+  z-index: 50;
+}
