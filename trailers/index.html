@@ -9,47 +9,113 @@
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="stylesheet" href="../style.css">
   <style>
-    html, body { height: 100%; }
-    body.tr { background: #000; display: grid; place-items: center; overflow: hidden; user-select: none; -webkit-user-select: none; cursor: default; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #000; }
+    body.tr { display: grid; place-items: center; overflow: hidden; user-select: none; -webkit-user-select: none; }
+
     #stage {
       --u: 3.6px;
       position: relative;
-      width: 360px;
-      height: 540px;
       overflow: hidden;
       color: #eaf0ff;
       font-family: "Segoe UI", Roboto, system-ui, sans-serif;
-      background: radial-gradient(120% 70% at 50% 0%, #10299e, #040a22 65%);
-      box-shadow: 0 0 60px rgba(16, 41, 158, 0.45);
+      background: radial-gradient(120% 80% at 50% 0%, #1432b8, #040a22 68%);
+      box-shadow: 0 0 50px rgba(20, 50, 184, 0.5);
     }
-    .sc { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; opacity: 0; visibility: hidden; transition: opacity .25s ease; padding: calc(var(--u) * 4); }
+
+    /* Ambient floating particles */
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,125,255,.28), transparent 70%);
+      pointer-events: none;
+      animation: floatOrb 6s ease-in-out infinite alternate;
+    }
+    .bg-orb.o1 { width: calc(var(--u) * 45); height: calc(var(--u) * 45); top: -10%; left: -10%; }
+    .bg-orb.o2 { width: calc(var(--u) * 55); height: calc(var(--u) * 55); bottom: -15%; right: -10%; animation-delay: -3s; }
+    @keyframes floatOrb { from { transform: translate(0, 0) scale(1); } to { transform: translate(calc(var(--u) * 4), calc(var(--u) * 4)) scale(1.12); } }
+
+    .sc {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: calc(var(--u) * 3.5);
+      padding: calc(var(--u) * 5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .25s ease;
+    }
     .sc.on { opacity: 1; visibility: visible; }
 
-    @keyframes popIn { 0% { opacity: 0; transform: scale(.55) translateY(calc(var(--u) * 4)); } 70% { transform: scale(1.08); } 100% { opacity: 1; transform: none; } }
-    @keyframes snapUp { 0% { opacity: 0; transform: translateY(calc(var(--u) * 10)); } 100% { opacity: 1; transform: none; } }
-    @keyframes fadeOutFast { to { opacity: 0; transform: scale(1.05); } }
-    @keyframes pulseGlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-
-    /* 1: Fast Hook (stops swipe in <1.5s) */
-    .hook-wrap { display: grid; gap: calc(var(--u) * 3); max-width: 90%; }
-    .hook-line { font-size: calc(var(--u) * 9.5); font-weight: 900; line-height: 1.08; letter-spacing: -0.02em; }
-    .hook-line span.bad { color: #ff6b78; text-decoration: line-through; text-decoration-thickness: calc(var(--u) * 1.1); }
-    .on .hook-line { animation: snapUp .35s cubic-bezier(.2,1.3,.4,1) both; }
-    .on .hook-wrap.exit { animation: fadeOutFast .25s ease forwards; }
-
-    .price-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 2.5); opacity: 0; }
-    .on .price-pills { animation: snapUp .35s .25s both; }
-    .pill-cut {
-      position: relative;
-      font-size: calc(var(--u) * 6);
-      font-weight: 800;
-      padding: .25em .7em;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.2);
-      color: #cbd5ff;
+    /* Landscape (16:9 YouTube Long-Form) splits visual & text side-by-side */
+    #stage.wide .sc.split {
+      flex-direction: row;
+      justify-content: space-evenly;
+      text-align: left;
+      gap: calc(var(--u) * 6);
+      padding: calc(var(--u) * 6) calc(var(--u) * 8);
     }
-    .pill-cut::after {
+    #stage.wide .sc.split .copy-col {
+      align-items: flex-start;
+      max-width: 52%;
+    }
+
+    .copy-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(var(--u) * 2.5);
+      z-index: 2;
+    }
+
+    @keyframes popIn { 0% { opacity: 0; transform: scale(.65) translateY(calc(var(--u) * 4)); } 70% { transform: scale(1.06); } 100% { opacity: 1; transform: none; } }
+    @keyframes slideUp { 0% { opacity: 0; transform: translateY(calc(var(--u) * 6)); } 100% { opacity: 1; transform: none; } }
+    @keyframes pulseBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+    /* Shared Typography */
+    .kicker {
+      font-size: calc(var(--u) * 3.4);
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #8ea6ff;
+      background: rgba(91,125,255,.16);
+      border: 1px solid rgba(142,166,255,.32);
+      padding: .3em .9em;
+      border-radius: 999px;
+    }
+    .title-xl {
+      font-size: calc(var(--u) * 8.2);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+    }
+    .title-xl span { color: #6c8aff; }
+    .title-xl span.red { color: #ff6b78; }
+    .sub-copy {
+      font-size: calc(var(--u) * 4);
+      color: #b8c5f2;
+      line-height: 1.35;
+    }
+
+    /* Scene 1: Frustrated with bills -> FREE */
+    .bills-row { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 2); justify-content: center; }
+    #stage.wide .bills-row { justify-content: flex-start; }
+    .bill-tag {
+      position: relative;
+      font-size: calc(var(--u) * 4.4);
+      font-weight: 800;
+      padding: .25em .65em;
+      border-radius: 999px;
+      background: rgba(255, 77, 90, 0.14);
+      border: 1px solid rgba(255, 107, 120, 0.4);
+      color: #ffc2c7;
+    }
+    .bill-tag::after {
       content: "";
       position: absolute;
       left: 6%; right: 6%; top: 50%;
@@ -57,251 +123,320 @@
       background: #ff4d5a;
       transform: rotate(-8deg);
     }
-
-    .free-slam { opacity: 0; transform: scale(.4); }
-    .on .free-slam { animation: popIn .45s .55s cubic-bezier(.2,1.4,.4,1) forwards; }
-    .free-slam small { display: block; font-size: calc(var(--u) * 5); font-weight: 700; color: #b5c2ee; text-transform: uppercase; letter-spacing: .12em; }
-    .free-slam b { display: block; font-size: calc(var(--u) * 22); font-weight: 900; line-height: 1; color: #6c8aff; text-shadow: 0 0 calc(var(--u) * 8) rgba(91,125,255,.75); }
-
-    /* 2: Walking With Phone Animation */
-    .walk-scene { position: relative; width: 100%; height: 100%; display: grid; place-items: center; overflow: hidden; }
-    .speed-lines {
-      position: absolute; inset: 0; opacity: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent 0px,
-        transparent 26px,
-        rgba(108, 138, 255, 0.14) 27px,
-        transparent 28px
-      );
+    .free-badge {
+      font-size: calc(var(--u) * 11);
+      font-weight: 900;
+      line-height: 1;
+      color: #6c8aff;
+      text-shadow: 0 0 calc(var(--u) * 7) rgba(91,125,255,.8);
+      opacity: 0;
     }
-    .on .speed-lines { animation: walkLines .55s linear infinite, snapUp .3s ease forwards; opacity: .85; }
-    @keyframes walkLines { from { transform: translateY(-28px); } to { transform: translateY(28px); } }
+    .on .free-badge { animation: popIn .45s .55s cubic-bezier(.2,1.4,.4,1) forwards; }
 
-    .walker-rig {
+    /* Scene 2: Human Walking With Phone Animation */
+    .char-stage {
       position: relative;
+      width: calc(var(--u) * 44);
+      height: calc(var(--u) * 44);
       display: grid;
-      justify-items: center;
-      gap: calc(var(--u) * 2);
+      place-items: center;
       z-index: 2;
+      flex-shrink: 0;
     }
-    .on .walker-rig { animation: walkBob .65s ease-in-out infinite; }
-    @keyframes walkBob {
-      0%, 100% { transform: translateY(0) rotate(-1deg); }
-      50% { transform: translateY(calc(var(--u) * -3.5)) rotate(1deg); }
-    }
+    .char-svg { width: 100%; height: 100%; overflow: visible; }
 
-    .hand-phone {
-      width: calc(var(--u) * 34);
-      height: calc(var(--u) * 58);
-      border-radius: calc(var(--u) * 5.5);
-      border: calc(var(--u) * 1.6) solid #8ea6ff;
-      background: linear-gradient(165deg, #162d8a, #050b24 75%);
-      box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 12) rgba(0,0,0,.65), 0 0 calc(var(--u) * 8) rgba(91,125,255,.45);
-      padding: calc(var(--u) * 2.5);
+    /* Walking Cycle Keyframes */
+    .on .walker-body { animation: bodyBounce .55s ease-in-out infinite; transform-origin: center; }
+    .on .leg-l { animation: legSwingA .55s ease-in-out infinite; transform-origin: 96px 118px; }
+    .on .leg-r { animation: legSwingB .55s ease-in-out infinite; transform-origin: 106px 118px; }
+    .on .arm-back { animation: armSwing .55s ease-in-out infinite; transform-origin: 92px 74px; }
+    .on .phone-glow { animation: screenPulse 1.2s ease-in-out infinite; }
+    .on .ground-scroll { animation: groundMove .55s linear infinite; }
+
+    @keyframes bodyBounce { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
+    @keyframes legSwingA { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+    @keyframes legSwingB { 0%, 100% { transform: rotate(22deg); } 50% { transform: rotate(-22deg); } }
+    @keyframes armSwing { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }
+    @keyframes screenPulse { 0%, 100% { opacity: .85; } 50% { opacity: 1; filter: drop-shadow(0 0 6px #7f98ff); } }
+    @keyframes groundMove { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 36; } }
+
+    /* Scene 3: Poster Wall + Thousands of Movies & Hundreds of Channels */
+    .wallt {
+      position: absolute;
+      inset: -25% -35%;
+      display: flex;
+      gap: calc(var(--u) * 3.5);
+      justify-content: center;
+      transform: perspective(calc(var(--u) * 200)) rotateX(46deg) rotateZ(-12deg) scale(1.15);
+      opacity: .55;
+    }
+    .wallt .col { display: flex; flex-direction: column; gap: calc(var(--u) * 3.5); }
+    .on .wallt .col { animation: colUp 9s linear infinite; }
+    .on .wallt .col:nth-child(2) { animation-direction: reverse; animation-duration: 11s; }
+    @keyframes colUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+    .tp { width: calc(var(--u) * 22); height: calc(var(--u) * 33); flex: none; border-radius: calc(var(--u) * 2); }
+    .shade { position: absolute; inset: 0; background: radial-gradient(80% 60% at 50% 50%, rgba(4,10,34,.88), rgba(4,10,34,.35) 100%); }
+
+    .cards-grid {
+      position: relative;
+      z-index: 2;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      position: relative;
+      gap: calc(var(--u) * 3);
+      width: 100%;
+      max-width: calc(var(--u) * 86);
     }
-    .phone-notch { width: calc(var(--u) * 12); height: calc(var(--u) * 1.6); background: rgba(255,255,255,.22); border-radius: 999px; margin: 0 auto; }
-    .phone-screen-ui { display: grid; gap: calc(var(--u) * 2); my-auto; }
-    .mini-row { height: calc(var(--u) * 7); border-radius: calc(var(--u) * 2); background: rgba(108,138,255,.22); border: 1px solid rgba(142,166,255,.35); display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--u) * 2.5); font-size: calc(var(--u) * 3.4); font-weight: 700; }
-    .mini-row.hot { background: linear-gradient(90deg, rgba(91,125,255,.45), rgba(29,63,216,.35)); }
-    .walk-caption { font-size: calc(var(--u) * 7.5); font-weight: 900; line-height: 1.1; margin-top: calc(var(--u) * 2); }
-    .walk-caption span { color: #7f98ff; }
-
-    /* 3: Thousands of Movies & Hundreds of Channels */
-    .wallt { position: absolute; inset: -25% -35%; display: flex; gap: calc(var(--u) * 4); justify-content: center; transform: perspective(calc(var(--u) * 220)) rotateX(48deg) rotateZ(-12deg) scale(1.2); }
-    .wallt .col { display: flex; flex-direction: column; gap: calc(var(--u) * 4); }
-    .on .wallt .col { animation: colUp 8s linear infinite; }
-    .on .wallt .col:nth-child(2) { animation-direction: reverse; animation-duration: 10s; }
-    @keyframes colUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
-    .tp { width: calc(var(--u) * 26); height: calc(var(--u) * 39); flex: none; border-radius: calc(var(--u) * 2.5); }
-    .shade { position: absolute; inset: 0; background: radial-gradient(75% 50% at 50% 50%, rgba(4,10,34,.9), rgba(4,10,34,.25) 100%); }
-
-    .catalog-stack { position: relative; z-index: 2; display: grid; gap: calc(var(--u) * 4); width: 92%; }
-    .stat-box {
+    #stage.wide .cards-grid { flex-direction: row; max-width: 92%; }
+    .feat-card {
+      flex: 1;
       padding: calc(var(--u) * 3.5) calc(var(--u) * 4);
-      border-radius: calc(var(--u) * 4);
-      background: rgba(10, 22, 74, 0.78);
-      border: 1px solid rgba(142, 166, 255, 0.35);
+      border-radius: calc(var(--u) * 3.5);
+      background: rgba(11, 25, 82, 0.84);
+      border: 1px solid rgba(142, 166, 255, 0.38);
       backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--u) * 1.2);
+      justify-content: center;
     }
-    .on .stat-box { animation: popIn .4s both; }
-    .on .stat-box:nth-child(2) { animation-delay: .18s !important; }
-    .big-num { font-size: calc(var(--u) * 14); font-weight: 900; line-height: 1; color: #7f98ff; text-shadow: 0 0 calc(var(--u) * 7) rgba(91,125,255,.65); }
-    .stat-label { font-size: calc(var(--u) * 6.8); font-weight: 800; margin-top: calc(var(--u) * 1); }
-    .stat-sub { font-size: calc(var(--u) * 3.8); color: #b5c2ee; margin-top: calc(var(--u) * 1); letter-spacing: .04em; }
+    .on .feat-card { animation: popIn .4s both; }
+    .on .feat-card:nth-child(2) { animation-delay: .16s !important; }
+    .feat-big { font-size: calc(var(--u) * 7.2); font-weight: 900; color: #7f98ff; line-height: 1.08; }
+    .feat-desc { font-size: calc(var(--u) * 3.6); color: #cbd5ff; font-weight: 600; }
 
-    /* 4: Holding Phone With Downloads to Watch Offline */
-    .dl-showcase { display: grid; gap: calc(var(--u) * 4); justify-items: center; max-width: 90%; z-index: 2; }
-    .dl-phone {
-      width: calc(var(--u) * 42);
-      border-radius: calc(var(--u) * 5.5);
-      border: calc(var(--u) * 1.8) solid #9cb1ff;
-      background: linear-gradient(180deg, #0d1d66, #040a22);
-      padding: calc(var(--u) * 3);
-      box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(0,0,0,.75), 0 0 calc(var(--u) * 10) rgba(91,125,255,.45);
-      display: grid;
-      gap: calc(var(--u) * 2.2);
-      text-align: left;
-    }
-    .on .dl-phone { animation: popIn .45s cubic-bezier(.2,1.35,.4,1) both; }
-    .dl-header { display: flex; justify-content: space-between; align-items: center; font-size: calc(var(--u) * 3.6); font-weight: 800; color: #b5c2ee; }
-    .dl-badge { background: rgba(48,164,108,.22); color: #6ee7b7; border: 1px solid rgba(110,231,183,.4); padding: 2px 8px; border-radius: 999px; font-size: calc(var(--u) * 3); }
-    .dl-item {
+    /* Scene 4: Human Holding Phone / Watching TV With Offline Downloads */
+    .on .chill-head { animation: headNod 2s ease-in-out infinite; transform-origin: 100px 58px; }
+    .on .tv-wave { animation: tvFlicker 1.6s ease-in-out infinite alternate; }
+    @keyframes headNod { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }
+    @keyframes tvFlicker { from { opacity: .75; } to { opacity: 1; } }
+
+    .dl-pills { display: flex; flex-direction: column; gap: calc(var(--u) * 1.8); width: 100%; }
+    .dl-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: calc(var(--u) * 2.2) calc(var(--u) * 2.8);
-      border-radius: calc(var(--u) * 2.5);
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      font-size: calc(var(--u) * 3.8);
+      gap: calc(var(--u) * 3);
+      padding: calc(var(--u) * 2) calc(var(--u) * 3);
+      border-radius: calc(var(--u) * 2.2);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(142,166,255,.28);
+      font-size: calc(var(--u) * 3.5);
       font-weight: 700;
     }
-    .dl-check { color: #6ee7b7; font-weight: 900; }
-    .dl-headline { font-size: calc(var(--u) * 8.5); font-weight: 900; line-height: 1.08; }
-    .dl-headline span { color: #7f98ff; }
+    .dl-ok { color: #6ee7b7; font-weight: 900; white-space: nowrap; }
 
-    /* 5: CTA */
-    .cta { display: grid; justify-items: center; gap: calc(var(--u) * 3.5); max-width: 90%; z-index: 2; }
-    .cta .brand-mark { font-size: calc(var(--u) * 11); font-weight: 900; }
-    .cta .brand-mark span { color: #6c8aff; }
-    .cta h2 { font-size: calc(var(--u) * 11); font-weight: 900; line-height: 1.05; }
-    .url-cta {
-      font-size: calc(var(--u) * 8.2);
+    /* Scene 5: CTA */
+    .brand-hero { font-size: calc(var(--u) * 10); font-weight: 900; letter-spacing: -0.02em; }
+    .brand-hero span { color: #6c8aff; }
+    .cta-pill {
+      font-size: calc(var(--u) * 6.5);
       font-weight: 900;
-      padding: .45em 1.1em;
+      padding: .45em 1.2em;
       border-radius: 999px;
       background: linear-gradient(180deg, #7f98ff, #1d3fd8);
       border: 1px solid rgba(255,255,255,.45);
-      box-shadow: 0 0 calc(var(--u) * 9) rgba(91,125,255,.75);
+      box-shadow: 0 0 calc(var(--u) * 8) rgba(91,125,255,.75);
     }
-    .on .url-cta { animation: pulseGlow 1.2s ease-in-out infinite; }
-    .cta .sub-cta { font-size: calc(var(--u) * 4.5); color: #b5c2ee; }
-    .cta .bio-cta { font-size: calc(var(--u) * 5.6); font-weight: 800; color: #fff; }
+    .on .cta-pill { animation: pulseBtn 1.2s ease-in-out infinite; }
 
-    /* Start & Format Picker */
-    #start, #cd { position: fixed; inset: 0; z-index: 20; display: grid; place-content: center; justify-items: center; text-align: center; gap: 14px; padding: 24px; background: #000; }
+    /* Start Overlay & Format Selector */
+    #start, #cd {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 24px;
+      background: #000;
+      color: #eaf0ff;
+      font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+    }
     #start.hide, #cd:not(.show) { display: none; }
-    #start h1 { font-size: 1.5rem; }
-    #start p { color: #94a3d9; max-width: 34ch; line-height: 1.5; font-size: .92rem; }
+    #start h1 { font-size: 1.5rem; font-weight: 900; }
+    #start p { color: #94a3d9; max-width: 34ch; line-height: 1.45; font-size: .9rem; }
     .fmt-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
     .fmt-btn {
       font: inherit;
-      font-size: .85rem;
+      font-size: .82rem;
       font-weight: 700;
       padding: 8px 14px;
       border-radius: 999px;
       background: rgba(255,255,255,.08);
       color: #cbd5ff;
-      border: 1px solid rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.24);
       cursor: pointer;
     }
-    .fmt-btn.active {
-      background: #1d3fd8;
+    .fmt-btn.active { background: #1d3fd8; color: #fff; border-color: #7f98ff; }
+    #go {
+      font: inherit;
+      font-weight: 800;
+      padding: 13px 34px;
+      border-radius: 999px;
       color: #fff;
-      border-color: #7f98ff;
+      cursor: pointer;
+      background: linear-gradient(180deg, #7f98ff, #1d3fd8);
+      border: 1px solid rgba(255,255,255,.45);
     }
-    #go { font: inherit; font-weight: 700; padding: 14px 34px; border-radius: 999px; color: #fff; cursor: pointer; background: linear-gradient(180deg, #7f98ff, #1d3fd8); border: 1px solid rgba(255,255,255,.4); }
     #go:disabled { opacity: .5; }
-    #cd { font-size: 8rem; font-weight: 800; color: #5b7dff; }
-    #replay { position: fixed; z-index: 10; bottom: 14px; left: 0; right: 0; text-align: center; color: #94a3d9; font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .4s; }
-    #replay.show { opacity: .85; pointer-events: auto; cursor: pointer; }
+    #cd { font-size: 7rem; font-weight: 900; color: #5b7dff; }
+    #replay {
+      position: fixed;
+      z-index: 10;
+      bottom: 12px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #94a3d9;
+      font-size: .88rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s;
+    }
+    #replay.show { opacity: .9; pointer-events: auto; cursor: pointer; }
   </style>
 </head>
 <body class="plain tr">
   <div id="stage">
-    <!-- Scene 1: Pattern-interrupt hook -->
+    <div class="bg-orb o1"></div>
+    <div class="bg-orb o2"></div>
+
+    <!-- SCENE 1: Pattern-Interrupt Hook -->
     <section class="sc" id="s1">
-      <div class="hook-wrap" id="hookWrap">
-        <div class="hook-line">Stop paying <span class="bad">every month</span></div>
-        <div class="price-pills">
-          <span class="pill-cut">$15/mo</span>
-          <span class="pill-cut">$20/mo</span>
-          <span class="pill-cut">$9/mo</span>
-        </div>
-        <div class="free-slam">
-          <small>Meet stream</small>
-          <b>100% FREE</b>
-        </div>
+      <div class="kicker">Tired of monthly bills?</div>
+      <div class="title-xl">Stop paying <span class="red">to stream</span></div>
+      <div class="bills-row">
+        <span class="bill-tag">$15/mo</span>
+        <span class="bill-tag">$20/mo</span>
+        <span class="bill-tag">$9/mo</span>
+      </div>
+      <div class="free-badge">100% FREE</div>
+    </section>
+
+    <!-- SCENE 2: Animated Character Walking With Phone -->
+    <section class="sc split" id="s2">
+      <div class="char-stage">
+        <svg class="char-svg" viewBox="0 0 200 190" fill="none">
+          <!-- Moving sidewalk line -->
+          <line class="ground-scroll" x1="15" y1="172" x2="185" y2="172" stroke="#5b7dff" stroke-width="4" stroke-linecap="round" stroke-dasharray="18 18" />
+          <!-- Back Arm -->
+          <g class="arm-back">
+            <path d="M92 76 L72 104" stroke="#3b5bdb" stroke-width="11" stroke-linecap="round"/>
+          </g>
+          <!-- Legs -->
+          <g class="leg-l">
+            <path d="M96 118 L82 164 L94 166" stroke="#1e3a8a" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g class="leg-r">
+            <path d="M106 118 L122 164 L134 166" stroke="#364fc7" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <!-- Torso & Head -->
+          <g class="walker-body">
+            <!-- Hoodie Torso -->
+            <rect x="82" y="68" width="38" height="54" rx="16" fill="#4c6ef5"/>
+            <!-- Head -->
+            <circle cx="102" cy="44" r="18" fill="#ffd8a8"/>
+            <!-- Hair / Cap -->
+            <path d="M84 40 C84 26, 120 26, 120 40 C112 34, 92 34, 84 40 Z" fill="#0b132b"/>
+            <rect x="102" y="33" width="24" height="5" rx="2.5" fill="#5b7dff"/>
+            <!-- Eye & Smile -->
+            <circle cx="111" cy="44" r="2.2" fill="#0b132b"/>
+            <path d="M107 51 Q112 55 116 50" stroke="#0b132b" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- Front Arm Holding Phone -->
+            <path d="M104 78 L128 96 L142 84" stroke="#748ffc" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Glowing Smartphone -->
+            <g class="phone-glow" transform="translate(136, 58) rotate(12)">
+              <rect x="0" y="0" width="22" height="38" rx="4" fill="#050a1c" stroke="#9cb1ff" stroke-width="2.5"/>
+              <polygon points="9,14 9,24 16,19" fill="#6c8aff"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="copy-col">
+        <div class="kicker">Watch on the move</div>
+        <div class="title-xl">Movies &amp; TV in <span>your pocket.</span></div>
+        <div class="sub-copy">Open <b>str▶eam</b> anywhere—zero sign-up walls, zero credit cards.</div>
       </div>
     </section>
 
-    <!-- Scene 2: Walking with phone animation -->
-    <section class="sc" id="s2">
-      <div class="walk-scene">
-        <div class="speed-lines"></div>
-        <div class="walker-rig">
-          <div class="hand-phone">
-            <div class="phone-notch"></div>
-            <div class="phone-screen-ui">
-              <div class="mini-row hot"><span>▶ Classic Cinema</span><span>HD</span></div>
-              <div class="mini-row"><span>● Live TV</span><span>24/7</span></div>
-              <div class="mini-row"><span>⬇ Offline Ready</span><span>SAVED</span></div>
-            </div>
-            <div style="text-align:center;font-size:calc(var(--u)*3);color:#9cb1ff;font-weight:700;">watchstream.app</div>
-          </div>
-          <div class="walk-caption">Walking. Commuting.<br><span>Streaming on the move.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Scene 3: Thousands of movies & hundreds of channels -->
+    <!-- SCENE 3: Thousands of Movies & Hundreds of Channels (Evergreen) -->
     <section class="sc" id="s3">
       <div class="wallt" id="wall"></div>
       <div class="shade"></div>
-      <div class="catalog-stack">
-        <div class="stat-box">
-          <div class="big-num" id="nFilms">1,000+</div>
-          <div class="stat-label">Thousands of movies</div>
-          <div class="stat-sub">CLASSICS · HORROR · ACTION · INDIE</div>
+      <div class="kicker">Always growing library</div>
+      <div class="cards-grid">
+        <div class="feat-card">
+          <div class="feat-big">Thousands of movies</div>
+          <div class="feat-desc">Classics · Action · Horror · Cult Favourites</div>
         </div>
-        <div class="stat-box">
-          <div class="big-num" id="nChan">100+</div>
-          <div class="stat-label">Hundreds of channels</div>
-          <div class="stat-sub">LIVE NEWS · SPORTS · MUSIC · DOCS</div>
+        <div class="feat-card">
+          <div class="feat-big">Hundreds of channels</div>
+          <div class="feat-desc">24/7 Live News · Sports · Music · Docs</div>
         </div>
       </div>
     </section>
 
-    <!-- Scene 4: Holding phone with downloads you can watch -->
-    <section class="sc" id="s4">
-      <div class="dl-showcase">
-        <div class="dl-phone">
-          <div class="dl-header">
-            <span>MY DOWNLOADS</span>
-            <span class="dl-badge">OFFLINE READY</span>
-          </div>
-          <div class="dl-item"><span>🎬 Night of the Living Dead</span><span class="dl-check">✓ Ready</span></div>
-          <div class="dl-item"><span>🎬 Metropolis (1927)</span><span class="dl-check">✓ Ready</span></div>
-          <div class="dl-item"><span>🎬 His Girl Friday</span><span class="dl-check">✓ Ready</span></div>
+    <!-- SCENE 4: Human Holding Phone & Watching TV With Offline Downloads -->
+    <section class="sc split" id="s4">
+      <div class="char-stage">
+        <svg class="char-svg" viewBox="0 0 210 185" fill="none">
+          <!-- TV Stand & Screen on Right -->
+          <rect x="128" y="34" width="68" height="44" rx="6" fill="#091540" stroke="#7f98ff" stroke-width="3"/>
+          <rect class="tv-wave" x="134" y="40" width="56" height="32" rx="3" fill="#1d3fd8"/>
+          <polygon points="158,49 158,63 170,56" fill="#eaf0ff"/>
+          <path d="M152 78 L172 78 M162 78 L162 88 M148 88 L176 88" stroke="#5b7dff" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Couch / Lounge Seat -->
+          <rect x="16" y="106" width="96" height="48" rx="14" fill="#182b7a" stroke="#4c6ef5" stroke-width="2.5"/>
+          <rect x="10" y="92" width="22" height="62" rx="10" fill="#233da3"/>
+
+          <!-- Person Relaxing & Holding Phone -->
+          <g class="chill-head">
+            <circle cx="58" cy="64" r="17" fill="#ffd8a8"/>
+            <path d="M41 60 C41 44, 75 44, 75 60 C67 53, 49 53, 41 60 Z" fill="#0b132b"/>
+            <circle cx="66" cy="64" r="2.2" fill="#0b132b"/>
+            <path d="M62 71 Q67 75 71 70" stroke="#0b132b" stroke-width="2.2" stroke-linecap="round"/>
+          </g>
+          <!-- Relaxed Torso & Legs -->
+          <path d="M44 82 L72 82 L84 122 L114 122 L118 154" stroke="#4c6ef5" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Arms Holding Phone Up -->
+          <path d="M56 88 L82 98 L94 84" stroke="#748ffc" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Phone in Hand -->
+          <g class="phone-glow" transform="translate(88, 60) rotate(10)">
+            <rect x="0" y="0" width="24" height="40" rx="4.5" fill="#050a1c" stroke="#6ee7b7" stroke-width="2.5"/>
+            <path d="M12 12 L12 24 M8 20 L12 24 L16 20" stroke="#6ee7b7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="7" y1="29" x2="17" y2="29" stroke="#6ee7b7" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="copy-col">
+        <div class="kicker">Save data · Watch offline</div>
+        <div class="title-xl">Download once. <span>Watch anywhere.</span></div>
+        <div class="dl-pills">
+          <div class="dl-row"><span>🎬 Night of the Living Dead</span><span class="dl-ok">✓ Ready</span></div>
+          <div class="dl-row"><span>🎬 Metropolis (1927)</span><span class="dl-ok">✓ Ready</span></div>
         </div>
-        <div class="dl-headline">Hold it. Download it.<br><span>Watch anywhere.</span></div>
       </div>
     </section>
 
-    <!-- Scene 5: Punchy CTA -->
+    <!-- SCENE 5: Fast CTA -->
     <section class="sc" id="s5">
-      <div class="cta">
-        <div class="brand-mark">str<span>▶</span>eam</div>
-        <h2>Zero subscriptions.</h2>
-        <div class="url-cta">watchstream.app</div>
-        <p class="sub-cta">Thousands of movies · Live channels · Offline downloads</p>
-        <p class="bio-cta">Tap the link &amp; start watching ↑</p>
-      </div>
+      <div class="brand-hero">str<span>▶</span>eam</div>
+      <div class="title-xl">Zero subscriptions.</div>
+      <div class="cta-pill">watchstream.app</div>
+      <div class="sub-copy">Thousands of movies · Hundreds of channels · Offline downloads</div>
     </section>
   </div>
 
   <div id="start">
     <h1>stream trailer</h1>
-    <p>Choose your format, start screen recording, tap Start after the 3-2-1 countdown, and trim the countdown after recording.</p>
-    <div class="fmt-group" role="group" aria-label="Aspect ratio format">
-      <button class="fmt-btn active" type="button" data-w="720" data-h="1080">720×1080 (2:3)</button>
-      <button class="fmt-btn" type="button" data-w="1080" data-h="1920">9:16 (Vertical)</button>
-      <button class="fmt-btn" type="button" data-w="1920" data-h="1080">16:9 (YouTube Long-Form)</button>
+    <p>Pick your format, start your screen recorder, and tap Start. Trim the 3-2-1 countdown after recording.</p>
+    <div class="fmt-group" role="group" aria-label="Video Format">
+      <button class="fmt-btn active" type="button" data-w="1920" data-h="1080">16:9 (YouTube Long-Form)</button>
+      <button class="fmt-btn" type="button" data-w="720" data-h="1080">720×1080 (Portrait)</button>
+      <button class="fmt-btn" type="button" data-w="1080" data-h="1920">9:16 (Shorts / Reels)</button>
     </div>
     <button id="go" type="button" disabled>Loading…</button>
   </div>
@@ -313,7 +448,7 @@
   (function () {
     var $ = function (id) { return document.getElementById(id); };
     var stage = $("stage");
-    var ratioW = 720, ratioH = 1080;
+    var ratioW = 1920, ratioH = 1080;
 
     function fit() {
       var iw = window.innerWidth, ih = window.innerHeight;
@@ -328,7 +463,10 @@
       }
       stage.style.width = w + "px";
       stage.style.height = h + "px";
-      stage.style.setProperty("--u", (w / 100) + "px");
+      stage.classList.toggle("wide", w > h);
+      // Scale unit cleanly from the smaller dimension so nothing ever clips vertically or horizontally
+      var base = Math.min(w, h);
+      stage.style.setProperty("--u", (base / 100) + "px");
     }
 
     Array.prototype.forEach.call(document.querySelectorAll(".fmt-btn"), function (btn) {
@@ -344,65 +482,46 @@
     window.addEventListener("resize", fit);
     fit();
 
-    var data = { m: [], c: [] }, ready = false, timers = [];
+    var movies = [], ready = false, timers = [];
     var scenes = Array.prototype.slice.call(document.querySelectorAll(".sc"));
-    function el(tag, cls, txt) {
-      var e = document.createElement(tag);
-      if (cls) e.className = cls;
-      if (txt) e.textContent = txt;
-      return e;
-    }
+    function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
 
-    function build() {
-      var ms = data.m.length ? data.m : [{ id: "x", title: "Classic Film", genre: "Drama", year: 1925 }];
+    function buildWall() {
+      var ms = movies.length ? movies : [{ id: "x", title: "Classic Film", genre: "Drama", year: 1925 }];
       var wall = $("wall");
       wall.innerHTML = "";
       for (var c = 0; c < 3; c++) {
         var col = el("div", "col");
         for (var rep = 0; rep < 2; rep++) {
-          for (var i = 0; i < 7; i++) {
-            col.appendChild(Stream.poster(ms[(c * 5 + i) % ms.length], "tp"));
+          for (var i = 0; i < 6; i++) {
+            if (window.Stream && Stream.poster) {
+              col.appendChild(Stream.poster(ms[(c * 5 + i) % ms.length], "tp"));
+            }
           }
         }
         wall.appendChild(col);
       }
-
-      var filmCount = Math.max(data.m.length || 0, 1050);
-      var chanCount = Math.max(data.c.length || 0, 100);
-      $("nFilms").setAttribute("data-n", filmCount);
-      $("nChan").setAttribute("data-n", chanCount);
     }
 
-    Promise.all([
-      fetch("../movies.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
-      fetch("../channels.json").then(function (r) { return r.json(); }).catch(function () { return []; })
-    ]).then(function (r) {
-      data.m = Array.isArray(r[0]) ? r[0] : [];
-      data.c = Array.isArray(r[1]) ? r[1] : [];
-      build();
-      ready = true;
-      $("go").disabled = false;
-      $("go").textContent = "▶ Start";
-      if (/auto=1/.test(location.search)) $("go").click();
-    });
+    fetch("../movies.json")
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; })
+      .then(function (list) {
+        movies = Array.isArray(list) ? list : [];
+        buildWall();
+        ready = true;
+        $("go").disabled = false;
+        $("go").textContent = "▶ Start";
+        if (/auto=1/.test(location.search)) $("go").click();
+      });
 
     setTimeout(function () {
       if (!ready) {
-        build();
+        buildWall();
         $("go").disabled = false;
         $("go").textContent = "▶ Start";
       }
-    }, 4500);
-
-    function countUp(node, to, ms, suffix) {
-      var t0 = performance.now();
-      (function tick(now) {
-        var p = Math.min(1, (now - t0) / ms);
-        var val = Math.round(to * (1 - Math.pow(1 - p, 3)));
-        node.textContent = val.toLocaleString() + (suffix || "");
-        if (p < 1) requestAnimationFrame(tick);
-      })(t0);
-    }
+    }, 4000);
 
     function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
     function show(id) {
@@ -413,25 +532,19 @@
       timers.forEach(clearTimeout);
       timers = [];
       $("replay").classList.remove("show");
-      $("hookWrap").classList.remove("exit");
 
       // 0.0s: Hook
       show("s1");
-      // 3.3s: Exit hook into walking-with-phone animation
-      at(3300, function () { $("hookWrap").classList.add("exit"); });
-      at(3600, function () { show("s2"); });
+      // 3.2s: Human walking with phone
+      at(3200, function () { show("s2"); });
       // 7.4s: Thousands of movies & hundreds of channels
-      at(7400, function () {
-        show("s3");
-        countUp($("nFilms"), +$("nFilms").getAttribute("data-n"), 1200, "+");
-        countUp($("nChan"), +$("nChan").getAttribute("data-n"), 1200, "+");
-      });
-      // 11.8s: Holding phone with downloads to watch
-      at(11800, function () { show("s4"); });
-      // 16.0s: CTA
-      at(16000, function () { show("s5"); });
-      // 21.5s: Show replay
-      at(21500, function () { $("replay").classList.add("show"); });
+      at(7400, function () { show("s3"); });
+      // 11.4s: Human relaxing with phone & TV + offline downloads
+      at(11400, function () { show("s4"); });
+      // 15.8s: CTA
+      at(15800, function () { show("s5"); });
+      // 20.5s: Replay prompt
+      at(20500, function () { $("replay").classList.add("show"); });
     }
 
     function countdown(done) {
