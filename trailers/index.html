@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#000000">
+  <title>stream trailer</title>
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    html, body { height: 100%; }
+    body.tr { background: #000; display: grid; place-items: center; overflow: hidden; user-select: none; -webkit-user-select: none; cursor: default; }
+    #stage {
+      --u: 3.6px;
+      position: relative;
+      width: 360px;
+      height: 540px;
+      overflow: hidden;
+      color: #eaf0ff;
+      font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+      background: radial-gradient(120% 70% at 50% 0%, #10299e, #040a22 65%);
+      box-shadow: 0 0 60px rgba(16, 41, 158, 0.45);
+    }
+    .sc { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; opacity: 0; visibility: hidden; transition: opacity .25s ease; padding: calc(var(--u) * 4); }
+    .sc.on { opacity: 1; visibility: visible; }
+
+    @keyframes popIn { 0% { opacity: 0; transform: scale(.55) translateY(calc(var(--u) * 4)); } 70% { transform: scale(1.08); } 100% { opacity: 1; transform: none; } }
+    @keyframes snapUp { 0% { opacity: 0; transform: translateY(calc(var(--u) * 10)); } 100% { opacity: 1; transform: none; } }
+    @keyframes fadeOutFast { to { opacity: 0; transform: scale(1.05); } }
+    @keyframes pulseGlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+    /* 1: Fast Hook (stops swipe in <1.5s) */
+    .hook-wrap { display: grid; gap: calc(var(--u) * 3); max-width: 90%; }
+    .hook-line { font-size: calc(var(--u) * 9.5); font-weight: 900; line-height: 1.08; letter-spacing: -0.02em; }
+    .hook-line span.bad { color: #ff6b78; text-decoration: line-through; text-decoration-thickness: calc(var(--u) * 1.1); }
+    .on .hook-line { animation: snapUp .35s cubic-bezier(.2,1.3,.4,1) both; }
+    .on .hook-wrap.exit { animation: fadeOutFast .25s ease forwards; }
+
+    .price-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 2.5); opacity: 0; }
+    .on .price-pills { animation: snapUp .35s .25s both; }
+    .pill-cut {
+      position: relative;
+      font-size: calc(var(--u) * 6);
+      font-weight: 800;
+      padding: .25em .7em;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #cbd5ff;
+    }
+    .pill-cut::after {
+      content: "";
+      position: absolute;
+      left: 6%; right: 6%; top: 50%;
+      height: 2.5px;
+      background: #ff4d5a;
+      transform: rotate(-8deg);
+    }
+
+    .free-slam { opacity: 0; transform: scale(.4); }
+    .on .free-slam { animation: popIn .45s .55s cubic-bezier(.2,1.4,.4,1) forwards; }
+    .free-slam small { display: block; font-size: calc(var(--u) * 5); font-weight: 700; color: #b5c2ee; text-transform: uppercase; letter-spacing: .12em; }
+    .free-slam b { display: block; font-size: calc(var(--u) * 22); font-weight: 900; line-height: 1; color: #6c8aff; text-shadow: 0 0 calc(var(--u) * 8) rgba(91,125,255,.75); }
+
+    /* 2: Walking With Phone Animation */
+    .walk-scene { position: relative; width: 100%; height: 100%; display: grid; place-items: center; overflow: hidden; }
+    .speed-lines {
+      position: absolute; inset: 0; opacity: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 26px,
+        rgba(108, 138, 255, 0.14) 27px,
+        transparent 28px
+      );
+    }
+    .on .speed-lines { animation: walkLines .55s linear infinite, snapUp .3s ease forwards; opacity: .85; }
+    @keyframes walkLines { from { transform: translateY(-28px); } to { transform: translateY(28px); } }
+
+    .walker-rig {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      gap: calc(var(--u) * 2);
+      z-index: 2;
+    }
+    .on .walker-rig { animation: walkBob .65s ease-in-out infinite; }
+    @keyframes walkBob {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(calc(var(--u) * -3.5)) rotate(1deg); }
+    }
+
+    .hand-phone {
+      width: calc(var(--u) * 34);
+      height: calc(var(--u) * 58);
+      border-radius: calc(var(--u) * 5.5);
+      border: calc(var(--u) * 1.6) solid #8ea6ff;
+      background: linear-gradient(165deg, #162d8a, #050b24 75%);
+      box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 12) rgba(0,0,0,.65), 0 0 calc(var(--u) * 8) rgba(91,125,255,.45);
+      padding: calc(var(--u) * 2.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .phone-notch { width: calc(var(--u) * 12); height: calc(var(--u) * 1.6); background: rgba(255,255,255,.22); border-radius: 999px; margin: 0 auto; }
+    .phone-screen-ui { display: grid; gap: calc(var(--u) * 2); my-auto; }
+    .mini-row { height: calc(var(--u) * 7); border-radius: calc(var(--u) * 2); background: rgba(108,138,255,.22); border: 1px solid rgba(142,166,255,.35); display: flex; align-items: center; justify-content: space-between; padding: 0 calc(var(--u) * 2.5); font-size: calc(var(--u) * 3.4); font-weight: 700; }
+    .mini-row.hot { background: linear-gradient(90deg, rgba(91,125,255,.45), rgba(29,63,216,.35)); }
+    .walk-caption { font-size: calc(var(--u) * 7.5); font-weight: 900; line-height: 1.1; margin-top: calc(var(--u) * 2); }
+    .walk-caption span { color: #7f98ff; }
+
+    /* 3: Thousands of Movies & Hundreds of Channels */
+    .wallt { position: absolute; inset: -25% -35%; display: flex; gap: calc(var(--u) * 4); justify-content: center; transform: perspective(calc(var(--u) * 220)) rotateX(48deg) rotateZ(-12deg) scale(1.2); }
+    .wallt .col { display: flex; flex-direction: column; gap: calc(var(--u) * 4); }
+    .on .wallt .col { animation: colUp 8s linear infinite; }
+    .on .wallt .col:nth-child(2) { animation-direction: reverse; animation-duration: 10s; }
+    @keyframes colUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+    .tp { width: calc(var(--u) * 26); height: calc(var(--u) * 39); flex: none; border-radius: calc(var(--u) * 2.5); }
+    .shade { position: absolute; inset: 0; background: radial-gradient(75% 50% at 50% 50%, rgba(4,10,34,.9), rgba(4,10,34,.25) 100%); }
+
+    .catalog-stack { position: relative; z-index: 2; display: grid; gap: calc(var(--u) * 4); width: 92%; }
+    .stat-box {
+      padding: calc(var(--u) * 3.5) calc(var(--u) * 4);
+      border-radius: calc(var(--u) * 4);
+      background: rgba(10, 22, 74, 0.78);
+      border: 1px solid rgba(142, 166, 255, 0.35);
+      backdrop-filter: blur(8px);
+    }
+    .on .stat-box { animation: popIn .4s both; }
+    .on .stat-box:nth-child(2) { animation-delay: .18s !important; }
+    .big-num { font-size: calc(var(--u) * 14); font-weight: 900; line-height: 1; color: #7f98ff; text-shadow: 0 0 calc(var(--u) * 7) rgba(91,125,255,.65); }
+    .stat-label { font-size: calc(var(--u) * 6.8); font-weight: 800; margin-top: calc(var(--u) * 1); }
+    .stat-sub { font-size: calc(var(--u) * 3.8); color: #b5c2ee; margin-top: calc(var(--u) * 1); letter-spacing: .04em; }
+
+    /* 4: Holding Phone With Downloads to Watch Offline */
+    .dl-showcase { display: grid; gap: calc(var(--u) * 4); justify-items: center; max-width: 90%; z-index: 2; }
+    .dl-phone {
+      width: calc(var(--u) * 42);
+      border-radius: calc(var(--u) * 5.5);
+      border: calc(var(--u) * 1.8) solid #9cb1ff;
+      background: linear-gradient(180deg, #0d1d66, #040a22);
+      padding: calc(var(--u) * 3);
+      box-shadow: 0 calc(var(--u) * 6) calc(var(--u) * 18) rgba(0,0,0,.75), 0 0 calc(var(--u) * 10) rgba(91,125,255,.45);
+      display: grid;
+      gap: calc(var(--u) * 2.2);
+      text-align: left;
+    }
+    .on .dl-phone { animation: popIn .45s cubic-bezier(.2,1.35,.4,1) both; }
+    .dl-header { display: flex; justify-content: space-between; align-items: center; font-size: calc(var(--u) * 3.6); font-weight: 800; color: #b5c2ee; }
+    .dl-badge { background: rgba(48,164,108,.22); color: #6ee7b7; border: 1px solid rgba(110,231,183,.4); padding: 2px 8px; border-radius: 999px; font-size: calc(var(--u) * 3); }
+    .dl-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: calc(var(--u) * 2.2) calc(var(--u) * 2.8);
+      border-radius: calc(var(--u) * 2.5);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: calc(var(--u) * 3.8);
+      font-weight: 700;
+    }
+    .dl-check { color: #6ee7b7; font-weight: 900; }
+    .dl-headline { font-size: calc(var(--u) * 8.5); font-weight: 900; line-height: 1.08; }
+    .dl-headline span { color: #7f98ff; }
+
+    /* 5: CTA */
+    .cta { display: grid; justify-items: center; gap: calc(var(--u) * 3.5); max-width: 90%; z-index: 2; }
+    .cta .brand-mark { font-size: calc(var(--u) * 11); font-weight: 900; }
+    .cta .brand-mark span { color: #6c8aff; }
+    .cta h2 { font-size: calc(var(--u) * 11); font-weight: 900; line-height: 1.05; }
+    .url-cta {
+      font-size: calc(var(--u) * 8.2);
+      font-weight: 900;
+      padding: .45em 1.1em;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #7f98ff, #1d3fd8);
+      border: 1px solid rgba(255,255,255,.45);
+      box-shadow: 0 0 calc(var(--u) * 9) rgba(91,125,255,.75);
+    }
+    .on .url-cta { animation: pulseGlow 1.2s ease-in-out infinite; }
+    .cta .sub-cta { font-size: calc(var(--u) * 4.5); color: #b5c2ee; }
+    .cta .bio-cta { font-size: calc(var(--u) * 5.6); font-weight: 800; color: #fff; }
+
+    /* Start & Format Picker */
+    #start, #cd { position: fixed; inset: 0; z-index: 20; display: grid; place-content: center; justify-items: center; text-align: center; gap: 14px; padding: 24px; background: #000; }
+    #start.hide, #cd:not(.show) { display: none; }
+    #start h1 { font-size: 1.5rem; }
+    #start p { color: #94a3d9; max-width: 34ch; line-height: 1.5; font-size: .92rem; }
+    .fmt-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .fmt-btn {
+      font: inherit;
+      font-size: .85rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      color: #cbd5ff;
+      border: 1px solid rgba(255,255,255,.22);
+      cursor: pointer;
+    }
+    .fmt-btn.active {
+      background: #1d3fd8;
+      color: #fff;
+      border-color: #7f98ff;
+    }
+    #go { font: inherit; font-weight: 700; padding: 14px 34px; border-radius: 999px; color: #fff; cursor: pointer; background: linear-gradient(180deg, #7f98ff, #1d3fd8); border: 1px solid rgba(255,255,255,.4); }
+    #go:disabled { opacity: .5; }
+    #cd { font-size: 8rem; font-weight: 800; color: #5b7dff; }
+    #replay { position: fixed; z-index: 10; bottom: 14px; left: 0; right: 0; text-align: center; color: #94a3d9; font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .4s; }
+    #replay.show { opacity: .85; pointer-events: auto; cursor: pointer; }
+  </style>
+</head>
+<body class="plain tr">
+  <div id="stage">
+    <!-- Scene 1: Pattern-interrupt hook -->
+    <section class="sc" id="s1">
+      <div class="hook-wrap" id="hookWrap">
+        <div class="hook-line">Stop paying <span class="bad">every month</span></div>
+        <div class="price-pills">
+          <span class="pill-cut">$15/mo</span>
+          <span class="pill-cut">$20/mo</span>
+          <span class="pill-cut">$9/mo</span>
+        </div>
+        <div class="free-slam">
+          <small>Meet stream</small>
+          <b>100% FREE</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 2: Walking with phone animation -->
+    <section class="sc" id="s2">
+      <div class="walk-scene">
+        <div class="speed-lines"></div>
+        <div class="walker-rig">
+          <div class="hand-phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen-ui">
+              <div class="mini-row hot"><span>▶ Classic Cinema</span><span>HD</span></div>
+              <div class="mini-row"><span>● Live TV</span><span>24/7</span></div>
+              <div class="mini-row"><span>⬇ Offline Ready</span><span>SAVED</span></div>
+            </div>
+            <div style="text-align:center;font-size:calc(var(--u)*3);color:#9cb1ff;font-weight:700;">watchstream.app</div>
+          </div>
+          <div class="walk-caption">Walking. Commuting.<br><span>Streaming on the move.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 3: Thousands of movies & hundreds of channels -->
+    <section class="sc" id="s3">
+      <div class="wallt" id="wall"></div>
+      <div class="shade"></div>
+      <div class="catalog-stack">
+        <div class="stat-box">
+          <div class="big-num" id="nFilms">1,000+</div>
+          <div class="stat-label">Thousands of movies</div>
+          <div class="stat-sub">CLASSICS · HORROR · ACTION · INDIE</div>
+        </div>
+        <div class="stat-box">
+          <div class="big-num" id="nChan">100+</div>
+          <div class="stat-label">Hundreds of channels</div>
+          <div class="stat-sub">LIVE NEWS · SPORTS · MUSIC · DOCS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 4: Holding phone with downloads you can watch -->
+    <section class="sc" id="s4">
+      <div class="dl-showcase">
+        <div class="dl-phone">
+          <div class="dl-header">
+            <span>MY DOWNLOADS</span>
+            <span class="dl-badge">OFFLINE READY</span>
+          </div>
+          <div class="dl-item"><span>🎬 Night of the Living Dead</span><span class="dl-check">✓ Ready</span></div>
+          <div class="dl-item"><span>🎬 Metropolis (1927)</span><span class="dl-check">✓ Ready</span></div>
+          <div class="dl-item"><span>🎬 His Girl Friday</span><span class="dl-check">✓ Ready</span></div>
+        </div>
+        <div class="dl-headline">Hold it. Download it.<br><span>Watch anywhere.</span></div>
+      </div>
+    </section>
+
+    <!-- Scene 5: Punchy CTA -->
+    <section class="sc" id="s5">
+      <div class="cta">
+        <div class="brand-mark">str<span>▶</span>eam</div>
+        <h2>Zero subscriptions.</h2>
+        <div class="url-cta">watchstream.app</div>
+        <p class="sub-cta">Thousands of movies · Live channels · Offline downloads</p>
+        <p class="bio-cta">Tap the link &amp; start watching ↑</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="start">
+    <h1>stream trailer</h1>
+    <p>Choose your format, start screen recording, tap Start after the 3-2-1 countdown, and trim the countdown after recording.</p>
+    <div class="fmt-group" role="group" aria-label="Aspect ratio format">
+      <button class="fmt-btn active" type="button" data-w="720" data-h="1080">720×1080 (2:3)</button>
+      <button class="fmt-btn" type="button" data-w="1080" data-h="1920">9:16 (Vertical)</button>
+      <button class="fmt-btn" type="button" data-w="1920" data-h="1080">16:9 (YouTube Long-Form)</button>
+    </div>
+    <button id="go" type="button" disabled>Loading…</button>
+  </div>
+  <div id="cd" aria-hidden="true"></div>
+  <div id="replay">Tap to replay</div>
+
+  <script src="../app.js"></script>
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var stage = $("stage");
+    var ratioW = 720, ratioH = 1080;
+
+    function fit() {
+      var iw = window.innerWidth, ih = window.innerHeight;
+      var targetRatio = ratioW / ratioH;
+      var w, h;
+      if (iw / ih <= targetRatio) {
+        w = iw;
+        h = iw / targetRatio;
+      } else {
+        h = ih;
+        w = ih * targetRatio;
+      }
+      stage.style.width = w + "px";
+      stage.style.height = h + "px";
+      stage.style.setProperty("--u", (w / 100) + "px");
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll(".fmt-btn"), function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".fmt-btn").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        ratioW = +btn.getAttribute("data-w");
+        ratioH = +btn.getAttribute("data-h");
+        fit();
+      });
+    });
+
+    window.addEventListener("resize", fit);
+    fit();
+
+    var data = { m: [], c: [] }, ready = false, timers = [];
+    var scenes = Array.prototype.slice.call(document.querySelectorAll(".sc"));
+    function el(tag, cls, txt) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (txt) e.textContent = txt;
+      return e;
+    }
+
+    function build() {
+      var ms = data.m.length ? data.m : [{ id: "x", title: "Classic Film", genre: "Drama", year: 1925 }];
+      var wall = $("wall");
+      wall.innerHTML = "";
+      for (var c = 0; c < 3; c++) {
+        var col = el("div", "col");
+        for (var rep = 0; rep < 2; rep++) {
+          for (var i = 0; i < 7; i++) {
+            col.appendChild(Stream.poster(ms[(c * 5 + i) % ms.length], "tp"));
+          }
+        }
+        wall.appendChild(col);
+      }
+
+      var filmCount = Math.max(data.m.length || 0, 1050);
+      var chanCount = Math.max(data.c.length || 0, 100);
+      $("nFilms").setAttribute("data-n", filmCount);
+      $("nChan").setAttribute("data-n", chanCount);
+    }
+
+    Promise.all([
+      fetch("../movies.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
+      fetch("../channels.json").then(function (r) { return r.json(); }).catch(function () { return []; })
+    ]).then(function (r) {
+      data.m = Array.isArray(r[0]) ? r[0] : [];
+      data.c = Array.isArray(r[1]) ? r[1] : [];
+      build();
+      ready = true;
+      $("go").disabled = false;
+      $("go").textContent = "▶ Start";
+      if (/auto=1/.test(location.search)) $("go").click();
+    });
+
+    setTimeout(function () {
+      if (!ready) {
+        build();
+        $("go").disabled = false;
+        $("go").textContent = "▶ Start";
+      }
+    }, 4500);
+
+    function countUp(node, to, ms, suffix) {
+      var t0 = performance.now();
+      (function tick(now) {
+        var p = Math.min(1, (now - t0) / ms);
+        var val = Math.round(to * (1 - Math.pow(1 - p, 3)));
+        node.textContent = val.toLocaleString() + (suffix || "");
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+
+    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    function show(id) {
+      scenes.forEach(function (s) { s.classList.toggle("on", s.id === id); });
+    }
+
+    function play() {
+      timers.forEach(clearTimeout);
+      timers = [];
+      $("replay").classList.remove("show");
+      $("hookWrap").classList.remove("exit");
+
+      // 0.0s: Hook
+      show("s1");
+      // 3.3s: Exit hook into walking-with-phone animation
+      at(3300, function () { $("hookWrap").classList.add("exit"); });
+      at(3600, function () { show("s2"); });
+      // 7.4s: Thousands of movies & hundreds of channels
+      at(7400, function () {
+        show("s3");
+        countUp($("nFilms"), +$("nFilms").getAttribute("data-n"), 1200, "+");
+        countUp($("nChan"), +$("nChan").getAttribute("data-n"), 1200, "+");
+      });
+      // 11.8s: Holding phone with downloads to watch
+      at(11800, function () { show("s4"); });
+      // 16.0s: CTA
+      at(16000, function () { show("s5"); });
+      // 21.5s: Show replay
+      at(21500, function () { $("replay").classList.add("show"); });
+    }
+
+    function countdown(done) {
+      var cd = $("cd"), n = 3;
+      cd.textContent = n;
+      cd.classList.add("show");
+      var iv = setInterval(function () {
+        n--;
+        if (n <= 0) {
+          clearInterval(iv);
+          cd.classList.remove("show");
+          done();
+        } else {
+          cd.textContent = n;
+        }
+      }, 1000);
+    }
+
+    $("go").onclick = function () {
+      $("start").classList.add("hide");
+      countdown(play);
+    };
+    $("replay").onclick = play;
+  })();
+  </script>
+</body>
+</html>
