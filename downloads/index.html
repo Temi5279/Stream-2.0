@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
 </head>
@@ -91,7 +91,9 @@
     }
     function render() {
       if (busy) return; busy = true;
-      Stream.dl.list().then(function (items) {
+      Promise.all([Stream.dl.list(), Stream.isKids() ? Stream.movies() : Promise.resolve(null)]).then(function (r) {
+        var items = r[0];
+        if (r[1]) { var okIds = {}; r[1].forEach(function (f) { okIds[f.id] = 1; }); items = items.filter(function (d) { return okIds[d.id]; }); }
         items.sort(function (a, b) { return b.ts - a.ts; });
         return Promise.all(items.map(function (m) { return m.status === "done" ? null : Stream.dl.progress(m); })).then(function (ps) {
           list.innerHTML = "";
