@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
 </head>
@@ -77,6 +77,7 @@
   <script type="module">
     import { auth, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, deleteUser, reauthenticateWithPopup, reauthenticateWithCredential, EmailAuthProvider, GoogleAuthProvider, db, doc, setDoc, deleteDoc, friendlyError } from "../firebase.js";
     var $ = function (id) { return document.getElementById(id); };
+    if (document.documentElement.classList.contains("kids")) location.replace("../profile/");
     onAuthStateChanged(auth, function (user) { if (user) init(user); });
 
     function init(user) {
