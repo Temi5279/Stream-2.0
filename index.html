@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
   <meta name="description" content="Classic films and free live TV. Watch free on your phone, tablet, laptop and TV.">
@@ -85,6 +85,10 @@
   <script src="app.js"></script>
   <script>
   Stream.guardOnline(function () { Stream.whenUser(function () {
+    if (Stream.isKids()) {
+      var kh = document.querySelector(".hero h1"), kp = document.querySelector(".hero p");
+      if (kh) kh.textContent = "Fun time! 🎈"; if (kp) kp.textContent = "Cartoons, adventures and family favourites, just for you.";
+    }
     var prof = Stream.profiles.active(), top = document.querySelector(".top");
     if (prof && top) {
       var pa = document.createElement("a"); pa.href = "profile/"; pa.setAttribute("aria-label", "Profile");
