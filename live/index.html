@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
 </head>
@@ -130,6 +130,10 @@
 
     Promise.all([Stream.channels(), Stream.epg()]).then(function (r) {
       channels = r[0]; epg = r[1];
+      if (Stream.isKids()) {
+        channels = channels.filter(function (c) { return c.category === "Kids" || c.category === "Docs & Science"; });
+        if (!channels.length) { $("lp").hidden = true; $("now").textContent = "No kids channels are available right now. Check back soon!"; }
+      }
       draw();
       if (channels.length) pick(channels[0]);
     });
