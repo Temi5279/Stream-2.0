@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
 </head>
@@ -38,7 +38,7 @@
       <p data-user-email></p>
     </div>
     <div class="pf-row" id="pfOthers"></div>
-    <a class="btn ghost" href="../profiles/?manage=1" style="display:block;text-align:center;margin:0 auto 8px;max-width:260px">Manage profiles</a>
+    <a class="btn ghost hide-kids" href="../profiles/?manage=1" style="display:block;text-align:center;margin:0 auto 8px;max-width:260px">Manage profiles</a>
 
     <section class="row" id="mlsec" aria-labelledby="ml1">
       <h2 id="ml1">My List</h2>
@@ -48,7 +48,7 @@
 
     <ul class="list" style="margin-top:18px">
       <li><a class="glass" href="../settings/">App settings <span aria-hidden="true">›</span></a></li>
-      <li><a class="glass" href="../account/">Account <span aria-hidden="true">›</span></a></li>
+      <li class="hide-kids"><a class="glass" href="../account/">Account <span aria-hidden="true">›</span></a></li>
       <li><button class="glass plain" type="button" onclick="StreamHelper &amp;&amp; StreamHelper.open()">Ask Astra, our help assistant <span aria-hidden="true">›</span></button></li>
     </ul>
 
@@ -81,11 +81,11 @@
     P.list().filter(function (p) { return p.id !== cur.id; }).forEach(function (p) {
       var b = document.createElement("button"); b.className = "pf-mini"; b.type = "button";
       b.appendChild(P.avatar(p, "sm")); var s = document.createElement("span"); s.textContent = p.name; b.appendChild(s);
-      b.onclick = function () { P.setActive(p.id); location.reload(); };
+      b.onclick = function () { Stream.switchProfile(p.id, function () { location.reload(); }); };
       $("pfOthers").appendChild(b);
     });
     if (P.list().length < 5) {
-      var add = document.createElement("a"); add.className = "pf-mini"; add.href = "../profiles/?new=1";
+      var add = document.createElement("a"); add.className = "pf-mini hide-kids"; add.href = "../profiles/?new=1";
       var plus = document.createElement("div"); plus.className = "av sm add"; plus.textContent = "+";
       add.appendChild(plus); var t = document.createElement("span"); t.textContent = "Add"; add.appendChild(t);
       $("pfOthers").appendChild(add);
