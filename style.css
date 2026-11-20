@@ -546,14 +546,63 @@ html.tv .msheet { left: 0; padding-top: 120px; }
 .ytw::before { content: ""; display: block; padding-top: 56.25%; }
 .ytw iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
-/* TV Remote Focus Highlight */
-.tv-focused,
-a:focus-visible,
-button:focus-visible {
-  outline: 3px solid #60a5fa !important;
-  outline-offset: 4px !important;
-  box-shadow: 0 0 20px rgba(96, 165, 250, 0.7) !important;
-  transform: scale(1.04);
-  transition: transform 0.15s ease, outline 0.15s ease;
-  z-index: 50;
+/* ---------- Kids theme: switched on by html.kids, so every page changes without separate pages ---------- */
+html.kids .hide-kids { display: none !important; }
+html.kids {
+  --ink: #24126b; --deep: #4a1fa8; --royal: #ff5d8f; --glow: #ffd166;
+  --text: #fffaf0; --muted: #e0d2ff; --glass: rgba(255,255,255,.16); --glass-edge: rgba(255,255,255,.45);
 }
+html.kids body {
+  font-family: ui-rounded, "Nunito", "Quicksand", "Segoe UI", Roboto, system-ui, sans-serif;
+  background:
+    radial-gradient(520px 420px at 10% 4%, rgba(255,93,143,.55), transparent 70%),
+    radial-gradient(520px 420px at 94% 12%, rgba(255,209,102,.42), transparent 70%),
+    radial-gradient(640px 480px at 50% 102%, rgba(46,196,182,.5), transparent 70%),
+    radial-gradient(480px 380px at 0% 66%, rgba(76,201,240,.38), transparent 70%), #2a1580;
+  background-attachment: fixed;
+}
+html.kids body::before {
+  content: ""; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: -1; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(circle, rgba(255,255,255,.8) 0 2px, transparent 3px), radial-gradient(circle, rgba(255,209,102,.9) 0 3px, transparent 4px), radial-gradient(circle, rgba(255,93,143,.85) 0 2px, transparent 3px);
+  background-size: 140px 140px, 230px 230px, 190px 190px; background-position: 0 0, 70px 90px, 40px 150px;
+  animation: kidsTwinkle 5s ease-in-out infinite alternate;
+}
+@keyframes kidsTwinkle { from { opacity: .25; } to { opacity: .7; } }
+html.kids .glass { background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.45); box-shadow: 0 8px 0 rgba(0,0,0,.14); }
+html.kids .nav { border-radius: 34px; background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.6); }
+html.kids .nav a { color: #f1e7ff; font-weight: 700; }
+html.kids .nav a[aria-current="page"] { background: linear-gradient(135deg, #ffd166, #ff9f43); color: #3a1a6b; font-weight: 800; }
+html.kids .btn { background: linear-gradient(180deg, #ffd166, #ff9f43); color: #3a1a6b; font-weight: 800; border: 2px solid rgba(255,255,255,.9); box-shadow: 0 7px 0 rgba(190,95,0,.5), 0 12px 22px rgba(0,0,0,.25); }
+html.kids .btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(190,95,0,.5); }
+html.kids .btn.ghost { background: rgba(255,255,255,.2); color: #fff; box-shadow: none; border: 2px solid rgba(255,255,255,.65); }
+html.kids .hero { background: linear-gradient(135deg, #ff5d8f, #7b2ff7 55%, #3a86ff); border: 3px solid rgba(255,255,255,.75); }
+html.kids .hero p { color: #fff0ff; }
+html.kids .row h2::after, html.kids .page-title::after { content: ""; display: block; width: 58px; height: 6px; margin-top: 6px; border-radius: 6px; background: linear-gradient(90deg, #ff5d8f, #ffd166, #2ec4b6, #4cc9f0); }
+html.kids .poster { border: 3px solid rgba(255,255,255,.92); border-radius: 24px; box-shadow: 0 8px 0 rgba(0,0,0,.2); }
+html.kids .poster::after { display: none; }
+html.kids .poster .pt { font-family: ui-rounded, "Nunito", "Segoe UI", sans-serif; font-weight: 800; }
+html.kids .poster .pg { background: #ffd166; color: #3a1a6b; border: 0; }
+html.kids .prog { background: rgba(255,255,255,.35); } html.kids .prog i { background: #ffd166; }
+html.kids .chip[aria-pressed="true"] { background: #ffd166; color: #3a1a6b; font-weight: 800; }
+html.kids .search, html.kids .field input { background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.55); color: #fff; }
+html.kids .msheet, html.kids .psetup { background: #2a1580; }
+html.kids .hp, html.kids .dlg-box, html.kids .consent, html.kids .upnext { background: rgba(48,22,130,.97); }
+html.kids .badge { background: #ffd166; color: #3a1a6b; font-weight: 800; }
+html.kids .av { border: 3px solid rgba(255,255,255,.9); }
+html.kids .start-btn, html.kids .p-btn.big { background: linear-gradient(180deg, #ffd166, #ff9f43); color: #3a1a6b; }
+html.kids .seek::-webkit-slider-runnable-track { background: linear-gradient(to right, #ffd166 var(--pct, 0%), rgba(255,255,255,.35) var(--pct, 0%)); }
+html.kids .offline svg { stroke: #ffd166; }
+@media (prefers-reduced-motion: reduce) { html.kids body::before { animation: none; } }
+
+/* ---------- Parent PIN keypad ---------- */
+.pinwrap { z-index: 95; }
+.pinbox { text-align: center; }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin: 6px 0 14px; }
+.pin-dots i { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--text); transition: transform .15s; }
+.pin-dots i.on { background: var(--glow); border-color: var(--glow); transform: scale(1.15); }
+.pin-dots.shake { animation: pinShake .4s; }
+@keyframes pinShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; margin: 0 auto 10px; }
+.pk { height: 58px; border-radius: 18px; font: inherit; font-size: 1.4rem; font-weight: 700; color: var(--text); cursor: pointer; background: rgba(255,255,255,.1); border: 1px solid var(--glass-edge); }
+.pk:active { background: rgba(255,255,255,.28); }
+.pin-links { display: flex; justify-content: space-between; margin-top: 8px; }
