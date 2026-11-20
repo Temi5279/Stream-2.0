@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
 </head>
 <body class="plain">
   <header class="w-top"><a class="logo" href="../" aria-label="stream home">str<span>▶</span>eam</a></header>
@@ -29,16 +29,17 @@
         var b = el("button", "pf-tile"); b.type = "button";
         var av = P.avatar(p, "lg"); if (manage) av.classList.add("editing");
         b.appendChild(av); b.appendChild(el("span", "", p.name + (p.kids ? " (Kids)" : "")));
-        b.onclick = function () { if (manage) form(p); else { P.setActive(p.id); home(); } };
+        b.onclick = function () { if (manage) form(p); else { Stream.switchProfile(p.id, home); } };
         grid.appendChild(b);
       });
-      if (P.list().length < 5) {
+      if (P.list().length < 5 && !Stream.isKids()) {
         var add = el("button", "pf-tile add"); add.type = "button";
         add.appendChild(el("div", "av lg add", "+")); add.appendChild(el("span", "", "Add profile"));
         add.onclick = function () { form(null); };
         grid.appendChild(add);
       }
       app.appendChild(grid);
+      if (Stream.isKids()) return;
       var m = el("button", "btn ghost", manage ? "Done" : "Manage profiles"); m.type = "button";
       m.style.cssText = "display:block;margin:26px auto 0";
       m.onclick = function () { select(!manage); };
@@ -66,24 +67,22 @@
       inp.value = p ? p.name : ((window.StreamUser && (window.StreamUser.displayName || "").split(" ")[0]) || "");
       f.appendChild(lab); f.appendChild(inp); box.appendChild(f);
       var kl = el("label", "kids-toggle"); var kc = el("input"); kc.type = "checkbox"; kc.checked = !!(p && p.kids);
-      kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror and 18+ films)")); box.appendChild(kl);
+      kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (colourful look, kid-friendly films only)")); box.appendChild(kl);
       var msg = el("p", "msg"); box.appendChild(msg);
       var save = el("button", "btn full", "Save"); save.type = "button";
       save.onclick = function () {
         var name = inp.value.trim();
         if (!name) { msg.textContent = "Please enter a name."; return; }
-        if (p) { P.update(p.id, { name: name, a: sel, kids: kc.checked }); select(true); }
-        else {
-          P.add({ name: name, a: sel, kids: kc.checked });
-          if (first) home(); else select(false);
-        }
+        var after = function () { if (p) select(true); else if (first) home(); else select(false); };
+        if (p) P.update(p.id, { name: name, a: sel, kids: kc.checked }); else P.add({ name: name, a: sel, kids: kc.checked });
+        if (kc.checked) Stream.pin.offer(after); else after();
       };
       box.appendChild(save);
       if (!first) {
         var cancel = el("button", "btn full ghost", "Cancel"); cancel.type = "button"; cancel.style.marginTop = "10px";
         cancel.onclick = function () { select(!!p); }; box.appendChild(cancel);
       }
-      if (p && P.list().length > 1) {
+      if (p && P.list().length > 1 && !Stream.isKids()) {
         var del = el("button", "linkbtn", "Delete profile"); del.type = "button"; del.style.cssText = "display:block;margin:16px auto 0;color:#ff8d98";
         del.onclick = function () { if (confirm("Delete " + p.name + "? Their My List and progress will be removed.")) { P.remove(p.id); select(true); } };
         box.appendChild(del);
@@ -91,7 +90,8 @@
       app.appendChild(box);
     }
 
-    if (q.get("edit")) { var ep = P.list().filter(function (x) { return x.id === q.get("edit"); })[0]; ep ? form(ep) : select(false); }
+    if (Stream.isKids() && P.list().length && (q.get("edit") || q.get("new") || q.get("manage"))) select(false);
+    else if (q.get("edit")) { var ep = P.list().filter(function (x) { return x.id === q.get("edit"); })[0]; ep ? form(ep) : select(false); }
     else if (q.get("new") || !P.list().length) form(null);
     else select(!!q.get("manage"));
   });
