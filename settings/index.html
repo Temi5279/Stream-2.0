@@ -8,7 +8,7 @@
   <link rel="manifest" href="../manifest.json">
   <link rel="apple-touch-icon" href="../icons/icon-192.png">
   <link rel="stylesheet" href="../style.css">
-  <script>document.documentElement.classList.add("auth-wait");setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
+  <script>document.documentElement.classList.add("auth-wait");try{if(localStorage.getItem("stream-kids")==="1")document.documentElement.classList.add("kids")}catch(e){}setTimeout(function(){document.documentElement.classList.remove("auth-wait")},6000)</script>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../icons/icon-192.png" type="image/png" sizes="192x192">
 </head>
@@ -49,23 +49,29 @@
       <label class="kids-toggle"><input type="checkbox" id="intro"> Play the opening animation</label>
     </section>
 
-    <section class="set-sec">
+    <section class="set-sec hide-kids">
       <h2>Playback and downloads</h2>
       <label class="kids-toggle"><input type="checkbox" id="cc"> Turn captions on by default (when a channel provides them)</label>
       <label class="kids-toggle"><input type="checkbox" id="wf"> Download over Wi-Fi only (Android)</label>
     </section>
 
-    <section class="set-sec">
+    <section class="set-sec hide-kids">
       <h2>Notifications</h2>
       <p class="empty">Push notifications are coming soon.</p>
     </section>
 
-    <section class="set-sec" id="privsec" hidden>
+    <section class="set-sec hide-kids" id="privsec" hidden>
       <h2>Privacy</h2>
       <label class="kids-toggle"><input type="checkbox" id="an"> Share anonymous usage data (Google Analytics)</label>
     </section>
 
-    <section class="set-sec">
+    <section class="set-sec hide-kids">
+      <h2>Parent PIN</h2>
+      <p class="empty" id="pinState"></p>
+      <div class="acct-row"><button class="btn ghost" type="button" id="pinSet"></button><button class="btn ghost" type="button" id="pinOff" hidden>Remove PIN</button></div>
+    </section>
+
+    <section class="set-sec hide-kids">
       <h2>Your data</h2>
       <ul class="list">
         <li><button class="glass plain" type="button" id="ch">Clear watch history for this profile</button></li>
@@ -101,6 +107,14 @@
       $(id).onchange = function () { try { if (this.checked) localStorage.setItem(key, "1"); else localStorage.removeItem(key); } catch (e) {} };
     }
     flag("cc", "stream-cc-default"); flag("wf", "stream-wifi-only");
+    function drawPin() {
+      var on = Stream.pin.has();
+      $("pinState").textContent = on ? "A PIN is on. Children need it to leave a kids profile." : "No PIN yet. A PIN stops children from leaving a kids profile.";
+      $("pinSet").textContent = on ? "Change PIN" : "Set PIN"; $("pinOff").hidden = !on;
+    }
+    drawPin();
+    $("pinSet").onclick = function () { if (Stream.pin.has()) Stream.pin.change(drawPin); else Stream.pin.setup(drawPin); };
+    $("pinOff").onclick = function () { Stream.pin.remove(drawPin); };
     $("intro").checked = !localStorage.getItem("stream-intro-off");
     $("intro").onchange = function () { try { if (this.checked) localStorage.removeItem("stream-intro-off"); else localStorage.setItem("stream-intro-off", "1"); } catch (e) {} };
     $("ch").onclick = function () { if (confirm("Clear watch history for " + cur.name + "?")) { Stream.clearProgress(); Stream.toast("Watch history cleared"); } };
@@ -112,7 +126,7 @@
     }, 1500);
     if (window.caches) caches.keys().then(function (ks) {
       var v = ks.filter(function (k) { return /^stream-v/.test(k); })[0];
-      var p = document.createElement("p"); p.className = "empty"; p.style.fontSize = ".8rem";
+      var p = document.createElement("p"); p.className = "empty hide-kids"; p.style.fontSize = ".8rem";
       p.textContent = "App version: " + (v || "not installed yet"); document.querySelector("main").appendChild(p);
     });
     if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(function (e) {
