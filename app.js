@@ -6,6 +6,7 @@
     try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
     // Tell the sync layer something changed (profiles, My List or progress)
     var p = k.split(":");
+    if (p[0] === "stream-pin") { window.dispatchEvent(new Event("stream:flush")); return; }
     if (p[0] === "stream-profiles" || p[0] === "stream-list" || p[0] === "stream-progress") {
       if (p[0] !== "stream-progress") {
         var mk = "stream-sync:" + p[1], m = get(mk, { pts: 0, lts: {} });
@@ -31,18 +32,19 @@
       var l = Profiles.list(), id = localStorage.getItem("stream-active:" + uid());
       return l.filter(function (p) { return p.id === id; })[0] || l[0] || null;
     },
-    setActive: function (id) { try { localStorage.setItem("stream-active:" + uid(), id); } catch (e) {} },
+    setActive: function (id) { try { localStorage.setItem("stream-active:" + uid(), id); } catch (e) {} applyKids(); },
     add: function (p) {
       var l = Profiles.list();
       p.id = "p" + Date.now().toString(36) + Math.floor(Math.random() * 1000);
       l.push(p); Profiles.save(l);
       if (l.length === 1) Profiles.setActive(p.id);
+      applyKids();
       return p;
     },
     update: function (id, ch) {
       var l = Profiles.list();
       l.forEach(function (p) { if (p.id === id) for (var k in ch) p[k] = ch[k]; });
-      Profiles.save(l);
+      Profiles.save(l); applyKids();
     },
     remove: function (id) {
       Profiles.save(Profiles.list().filter(function (p) { return p.id !== id; }));
@@ -59,6 +61,16 @@
       return d;
     }
   };
+  // ---------- Kids mode: one switch that restyles every page ----------
+  var KIDS_OK = ["Animation", "Comedy", "Adventure"];
+  function isKidsFilm(m) { return m.kids === true || (m.kids !== false && !m.mature && KIDS_OK.indexOf(m.genre) > -1); }
+  function applyKids() {
+    var p = Profiles.active(), on = !!(p && p.kids);
+    try { localStorage.setItem("stream-kids", on ? "1" : "0"); } catch (e) {}
+    document.documentElement.classList.toggle("kids", on);
+    return on;
+  }
+  window.addEventListener("stream:user", applyKids);
   function pkey(n) { var p = Profiles.active(); return "stream-" + n + ":" + uid() + ":" + (p ? p.id : "default"); }
 
   // ---------- Posters load as they scroll into view ----------
@@ -179,7 +191,7 @@
     var dn = window.StreamUser && window.StreamUser.displayName; inp.value = dn ? dn.split(" ")[0] : "";
     f.appendChild(lab); f.appendChild(inp); box.appendChild(f);
     var kl = el("label", "kids-toggle"), kc = el("input"); kc.type = "checkbox";
-    kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (hides horror and 18+ films)")); box.appendChild(kl);
+    kl.appendChild(kc); kl.appendChild(document.createTextNode(" Kids profile (colourful look, kid-friendly films only)")); box.appendChild(kl);
     var msg = el("p", "msg"); box.appendChild(msg);
     var save = el("button", "btn full", "Save and start watching"); save.type = "button";
     save.onclick = function () {
@@ -298,10 +310,100 @@
     return "page";
   }
 
+  // ---------- Parent PIN: stops children leaving a kids profile ----------
+  function pinKey() { return "stream-pin:" + uid(); }
+  function pinHas() { var p = get(pinKey(), null); return !!(p && p.h); }
+  function hashPin(v) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(uid() + ":" + v)).then(function (b) {
+      return Array.prototype.map.call(new Uint8Array(b), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+    });
+  }
+  function keypad(title, sub, onDone, opts) {
+    var wrap = document.createElement("div"); wrap.className = "dlg pinwrap";
+    var box = document.createElement("div"); box.className = "dlg-box glass pinbox"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", title);
+    var h = document.createElement("h2"); h.textContent = title;
+    var p = document.createElement("p"); p.textContent = sub || "";
+    var dots = document.createElement("div"); dots.className = "pin-dots";
+    for (var i = 0; i < 4; i++) dots.appendChild(document.createElement("i"));
+    var msg = document.createElement("p"); msg.className = "msg"; msg.style.textAlign = "center";
+    var pad = document.createElement("div"); pad.className = "pin-pad", val = "";
+    function render() { Array.prototype.forEach.call(dots.children, function (d, k) { d.className = k < val.length ? "on" : ""; }); }
+    function close() { document.removeEventListener("keydown", onKey); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+    var ctl = {
+      close: close,
+      wrong: function (t) { msg.textContent = t || ""; val = ""; render(); dots.classList.add("shake"); setTimeout(function () { dots.classList.remove("shake"); }, 400); },
+      again: function (t, s) { h.textContent = t; p.textContent = s || ""; msg.textContent = ""; val = ""; render(); }
+    };
+    function press(d) {
+      if (d === "back") { val = val.slice(0, -1); render(); return; }
+      if (val.length >= 4) return;
+      val += d; render();
+      if (val.length === 4) { var v = val; setTimeout(function () { onDone(v, ctl); }, 140); }
+    }
+    function onKey(e) { if (/^[0-9]$/.test(e.key)) press(e.key); else if (e.key === "Backspace") press("back"); else if (e.key === "Escape") close(); }
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "back"].forEach(function (d) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "pk";
+      if (d === "") { b.style.visibility = "hidden"; b.disabled = true; } else { b.textContent = d === "back" ? "⌫" : d; b.setAttribute("aria-label", d === "back" ? "Delete" : d); b.onclick = function () { press(d); }; }
+      pad.appendChild(b);
+    });
+    var links = document.createElement("div"); links.className = "pin-links";
+    var cancel = document.createElement("button"); cancel.type = "button"; cancel.className = "linkbtn"; cancel.textContent = "Cancel"; cancel.onclick = close; links.appendChild(cancel);
+    if (opts && opts.forgot) { var fg = document.createElement("button"); fg.type = "button"; fg.className = "linkbtn"; fg.textContent = "Forgot PIN?"; fg.onclick = function () { close(); pin.forgot(); }; links.appendChild(fg); }
+    box.appendChild(h); box.appendChild(p); box.appendChild(dots); box.appendChild(msg); box.appendChild(pad); box.appendChild(links);
+    wrap.appendChild(box); document.body.appendChild(wrap); document.addEventListener("keydown", onKey);
+  }
+  var pin = {
+    has: pinHas,
+    ask: function (onOk, title) {
+      if (!pinHas()) { onOk(); return; }
+      keypad(title || "Parent PIN", "Ask a grown-up to enter the PIN.", function (v, c) {
+        var lock = get("stream-pin-fail", { n: 0, until: 0 });
+        if (lock.until > Date.now()) { c.wrong("Too many tries. Wait a little and try again."); return; }
+        hashPin(v).then(function (hh) {
+          var cur = get(pinKey(), null);
+          if (cur && cur.h === hh) { put("stream-pin-fail", { n: 0, until: 0 }); c.close(); onOk(); return; }
+          lock.n = (lock.n || 0) + 1;
+          if (lock.n >= 5) { lock.n = 0; lock.until = Date.now() + 30000; }
+          put("stream-pin-fail", lock);
+          c.wrong(lock.until > Date.now() ? "Too many tries. Wait 30 seconds." : "Wrong PIN. Try again.");
+        });
+      }, { forgot: true });
+    },
+    setup: function (done) {
+      var first = null;
+      keypad("Set a parent PIN", "Choose 4 numbers only you know.", function (v, c) {
+        if (first === null) { first = v; c.again("Enter it again", "Type the same 4 numbers to confirm."); return; }
+        if (v !== first) { first = null; c.again("Set a parent PIN", "Those didn't match. Choose 4 numbers again."); return; }
+        hashPin(v).then(function (hh) { put(pinKey(), { h: hh, t: Date.now() }); c.close(); toast("Parent PIN saved"); if (done) done(); });
+      });
+    },
+    change: function (done) { pin.ask(function () { pin.setup(done); }, "Enter your current PIN"); },
+    remove: function (done) { pin.ask(function () { put(pinKey(), { h: null, t: Date.now() }); toast("Parent PIN removed"); if (done) done(); }, "Enter your PIN to remove it"); },
+    offer: function (done) {
+      if (pinHas()) { done(); return; }
+      var wrap = document.createElement("div"); wrap.className = "dlg pinwrap";
+      var box = document.createElement("div"); box.className = "dlg-box glass";
+      box.innerHTML = "<h2>Set a parent PIN?</h2><p>A PIN stops children from leaving a kids profile. You can also set one later in Settings.</p>";
+      var row = document.createElement("div"); row.className = "dlg-row";
+      var no = document.createElement("button"); no.type = "button"; no.className = "btn ghost"; no.textContent = "Not now";
+      var yes = document.createElement("button"); yes.type = "button"; yes.className = "btn"; yes.textContent = "Set PIN";
+      function close() { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+      no.onclick = function () { close(); done(); }; yes.onclick = function () { close(); pin.setup(done); };
+      row.appendChild(no); row.appendChild(yes); box.appendChild(row); wrap.appendChild(box); document.body.appendChild(wrap);
+    },
+    forgot: function () {
+      if (!confirm("This signs you out. Sign back in with your account email or Google, and the PIN will be cleared so you can set a new one. Continue?")) return;
+      window.dispatchEvent(new CustomEvent("stream:signout", { detail: { forgot: true, uid: uid() } }));
+    }
+  };
+
   // ---------- Designed posters (colour by genre, with the film's own frame blended in) ----------
   var PAL = { Horror: ["#b3202a", "#14040a"], Comedy: ["#f5a524", "#a4400c"], "Sci-Fi": ["#14b8a6", "#3b1a8c"], Drama: ["#4a6bff", "#1b1464"], Western: ["#e0701f", "#3d1a05"], Animation: ["#f0489a", "#5b21b6"], Documentary: ["#22b45a", "#053f35"], War: ["#8a9a22", "#18200f"], Romance: ["#e11d74", "#3d0b2a"], Adventure: ["#fb8c1d", "#0b6b66"] };
+  var KP = [["#ff5d8f", "#7b2ff7"], ["#ffb703", "#fb5607"], ["#2ec4b6", "#3a86ff"], ["#80ed99", "#2ec4b6"], ["#c77dff", "#ff5d8f"], ["#4cc9f0", "#4361ee"]];
   function posterEl(m, cls, tag, thumbNow) {
-    var pal = PAL[m.genre] || ["#2f4cdd", "#0a1a5c"];
+    var kidsOn = document.documentElement.classList.contains("kids"), h = 0;
+    for (var ci = 0; ci < m.id.length; ci++) h = (h * 31 + m.id.charCodeAt(ci)) % 9973;
+    var pal = kidsOn ? KP[h % KP.length] : (PAL[m.genre] || ["#2f4cdd", "#0a1a5c"]);
     var d = document.createElement(tag || "div"); d.className = "poster " + (cls || "");
     d.style.setProperty("--c1", pal[0]); d.style.setProperty("--c2", pal[1]);
     var t = "url(" + Stream.thumb(m.id) + ")";
@@ -344,6 +446,14 @@
     root: ROOT,
     profiles: Profiles,
     toast: toast,
+    pin: pin,
+    switchProfile: function (id, done) {
+      var cur = Profiles.active(), target = Profiles.list().filter(function (x) { return x.id === id; })[0];
+      function go() { Profiles.setActive(id); if (done) done(); }
+      if (cur && cur.kids && target && !target.kids && pinHas()) pin.ask(go, "Parent PIN"); else go();
+    },
+    isKids: function () { var p = Profiles.active(); return !!(p && p.kids); },
+    isKidsFilm: isKidsFilm,
     dl: dl,
     poster: function (m, cls) { return posterEl(m, cls, "div", true); },
     reportDialog: reportDialog,
@@ -357,7 +467,7 @@
     movies: function () {
       return fetch(new URL("movies.json", ROOT)).then(function (r) { return r.json(); }).then(function (l) {
         var p = Profiles.active();
-        return p && p.kids ? l.filter(function (m) { return m.genre !== "Horror" && !m.mature; }) : l;
+        return p && p.kids ? l.filter(isKidsFilm) : l;
       });
     },
     channels: function () { return fetch(new URL("channels.json", ROOT)).then(function (r) { return r.json(); }); },
@@ -420,4 +530,5 @@
       return a;
     }
   };
+applyKids();
 })();
