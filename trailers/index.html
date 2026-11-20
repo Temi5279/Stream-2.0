@@ -23,7 +23,6 @@
       box-shadow: 0 0 50px rgba(20, 50, 184, 0.5);
     }
 
-    /* Ambient floating particles */
     .bg-orb {
       position: absolute;
       border-radius: 50%;
@@ -51,7 +50,6 @@
     }
     .sc.on { opacity: 1; visibility: visible; }
 
-    /* Landscape (16:9 YouTube Long-Form) splits visual & text side-by-side */
     #stage.wide .sc.split {
       flex-direction: row;
       justify-content: space-evenly;
@@ -73,10 +71,8 @@
     }
 
     @keyframes popIn { 0% { opacity: 0; transform: scale(.65) translateY(calc(var(--u) * 4)); } 70% { transform: scale(1.06); } 100% { opacity: 1; transform: none; } }
-    @keyframes slideUp { 0% { opacity: 0; transform: translateY(calc(var(--u) * 6)); } 100% { opacity: 1; transform: none; } }
     @keyframes pulseBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
-    /* Shared Typography */
     .kicker {
       font-size: calc(var(--u) * 3.4);
       font-weight: 800;
@@ -102,7 +98,6 @@
       line-height: 1.35;
     }
 
-    /* Scene 1: Frustrated with bills -> FREE */
     .bills-row { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 2); justify-content: center; }
     #stage.wide .bills-row { justify-content: flex-start; }
     .bill-tag {
@@ -133,7 +128,6 @@
     }
     .on .free-badge { animation: popIn .45s .55s cubic-bezier(.2,1.4,.4,1) forwards; }
 
-    /* Scene 2: Human Walking With Phone Animation */
     .char-stage {
       position: relative;
       width: calc(var(--u) * 44);
@@ -145,7 +139,6 @@
     }
     .char-svg { width: 100%; height: 100%; overflow: visible; }
 
-    /* Walking Cycle Keyframes */
     .on .walker-body { animation: bodyBounce .55s ease-in-out infinite; transform-origin: center; }
     .on .leg-l { animation: legSwingA .55s ease-in-out infinite; transform-origin: 96px 118px; }
     .on .leg-r { animation: legSwingB .55s ease-in-out infinite; transform-origin: 106px 118px; }
@@ -160,7 +153,6 @@
     @keyframes screenPulse { 0%, 100% { opacity: .85; } 50% { opacity: 1; filter: drop-shadow(0 0 6px #7f98ff); } }
     @keyframes groundMove { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 36; } }
 
-    /* Scene 3: Poster Wall + Thousands of Movies & Hundreds of Channels */
     .wallt {
       position: absolute;
       inset: -25% -35%;
@@ -204,7 +196,6 @@
     .feat-big { font-size: calc(var(--u) * 7.2); font-weight: 900; color: #7f98ff; line-height: 1.08; }
     .feat-desc { font-size: calc(var(--u) * 3.6); color: #cbd5ff; font-weight: 600; }
 
-    /* Scene 4: Human Holding Phone / Watching TV With Offline Downloads */
     .on .chill-head { animation: headNod 2s ease-in-out infinite; transform-origin: 100px 58px; }
     .on .tv-wave { animation: tvFlicker 1.6s ease-in-out infinite alternate; }
     @keyframes headNod { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }
@@ -225,7 +216,6 @@
     }
     .dl-ok { color: #6ee7b7; font-weight: 900; white-space: nowrap; }
 
-    /* Scene 5: CTA */
     .brand-hero { font-size: calc(var(--u) * 10); font-weight: 900; letter-spacing: -0.02em; }
     .brand-hero span { color: #6c8aff; }
     .cta-pill {
@@ -239,7 +229,6 @@
     }
     .on .cta-pill { animation: pulseBtn 1.2s ease-in-out infinite; }
 
-    /* Start Overlay & Format Selector */
     #start, #cd {
       position: fixed;
       inset: 0;
@@ -256,8 +245,8 @@
     }
     #start.hide, #cd:not(.show) { display: none; }
     #start h1 { font-size: 1.5rem; font-weight: 900; }
-    #start p { color: #94a3d9; max-width: 34ch; line-height: 1.45; font-size: .9rem; }
-    .fmt-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    #start p { color: #94a3d9; max-width: 36ch; line-height: 1.45; font-size: .9rem; }
+    .fmt-group, .act-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
     .fmt-btn {
       font: inherit;
       font-size: .82rem;
@@ -270,17 +259,23 @@
       cursor: pointer;
     }
     .fmt-btn.active { background: #1d3fd8; color: #fff; border-color: #7f98ff; }
-    #go {
+    .go-btn {
       font: inherit;
       font-weight: 800;
-      padding: 13px 34px;
+      font-size: .9rem;
+      padding: 13px 24px;
       border-radius: 999px;
       color: #fff;
       cursor: pointer;
       background: linear-gradient(180deg, #7f98ff, #1d3fd8);
       border: 1px solid rgba(255,255,255,.45);
     }
-    #go:disabled { opacity: .5; }
+    .go-btn.dl-btn {
+      background: linear-gradient(180deg, #34d399, #059669);
+      border-color: rgba(167,243,208,.55);
+    }
+    .go-btn:disabled { opacity: .5; cursor: not-allowed; }
+    #statusMsg { font-size: .82rem; color: #9cb1ff; min-height: 1.2em; }
     #cd { font-size: 7rem; font-weight: 900; color: #5b7dff; }
     #replay {
       position: fixed;
@@ -319,34 +314,24 @@
     <section class="sc split" id="s2">
       <div class="char-stage">
         <svg class="char-svg" viewBox="0 0 200 190" fill="none">
-          <!-- Moving sidewalk line -->
           <line class="ground-scroll" x1="15" y1="172" x2="185" y2="172" stroke="#5b7dff" stroke-width="4" stroke-linecap="round" stroke-dasharray="18 18" />
-          <!-- Back Arm -->
           <g class="arm-back">
             <path d="M92 76 L72 104" stroke="#3b5bdb" stroke-width="11" stroke-linecap="round"/>
           </g>
-          <!-- Legs -->
           <g class="leg-l">
             <path d="M96 118 L82 164 L94 166" stroke="#1e3a8a" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
           <g class="leg-r">
             <path d="M106 118 L122 164 L134 166" stroke="#364fc7" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
-          <!-- Torso & Head -->
           <g class="walker-body">
-            <!-- Hoodie Torso -->
             <rect x="82" y="68" width="38" height="54" rx="16" fill="#4c6ef5"/>
-            <!-- Head -->
             <circle cx="102" cy="44" r="18" fill="#ffd8a8"/>
-            <!-- Hair / Cap -->
             <path d="M84 40 C84 26, 120 26, 120 40 C112 34, 92 34, 84 40 Z" fill="#0b132b"/>
             <rect x="102" y="33" width="24" height="5" rx="2.5" fill="#5b7dff"/>
-            <!-- Eye & Smile -->
             <circle cx="111" cy="44" r="2.2" fill="#0b132b"/>
             <path d="M107 51 Q112 55 116 50" stroke="#0b132b" stroke-width="2.2" stroke-linecap="round"/>
-            <!-- Front Arm Holding Phone -->
             <path d="M104 78 L128 96 L142 84" stroke="#748ffc" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Glowing Smartphone -->
             <g class="phone-glow" transform="translate(136, 58) rotate(12)">
               <rect x="0" y="0" width="22" height="38" rx="4" fill="#050a1c" stroke="#9cb1ff" stroke-width="2.5"/>
               <polygon points="9,14 9,24 16,19" fill="#6c8aff"/>
@@ -361,7 +346,7 @@
       </div>
     </section>
 
-    <!-- SCENE 3: Thousands of Movies & Hundreds of Channels (Evergreen) -->
+    <!-- SCENE 3: Thousands of Movies & Hundreds of Channels -->
     <section class="sc" id="s3">
       <div class="wallt" id="wall"></div>
       <div class="shade"></div>
@@ -378,32 +363,26 @@
       </div>
     </section>
 
-    <!-- SCENE 4: Human Holding Phone & Watching TV With Offline Downloads -->
+    <!-- SCENE 4: Holding Phone & Watching TV With Offline Downloads -->
     <section class="sc split" id="s4">
       <div class="char-stage">
         <svg class="char-svg" viewBox="0 0 210 185" fill="none">
-          <!-- TV Stand & Screen on Right -->
           <rect x="128" y="34" width="68" height="44" rx="6" fill="#091540" stroke="#7f98ff" stroke-width="3"/>
           <rect class="tv-wave" x="134" y="40" width="56" height="32" rx="3" fill="#1d3fd8"/>
           <polygon points="158,49 158,63 170,56" fill="#eaf0ff"/>
           <path d="M152 78 L172 78 M162 78 L162 88 M148 88 L176 88" stroke="#5b7dff" stroke-width="3" stroke-linecap="round"/>
 
-          <!-- Couch / Lounge Seat -->
           <rect x="16" y="106" width="96" height="48" rx="14" fill="#182b7a" stroke="#4c6ef5" stroke-width="2.5"/>
           <rect x="10" y="92" width="22" height="62" rx="10" fill="#233da3"/>
 
-          <!-- Person Relaxing & Holding Phone -->
           <g class="chill-head">
             <circle cx="58" cy="64" r="17" fill="#ffd8a8"/>
             <path d="M41 60 C41 44, 75 44, 75 60 C67 53, 49 53, 41 60 Z" fill="#0b132b"/>
             <circle cx="66" cy="64" r="2.2" fill="#0b132b"/>
             <path d="M62 71 Q67 75 71 70" stroke="#0b132b" stroke-width="2.2" stroke-linecap="round"/>
           </g>
-          <!-- Relaxed Torso & Legs -->
           <path d="M44 82 L72 82 L84 122 L114 122 L118 154" stroke="#4c6ef5" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Arms Holding Phone Up -->
           <path d="M56 88 L82 98 L94 84" stroke="#748ffc" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Phone in Hand -->
           <g class="phone-glow" transform="translate(88, 60) rotate(10)">
             <rect x="0" y="0" width="24" height="40" rx="4.5" fill="#050a1c" stroke="#6ee7b7" stroke-width="2.5"/>
             <path d="M12 12 L12 24 M8 20 L12 24 L16 20" stroke="#6ee7b7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -432,13 +411,17 @@
 
   <div id="start">
     <h1>stream trailer</h1>
-    <p>Pick your format, start your screen recorder, and tap Start. Trim the 3-2-1 countdown after recording.</p>
+    <p>Pick your format, then preview or download a <strong>.webm</strong> clip directly (or use your screen recorder).</p>
     <div class="fmt-group" role="group" aria-label="Video Format">
       <button class="fmt-btn active" type="button" data-w="1920" data-h="1080">16:9 (YouTube Long-Form)</button>
       <button class="fmt-btn" type="button" data-w="720" data-h="1080">720×1080 (Portrait)</button>
       <button class="fmt-btn" type="button" data-w="1080" data-h="1920">9:16 (Shorts / Reels)</button>
     </div>
-    <button id="go" type="button" disabled>Loading…</button>
+    <div class="act-group">
+      <button class="go-btn" id="go" type="button" disabled>Loading…</button>
+      <button class="go-btn dl-btn" id="dl" type="button" disabled>⬇ Download .webm</button>
+    </div>
+    <div id="statusMsg" aria-live="polite"></div>
   </div>
   <div id="cd" aria-hidden="true"></div>
   <div id="replay">Tap to replay</div>
@@ -449,6 +432,7 @@
     var $ = function (id) { return document.getElementById(id); };
     var stage = $("stage");
     var ratioW = 1920, ratioH = 1080;
+    var recorder = null, chunks = [], isDownloading = false;
 
     function fit() {
       var iw = window.innerWidth, ih = window.innerHeight;
@@ -464,7 +448,6 @@
       stage.style.width = w + "px";
       stage.style.height = h + "px";
       stage.classList.toggle("wide", w > h);
-      // Scale unit cleanly from the smaller dimension so nothing ever clips vertically or horizontally
       var base = Math.min(w, h);
       stage.style.setProperty("--u", (base / 100) + "px");
     }
@@ -511,7 +494,8 @@
         buildWall();
         ready = true;
         $("go").disabled = false;
-        $("go").textContent = "▶ Start";
+        $("go").textContent = "▶ Preview";
+        $("dl").disabled = false;
         if (/auto=1/.test(location.search)) $("go").click();
       });
 
@@ -519,7 +503,8 @@
       if (!ready) {
         buildWall();
         $("go").disabled = false;
-        $("go").textContent = "▶ Start";
+        $("go").textContent = "▶ Preview";
+        $("dl").disabled = false;
       }
     }, 4000);
 
@@ -528,23 +513,26 @@
       scenes.forEach(function (s) { s.classList.toggle("on", s.id === id); });
     }
 
-    function play() {
+    function stopRecordingIfActive() {
+      if (recorder && recorder.state !== "inactive") {
+        try { recorder.stop(); } catch (e) {}
+      }
+    }
+
+    function play(onComplete) {
       timers.forEach(clearTimeout);
       timers = [];
       $("replay").classList.remove("show");
 
-      // 0.0s: Hook
       show("s1");
-      // 3.2s: Human walking with phone
       at(3200, function () { show("s2"); });
-      // 7.4s: Thousands of movies & hundreds of channels
       at(7400, function () { show("s3"); });
-      // 11.4s: Human relaxing with phone & TV + offline downloads
       at(11400, function () { show("s4"); });
-      // 15.8s: CTA
       at(15800, function () { show("s5"); });
-      // 20.5s: Replay prompt
-      at(20500, function () { $("replay").classList.add("show"); });
+      at(20500, function () {
+        if (typeof onComplete === "function") onComplete();
+        $("replay").classList.add("show");
+      });
     }
 
     function countdown(done) {
@@ -563,11 +551,68 @@
       }, 1000);
     }
 
+    async function startDownloadCapture() {
+      if (isDownloading) return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || typeof MediaRecorder === "undefined") {
+        $("statusMsg").textContent = "Direct browser export isn't supported here—use your phone's screen recorder.";
+        return;
+      }
+
+      try {
+        isDownloading = true;
+        $("statusMsg").textContent = "Select this tab/window when prompted…";
+        var stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 30 },
+          audio: false
+        });
+
+        var mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+          ? "video/webm;codecs=vp9"
+          : (MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "");
+
+        chunks = [];
+        recorder = mimeType ? new MediaRecorder(stream, { mimeType: mimeType }) : new MediaRecorder(stream);
+
+        recorder.ondataavailable = function (e) {
+          if (e.data && e.data.size > 0) chunks.push(e.data);
+        };
+
+        recorder.onstop = function () {
+          stream.getTracks().forEach(function (t) { t.stop(); });
+          var blob = new Blob(chunks, { type: mimeType || "video/webm" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "watchstream-trailer-" + ratioW + "x" + ratioH + ".webm";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+          isDownloading = false;
+          $("statusMsg").textContent = "Downloaded .webm trailer!";
+        };
+
+        $("start").classList.add("hide");
+        countdown(function () {
+          $("statusMsg").textContent = "Recording trailer…";
+          recorder.start();
+          play(function () {
+            stopRecordingIfActive();
+          });
+        });
+      } catch (err) {
+        isDownloading = false;
+        $("start").classList.remove("hide");
+        $("statusMsg").textContent = "Capture cancelled—you can still preview or screen-record.";
+      }
+    }
+
     $("go").onclick = function () {
       $("start").classList.add("hide");
-      countdown(play);
+      countdown(function () { play(); });
     };
-    $("replay").onclick = play;
+    $("dl").onclick = startDownloadCapture;
+    $("replay").onclick = function () { play(); };
   })();
   </script>
 </body>
