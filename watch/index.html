@@ -73,5 +73,82 @@
   })();
   </script>
   <script type="module" src="../guard.js"></script>
+
+<script>
+(function () {
+  if (document.documentElement.classList.contains("kids") || localStorage.getItem("stream-kids") === "1") return;
+
+  var player = document.querySelector(".player");
+  var video = player && player.querySelector("video");
+  if (!player || !video) return;
+
+  var AD = {
+    img: "../Picsart_26-10-29_06-47-08-346.jpg",
+    url: "https://quicktokengen.dev/?utm_source=watchstream&utm_medium=preroll&utm_campaign=quicktokengen",
+    label: "Sponsored · QuickTokenGen",
+    totalSec: 15,
+    skipAfterSec: 5
+  };
+
+  var ov = document.createElement("div");
+  ov.className = "ad-ov";
+  ov.innerHTML =
+    '<div class="ad-card">' +
+      '<a href="' + AD.url + '" target="_blank" rel="noopener noreferrer" aria-label="Visit QuickTokenGen">' +
+        '<img src="' + AD.img + '" alt="QuickTokenGen - Password Generator, QR Code, Text Tools">' +
+      '</a>' +
+      '<div class="ad-bar">' +
+        '<span class="ad-tag" id="ad-status">' + AD.label + ' · 15s</span>' +
+        '<div class="ad-actions">' +
+          '<a class="btn sm" href="' + AD.url + '" target="_blank" rel="noopener noreferrer">Open Tool</a>' +
+          '<button type="button" class="ad-skip" id="ad-skip" disabled>Skip in 5s</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  player.appendChild(ov);
+
+  var skipBtn = ov.querySelector("#ad-skip");
+  var statusEl = ov.querySelector("#ad-status");
+  var elapsed = 0;
+  var closed = false;
+
+  video.pause();
+
+  function closeAd() {
+    if (closed) return;
+    closed = true;
+    clearInterval(timer);
+    ov.remove();
+    var startEl = player.querySelector(".start");
+    if (startEl) startEl.hidden = true;
+    video.play().catch(function () {});
+  }
+
+  var timer = setInterval(function () {
+    elapsed += 1;
+    var left = Math.max(0, AD.totalSec - elapsed);
+    var skipLeft = Math.max(0, AD.skipAfterSec - elapsed);
+
+    statusEl.textContent = AD.label + " · " + left + "s";
+
+    if (skipLeft > 0) {
+      skipBtn.textContent = "Skip in " + skipLeft + "s";
+    } else if (skipBtn.disabled) {
+      skipBtn.disabled = false;
+      skipBtn.classList.add("ready");
+      skipBtn.textContent = "Skip Ad ›";
+    }
+
+    if (elapsed >= AD.totalSec) {
+      closeAd();
+    }
+  }, 1000);
+
+  skipBtn.addEventListener("click", function () {
+    if (!skipBtn.disabled) closeAd();
+  });
+})();
+</script>
 </body>
 </html>
