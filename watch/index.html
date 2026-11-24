@@ -74,7 +74,7 @@
   </script>
   <script type="module" src="../guard.js"></script>
 
-  <script src="../app.js"></script>
+    <script src="../app.js"></script>
   <script src="../player.js"></script>
   <script>
   (function () {
@@ -101,19 +101,6 @@
         genres: null,
         movieIds: null
       }
-      // Add more sponsors here, e.g.:
-      // {
-      //   id: "sponsor-two",
-      //   type: "video", // "card" or "video"
-      //   src: "https://archive.org/download/YOUR_ITEM/promo.mp4",
-      //   url: "https://example.com/?utm_source=watchstream&utm_medium=preroll",
-      //   label: "Sponsored · Brand Name",
-      //   cta: "Learn More",
-      //   totalSec: 15,
-      //   skipAfterSec: 5,
-      //   genres: ["Horror", "Sci-Fi"],
-      //   movieIds: null
-      // }
     ];
 
     function isKidsMode() {
@@ -149,17 +136,22 @@
       return pool[idx % pool.length];
     }
 
-    function runPreRoll(film, onDone) {
-      if (isKidsMode()) { onDone(); return; }
-      var ad = pickCampaign(film);
-      if (!ad) { onDone(); return; }
+    var adDone = false, adCallbacks = [];
+    function afterAd(fn) {
+      if (adDone) { fn(); return; }
+      adCallbacks.push(fn);
+    }
 
-      try {
-        if (pl.video && typeof pl.video.pause === "function") pl.video.pause();
-      } catch (e) {}
+    (function startAdNow() {
+      if (isKidsMode()) { adDone = true; return; }
+      var ad = pickCampaign(null);
+      if (!ad) { adDone = true; return; }
+
+      try { if (pl.video && typeof pl.video.pause === "function") pl.video.pause(); } catch (e) {}
 
       var ov = document.createElement("div");
       ov.className = "ad-ov";
+      ov.style.cssText = "position:fixed;inset:0;z-index:9999;visibility:visible;";
 
       var mediaHtml = ad.type === "video"
         ? '<video src="' + ad.src + '" autoplay playsinline muted style="width:100%;max-height:58vh;display:block;background:#000;"></video>'
@@ -179,7 +171,7 @@
           '</div>' +
         '</div>';
 
-      mountEl.appendChild(ov);
+      document.body.appendChild(ov);
 
       var skipBtn = ov.querySelector("#ad-skip");
       var statusEl = ov.querySelector("#ad-status");
@@ -189,9 +181,13 @@
       function finish() {
         if (closed) return;
         closed = true;
+        adDone = true;
         clearInterval(timer);
         if (ov.parentNode) ov.parentNode.removeChild(ov);
-        onDone();
+        while (adCallbacks.length) {
+          var cb = adCallbacks.shift();
+          try { cb(); } catch (e) {}
+        }
       }
 
       var timer = setInterval(function () {
@@ -209,15 +205,13 @@
           skipBtn.textContent = "Skip Ad ›";
         }
 
-        if (elapsed >= ad.totalSec) {
-          finish();
-        }
+        if (elapsed >= ad.totalSec) finish();
       }, 1000);
 
       skipBtn.addEventListener("click", function () {
         if (!skipBtn.disabled) finish();
       });
-    }
+    })();
 
     Stream.movies().then(function (all) {
       var m = all.filter(function (x) { return x.id === id; })[0];
@@ -245,7 +239,7 @@
       var s = Stream.progress()[id], at = s && s.t > 5 && s.t < s.d - 30 ? s.t : 0;
       pl.setStart(at ? "Resume from " + Player.fmt(at) : "Tap to play");
 
-      function startStreamLoad() {
+      afterAd(function () {
         var base = "https://archive.org/download/" + encodeURIComponent(id) + "/";
         return Stream.dl.has(id).then(function (has) {
           if (has) { pl.load(Stream.dl.url(id), at); return; }
@@ -261,9 +255,7 @@
             pl.load(base + vids[0].name.split("/").map(encodeURIComponent).join("/"), at);
           });
         });
-      }
-
-      runPreRoll(m, startStreamLoad);
+      });
     }).catch(function () { pl.say("Could not load this film. Check your connection."); });
   })();
   </script>
