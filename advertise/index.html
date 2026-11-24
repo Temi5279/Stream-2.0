@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#040a22">
+  <title>Advertise · str▶eam</title>
+  <meta name="description" content="Advertise your business on stream.">
+  <meta property="og:title" content="Advertise on stream">
+  <meta property="og:description" content="Advertise your business on stream.">
+  <meta property="og:image" content="https://watchstream.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .pg-hero { text-align: center; padding: 8px 0 18px; }
+    .pg-hero h1 { font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.1; margin-bottom: 10px; }
+    .pg-hero p { color: var(--muted); line-height: 1.55; }
+    .big-btn { display: inline-block; margin-top: 8px; padding: 15px 34px; font-size: 1.05rem; text-align: center; }
+    .cards2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 14px 0; }
+    .card2 { padding: 18px; border-radius: 20px; } .card2 h3 { font-size: 1.02rem; margin-bottom: 6px; } .card2 p { color: var(--muted); font-size: .92rem; line-height: 1.5; margin: 0; }
+    .note { color: var(--muted); font-size: .85rem; line-height: 1.5; }
+    .form { display: grid; gap: 12px; margin-top: 12px; }
+    .form label { font-size: .85rem; color: var(--muted); display: grid; gap: 6px; }
+    .form input, .form textarea { width: 100%; padding: 13px 15px; border-radius: 14px; font: inherit; color: var(--text); background: rgba(4,10,34,.55); border: 1px solid var(--glass-edge); }
+    .form textarea { min-height: 110px; resize: vertical; }
+  </style>
+</head>
+<body class="plain">
+  <header class="w-top">
+    <a class="logo" href="../welcome/" aria-label="stream home">str<span>▶</span>eam</a>
+    <a class="btn sm ghost" href="../">Open app</a>
+  </header>
+  <main class="doc">
+    <article class="glass">
+      <div class="pg-hero">
+        <h1>Advertise on stream</h1>
+        <p>Reach people who love classic films and free live TV. Ads on stream are placed by hand and always labelled <strong>Sponsored</strong>.</p>
+        <a class="btn big-btn" href="#enquire">Send an enquiry</a>
+      </div>
+      <h2>What we can offer</h2>
+      <div class="cards2">
+        <div class="card2 glass"><h3>Sponsored banner</h3><p>A banner on the Home page, above the film rows.</p></div>
+        <div class="card2 glass"><h3>Sponsored poster</h3><p>Your business shown as a poster card inside a row on Discover.</p></div>
+        <div class="card2 glass"><h3>Brand shout-out</h3><p>Your logo and a short message on the Welcome page.</p></div>
+      </div>
+      <p class="note">These are starting ideas. Tell us what you need and we'll agree the format, dates and price with you before anything goes live. Prices are on request.</p>
+      <h2>Our ad rules</h2>
+      <ul>
+        <li>Every ad is clearly labelled <strong>Sponsored</strong>.</li>
+        <li>Kids profiles never show ads.</li>
+        <li>We don't accept adult content, gambling, weapons, tobacco, misleading claims or anything illegal, and we may refuse or remove any ad.</li>
+        <li>We don't sell your viewers' personal details.</li>
+      </ul>
+      <h2 id="enquire">Send an enquiry</h2>
+      <form class="form" id="f">
+        <label>Your name<input id="n" autocomplete="name" required></label>
+        <label>Business or brand<input id="b" required></label>
+        <label>Website or social page<input id="w" placeholder="https://"></label>
+        <label>What would you like to promote?<textarea id="m" required></textarea></label>
+        <label>Preferred dates or budget (optional)<input id="d"></label>
+        <button class="btn big-btn" type="submit">Email us your enquiry</button>
+      </form>
+      <p class="note">This opens your email app with the details filled in, addressed to <a href="mailto:contact@watchstream.app">contact@watchstream.app</a>. Please use that address for advertising enquiries only. Emails about other topics may be ignored or rejected.</p>
+    </article>
+  </main>
+  <footer class="w-foot">
+    <nav class="w-links" aria-label="Links"><a href="../privacy/">Privacy Policy</a><a href="../terms/">Terms of Service</a><a href="../cookies/">Cookie Policy</a><a href="../legal/">Legal notice</a><a href="../help/">Help Center</a><a href="../help/#contact">Contact Support</a><a href="../donate/">Support stream</a><a href="../advertise/">Advertise</a></nav>
+    <div class="foot-line"></div>
+    <p>© 2026 str▶eam. All rights reserved.</p>
+  </footer>
+  <script>
+  document.getElementById("f").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = function (id) { return document.getElementById(id).value.trim(); };
+    var body = "Name: " + v("n") + "\nBusiness: " + v("b") + "\nWebsite: " + v("w") + "\n\nWhat I'd like to promote:\n" + v("m") + "\n\nDates or budget: " + v("d") + "\n";
+    location.href = "mailto:contact@watchstream.app?subject=" + encodeURIComponent("Advertising enquiry: " + v("b")) + "&body=" + encodeURIComponent(body);
+  });
+  </script>
+</body>
+</html>
