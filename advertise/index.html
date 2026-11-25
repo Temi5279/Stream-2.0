@@ -5,26 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#040a22">
   <title>Advertise · str▶eam</title>
-  <meta name="description" content="Advertise your business on stream.">
+  <meta name="description" content="Video and banner ads on stream from just a few days. Simple flat prices in naira or dollars.">
   <meta property="og:title" content="Advertise on stream">
-  <meta property="og:description" content="Advertise your business on stream.">
+  <meta property="og:description" content="Video and banner ads on stream from just a few days. Simple flat prices in naira or dollars.">
   <meta property="og:image" content="https://watchstream.app/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="stylesheet" href="../style.css">
   <style>
-    .pg-hero { text-align: center; padding: 8px 0 18px; }
-    .pg-hero h1 { font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.1; margin-bottom: 10px; }
-    .pg-hero p { color: var(--muted); line-height: 1.55; }
-    .big-btn { display: inline-block; margin-top: 8px; padding: 15px 34px; font-size: 1.05rem; text-align: center; }
-    .cards2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 14px 0; }
-    .card2 { padding: 18px; border-radius: 20px; } .card2 h3 { font-size: 1.02rem; margin-bottom: 6px; } .card2 p { color: var(--muted); font-size: .92rem; line-height: 1.5; margin: 0; }
-    .note { color: var(--muted); font-size: .85rem; line-height: 1.5; }
-    .form { display: grid; gap: 12px; margin-top: 12px; }
+    .adv { max-width: 920px; margin: 0 auto; padding: 0 16px 30px; }
+    .adv h2 { font-size: clamp(1.4rem, 4.5vw, 1.9rem); margin: 40px 0 14px; text-align: center; }
+    .adv .lead { text-align: center; color: var(--muted); max-width: 52ch; margin: 0 auto 8px; line-height: 1.55; }
+    .hero2 { text-align: center; padding: 26px 0 10px; }
+    .hero2 h1 { font-size: clamp(2.1rem, 8vw, 3.4rem); line-height: 1.05; margin-bottom: 14px; }
+    .hero2 h1 span { background: linear-gradient(90deg, #8fa6ff, #ffd166, #ff7aa8); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite; }
+    @keyframes shine { to { background-position: 200% 0; } }
+    .from { display: inline-block; margin: 6px 0 18px; padding: 8px 18px; border-radius: 999px; font-weight: 700; background: rgba(91,125,255,.28); border: 1px solid var(--glass-edge); }
+    .cta-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .cta-row .btn { align-self: auto; padding: 14px 30px; }
+
+    /* phone mock-ups */
+    .mocks { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); justify-items: center; margin: 26px 0 10px; perspective: 900px; }
+    .mock { width: 220px; }
+    .mock .ph { height: 330px; border-radius: 30px; border: 6px solid #1a2a7a; background: #050a1c; overflow: hidden; position: relative; box-shadow: 0 24px 50px rgba(0,0,40,.6); transform: rotateY(-10deg) rotateX(3deg); }
+    .mock:nth-child(2) .ph { transform: rotateY(10deg) rotateX(3deg); }
+    .mock p { text-align: center; margin-top: 12px; font-weight: 700; } .mock small { display: block; text-align: center; color: var(--muted); }
+    .spons { position: absolute; z-index: 3; top: 8px; left: 8px; font-size: .58rem; font-weight: 800; letter-spacing: .08em; padding: 2px 7px; border-radius: 6px; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.4); }
+    .bn { position: absolute; top: 34px; left: 10px; right: 10px; height: 74px; border-radius: 14px; background: linear-gradient(120deg, #ff5d8f, #ffb703, #ff5d8f); background-size: 200% 100%; animation: shine 3s linear infinite; display: grid; place-items: center; font-weight: 800; color: #2a1250; text-align: center; font-size: .85rem; }
+    .rows i { position: absolute; left: 10px; right: 10px; height: 58px; border-radius: 12px; background: rgba(255,255,255,.08); } .rows i:nth-child(1) { top: 122px; } .rows i:nth-child(2) { top: 190px; } .rows i:nth-child(3) { top: 258px; }
+    .vid { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: radial-gradient(circle at 50% 40%, #3a5bff, #0a1a5c 70%); display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; text-align: center; padding: 20px; }
+    .adbadge { position: absolute; z-index: 3; top: 8px; right: 8px; font-size: .62rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: #ffd166; color: #2a1250; }
+    .vbar { position: absolute; left: 10px; right: 10px; bottom: 14px; height: 5px; border-radius: 5px; background: rgba(255,255,255,.3); overflow: hidden; } .vbar i { display: block; height: 100%; width: 0; background: #ffd166; animation: fill 5s linear infinite; }
+    @keyframes fill { to { width: 100%; } }
+
+    /* calculator */
+    .calc { padding: 22px; border-radius: 26px; max-width: 700px; margin: 0 auto; }
+    .opts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 18px; }
+    .opt { text-align: left; padding: 14px; border-radius: 18px; font: inherit; color: var(--text); cursor: pointer; background: rgba(255,255,255,.07); border: 2px solid var(--glass-edge); }
+    .opt b { display: block; margin-bottom: 4px; } .opt small { color: var(--muted); line-height: 1.35; display: block; }
+    .opt[aria-pressed="true"] { border-color: #fff; background: rgba(91,125,255,.35); }
+    .lbl { font-size: .85rem; color: var(--muted); margin: 6px 0 8px; display: block; }
+    .days { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .dchip { padding: 10px 18px; border-radius: 999px; font: inherit; font-weight: 700; color: var(--text); cursor: pointer; background: rgba(255,255,255,.08); border: 2px solid var(--glass-edge); }
+    .dchip[aria-pressed="true"] { border-color: #fff; background: rgba(91,125,255,.4); }
+    .days input { width: 96px; padding: 10px 12px; border-radius: 14px; font: inherit; color: var(--text); background: rgba(4,10,34,.55); border: 2px solid var(--glass-edge); }
+    .total { text-align: center; margin: 22px 0 6px; }
+    .total .amt { font-size: clamp(2.4rem, 11vw, 3.6rem); font-weight: 800; line-height: 1; text-shadow: 0 0 30px rgba(91,125,255,.6); }
+    .total small { color: var(--muted); display: block; margin-top: 6px; }
+    .cur { display: flex; gap: 6px; justify-content: center; margin-top: 6px; }
+    .cur button { padding: 6px 14px; border-radius: 999px; font: inherit; font-size: .85rem; color: var(--text); cursor: pointer; background: transparent; border: 1px solid var(--glass-edge); } .cur button[aria-pressed="true"] { background: rgba(91,125,255,.4); border-color: #fff; }
+    .table { width: 100%; border-collapse: collapse; font-size: .9rem; margin-top: 18px; } .table th, .table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--glass-edge); } .table th { color: var(--muted); font-weight: 600; } .table td:first-child { text-align: left; font-weight: 700; }
+
+    .steps2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); counter-reset: s; }
+    .st { padding: 18px; border-radius: 20px; } .st::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--royal); font-weight: 700; margin-bottom: 10px; }
+    .st b { display: block; margin-bottom: 4px; } .st span { color: var(--muted); font-size: .92rem; line-height: 1.45; }
+    .why { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .why div { padding: 16px; border-radius: 18px; } .why b { display: block; margin-bottom: 4px; } .why span { color: var(--muted); font-size: .92rem; line-height: 1.45; }
+    .faq3 { max-width: 720px; margin: 0 auto; } .faq3 details { padding: 14px 16px; border-radius: 16px; margin-bottom: 10px; } .faq3 summary { cursor: pointer; font-weight: 600; } .faq3 p { color: var(--muted); margin-top: 10px; line-height: 1.5; }
+    .form { display: grid; gap: 12px; max-width: 640px; margin: 0 auto; padding: 22px; border-radius: 26px; }
     .form label { font-size: .85rem; color: var(--muted); display: grid; gap: 6px; }
     .form input, .form textarea { width: 100%; padding: 13px 15px; border-radius: 14px; font: inherit; color: var(--text); background: rgba(4,10,34,.55); border: 1px solid var(--glass-edge); }
-    .form textarea { min-height: 110px; resize: vertical; }
+    .form textarea { min-height: 100px; resize: vertical; }
+    .pkg { padding: 12px 14px; border-radius: 14px; background: rgba(91,125,255,.25); font-weight: 700; }
+    .note { color: var(--muted); font-size: .85rem; line-height: 1.5; text-align: center; max-width: 60ch; margin: 12px auto 0; }
+    .rv { opacity: 0; transform: translateY(26px); transition: opacity .7s, transform .7s; } .rv.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .rv { opacity: 1; transform: none; } }
   </style>
 </head>
 <body class="plain">
@@ -32,51 +78,156 @@
     <a class="logo" href="../welcome/" aria-label="stream home">str<span>▶</span>eam</a>
     <a class="btn sm ghost" href="../">Open app</a>
   </header>
-  <main class="doc">
-    <article class="glass">
-      <div class="pg-hero">
-        <h1>Advertise on stream</h1>
-        <p>Reach people who love classic films and free live TV. Ads on stream are placed by hand and always labelled <strong>Sponsored</strong>.</p>
-        <a class="btn big-btn" href="#enquire">Send an enquiry</a>
+
+  <main class="adv">
+    <section class="hero2">
+      <h1>Put your business in front of <span>film lovers</span></h1>
+      <p class="lead">Video ads before and during films, and banner ads on the Home page. Simple flat prices, no per-view fees, from just 3 days.</p>
+      <div class="from">Starting from <span id="fromPrice">₦3,000</span></div>
+      <div class="cta-row"><a class="btn" href="#price">See prices</a><a class="btn ghost" href="#enquire">Send an enquiry</a></div>
+    </section>
+
+    <div class="mocks rv">
+      <div class="mock"><div class="ph"><span class="spons">SPONSORED</span><div class="bn">Your business<br>shown here</div><div class="rows"><i></i><i></i><i></i></div></div><p>Banner ad</p><small>On the Home page</small></div>
+      <div class="mock"><div class="ph"><span class="adbadge">Ad · Sponsored</span><div class="vid">Your video plays<br>before the film</div><div class="vbar"><i></i></div></div><p>Video ad</p><small>Before a film and mid-film</small></div>
+    </div>
+
+    <h2 id="price">Pick your ad and your days</h2>
+    <div class="calc glass rv">
+      <span class="lbl">1. Choose a format</span>
+      <div class="opts" id="fmts">
+        <button class="opt" type="button" data-f="video" aria-pressed="true"><b>▶ Video ad</b><small>Plays before a film and again in the middle.</small></button>
+        <button class="opt" type="button" data-f="banner" aria-pressed="false"><b>🖼 Banner ad</b><small>A banner above the film rows on Home.</small></button>
+        <button class="opt" type="button" data-f="both" aria-pressed="false"><b>⭐ Video + Banner</b><small>Both together. Save 15%.</small></button>
       </div>
-      <h2>What we can offer</h2>
-      <div class="cards2">
-        <div class="card2 glass"><h3>Sponsored banner</h3><p>A banner on the Home page, above the film rows.</p></div>
-        <div class="card2 glass"><h3>Sponsored poster</h3><p>Your business shown as a poster card inside a row on Discover.</p></div>
-        <div class="card2 glass"><h3>Brand shout-out</h3><p>Your logo and a short message on the Welcome page.</p></div>
+      <span class="lbl">2. How many days? (3 to 90)</span>
+      <div class="days" id="days">
+        <button class="dchip" type="button" data-d="3" aria-pressed="false">3</button>
+        <button class="dchip" type="button" data-d="7" aria-pressed="true">7</button>
+        <button class="dchip" type="button" data-d="14" aria-pressed="false">14</button>
+        <button class="dchip" type="button" data-d="30" aria-pressed="false">30</button>
+        <input id="cd" type="number" min="3" max="90" value="7" inputmode="numeric" aria-label="Custom number of days">
       </div>
-      <p class="note">These are starting ideas. Tell us what you need and we'll agree the format, dates and price with you before anything goes live. Prices are on request.</p>
-      <h2>Our ad rules</h2>
-      <ul>
-        <li>Every ad is clearly labelled <strong>Sponsored</strong>.</li>
-        <li>Kids profiles never show ads.</li>
-        <li>We don't accept adult content, gambling, weapons, tobacco, misleading claims or anything illegal, and we may refuse or remove any ad.</li>
-        <li>We don't sell your viewers' personal details.</li>
-      </ul>
-      <h2 id="enquire">Send an enquiry</h2>
-      <form class="form" id="f">
-        <label>Your name<input id="n" autocomplete="name" required></label>
-        <label>Business or brand<input id="b" required></label>
-        <label>Website or social page<input id="w" placeholder="https://"></label>
-        <label>What would you like to promote?<textarea id="m" required></textarea></label>
-        <label>Preferred dates or budget (optional)<input id="d"></label>
-        <button class="btn big-btn" type="submit">Email us your enquiry</button>
-      </form>
-      <p class="note">This opens your email app with the details filled in, addressed to <a href="mailto:contact@watchstream.app">contact@watchstream.app</a>. Please use that address for advertising enquiries only. Emails about other topics may be ignored or rejected.</p>
-    </article>
+      <div class="total">
+        <div class="amt" id="amt">₦10,000</div>
+        <small id="per"></small>
+        <div class="cur" role="group" aria-label="Currency"><button type="button" data-c="NGN" aria-pressed="true">₦ Naira</button><button type="button" data-c="USD" aria-pressed="false">$ Dollars</button></div>
+        <small>Prices show in naira for Nigeria and dollars elsewhere. Switch if we guessed wrong.</small>
+      </div>
+      <div class="cta-row"><a class="btn" href="#enquire" id="book">Book this ad</a></div>
+      <table class="table" id="tbl" aria-label="Price list"></table>
+    </div>
+    <p class="note">These are introductory prices and may change as stream grows. We don't promise a number of views or clicks. You pay a flat price for the days you choose.</p>
+
+    <h2>How it works</h2>
+    <div class="steps2">
+      <div class="st glass rv"><b>Tell us</b><span>Pick your format and days, then send your enquiry.</span></div>
+      <div class="st glass rv"><b>Send your ad</b><span>Share your video or banner. We check it fits our rules.</span></div>
+      <div class="st glass rv"><b>Pay</b><span>We send a payment link. Pay by card or bank transfer, in naira or dollars.</span></div>
+      <div class="st glass rv"><b>Go live</b><span>Your ad starts on the agreed date and stops when your days end.</span></div>
+    </div>
+
+    <h2>Why advertise here</h2>
+    <div class="why">
+      <div class="glass rv"><b>Simple and cheap</b><span>Flat prices from 3 days. No bidding, no per-view charges.</span></div>
+      <div class="glass rv"><b>Clearly labelled</b><span>Every ad says Sponsored, so viewers trust the app and your brand.</span></div>
+      <div class="glass rv"><b>Family-safe</b><span>Kids profiles never show ads.</span></div>
+      <div class="glass rv"><b>Handled by a person</b><span>You deal with the owner directly, and we place your ad by hand.</span></div>
+    </div>
+
+    <h2>What we need from you</h2>
+    <div class="faq3">
+      <details class="glass"><summary>Video ad file</summary><p>An MP4 video, 10 to 30 seconds, ideally 1280×720 (landscape), under 100 MB. Make sure you own the video and the music in it.</p></details>
+      <details class="glass"><summary>Banner ad file</summary><p>A JPG, PNG or WebP image, 1200×400 pixels (3 to 1 wide), under 300 KB, plus the link people should go to when they tap it.</p></details>
+      <details class="glass"><summary>Our ad rules</summary><p>No adult content, gambling, weapons, tobacco, misleading claims or anything illegal. We may refuse or remove any ad, and if we can't run yours we refund you.</p></details>
+    </div>
+
+    <h2>Questions</h2>
+    <div class="faq3">
+      <details class="glass"><summary>Do you charge per view?</summary><p>No. You pay one flat price for the number of days you choose, with a minimum of 3 days.</p></details>
+      <details class="glass"><summary>Can I choose my own number of days?</summary><p>Yes. Pick 3, 7, 14 or 30, or type any number from 3 to 90 and the price updates.</p></details>
+      <details class="glass"><summary>Will kids see my ad?</summary><p>No. Ads are never shown on kids profiles.</p></details>
+      <details class="glass"><summary>Do you guarantee views or sales?</summary><p>No. stream is growing, so we can't promise a number of views, clicks or sales. We promise your ad runs on the days you paid for.</p></details>
+      <details class="glass"><summary>How do I pay?</summary><p>After you send your enquiry we confirm the details and send a payment link. You can pay in naira or dollars.</p></details>
+    </div>
+
+    <h2 id="enquire">Send an enquiry</h2>
+    <form class="form glass" id="f">
+      <div class="pkg" id="pkg"></div>
+      <label>Your name<input id="n" autocomplete="name" required></label>
+      <label>Business or brand<input id="b" required></label>
+      <label>Website or social page<input id="w" placeholder="https://"></label>
+      <label>Where should people go when they tap your ad?<input id="l" placeholder="https://"></label>
+      <label>What would you like to promote?<textarea id="m" required></textarea></label>
+      <label>Preferred start date (optional)<input id="d" type="date"></label>
+      <button class="btn" type="submit" style="align-self:auto;padding:14px">Email us your enquiry</button>
+    </form>
+    <p class="note">This opens your email app with the details filled in, addressed to <a href="mailto:contact@watchstream.app">contact@watchstream.app</a>. Please use that address for advertising enquiries only. Emails about other topics may be ignored or rejected.</p>
   </main>
+
   <footer class="w-foot">
     <nav class="w-links" aria-label="Links"><a href="../privacy/">Privacy Policy</a><a href="../terms/">Terms of Service</a><a href="../cookies/">Cookie Policy</a><a href="../legal/">Legal notice</a><a href="../help/">Help Center</a><a href="../help/#contact">Contact Support</a><a href="../donate/">Support stream</a><a href="../advertise/">Advertise</a></nav>
     <div class="foot-line"></div>
     <p>© 2026 str▶eam. All rights reserved.</p>
   </footer>
+
   <script>
-  document.getElementById("f").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var v = function (id) { return document.getElementById(id).value.trim(); };
-    var body = "Name: " + v("n") + "\nBusiness: " + v("b") + "\nWebsite: " + v("w") + "\n\nWhat I'd like to promote:\n" + v("m") + "\n\nDates or budget: " + v("d") + "\n";
-    location.href = "mailto:contact@watchstream.app?subject=" + encodeURIComponent("Advertising enquiry: " + v("b")) + "&body=" + encodeURIComponent(body);
-  });
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var P = {
+      banner: { NGN: [[3, 3000], [7, 6000], [14, 10000], [30, 18000]], USD: [[3, 3], [7, 6], [14, 10], [30, 15]] },
+      video:  { NGN: [[3, 5000], [7, 10000], [14, 17000], [30, 30000]], USD: [[3, 5], [7, 9], [14, 15], [30, 25]] }
+    };
+    var NAMES = { video: "Video ad", banner: "Banner ad", both: "Video + Banner" };
+    var isNG = false;
+    try { isNG = Intl.DateTimeFormat().resolvedOptions().timeZone === "Africa/Lagos" || /-NG$/i.test(navigator.language || ""); } catch (e) {}
+    var st = { f: "video", d: 7, c: isNG ? "NGN" : "USD" };
+
+    function base(f, c, d) { var t = P[f][c], tier = t[0]; t.forEach(function (x) { if (d >= x[0]) tier = x; }); return tier[1] + (d - tier[0]) * (tier[1] / tier[0]); }
+    function round(c, v) { return c === "NGN" ? Math.round(v / 500) * 500 : Math.round(v); }
+    function price(f, c, d) {
+      d = Math.max(3, Math.min(90, Math.round(d) || 3));
+      var v = f === "both" ? (base("banner", c, d) + base("video", c, d)) * 0.85 : base(f, c, d);
+      return round(c, v);
+    }
+    function money(c, v) { return c === "NGN" ? "₦" + v.toLocaleString("en-NG") : "$" + v.toLocaleString("en-US"); }
+    function clamp(d) { return Math.max(3, Math.min(90, Math.round(d) || 3)); }
+
+    function draw() {
+      st.d = clamp(st.d);
+      var p = price(st.f, st.c, st.d);
+      $("amt").textContent = money(st.c, p);
+      $("per").textContent = NAMES[st.f] + " for " + st.d + " days · about " + money(st.c, Math.round(p / st.d * (st.c === "USD" ? 100 : 1)) / (st.c === "USD" ? 100 : 1)) + " a day";
+      $("fromPrice").textContent = money(st.c, price("banner", st.c, 3));
+      $("pkg").textContent = "Your pick: " + NAMES[st.f] + " · " + st.d + " days · " + money(st.c, p);
+      Array.prototype.forEach.call(document.querySelectorAll("#fmts .opt"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-f") === st.f); });
+      Array.prototype.forEach.call(document.querySelectorAll("#days .dchip"), function (b) { b.setAttribute("aria-pressed", +b.getAttribute("data-d") === st.d); });
+      Array.prototype.forEach.call(document.querySelectorAll(".cur button"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-c") === st.c); });
+      if (document.activeElement !== $("cd")) $("cd").value = st.d;
+      var rows = "<tr><th></th>" + [3, 7, 14, 30].map(function (d) { return "<th>" + d + " days</th>"; }).join("") + "</tr>";
+      ["video", "banner", "both"].forEach(function (f) { rows += "<tr><td>" + NAMES[f] + "</td>" + [3, 7, 14, 30].map(function (d) { return "<td>" + money(st.c, price(f, st.c, d)) + "</td>"; }).join("") + "</tr>"; });
+      $("tbl").innerHTML = rows;
+    }
+    $("fmts").addEventListener("click", function (e) { var b = e.target.closest(".opt"); if (b) { st.f = b.getAttribute("data-f"); draw(); } });
+    $("days").addEventListener("click", function (e) { var b = e.target.closest(".dchip"); if (b) { st.d = +b.getAttribute("data-d"); draw(); } });
+    $("cd").addEventListener("input", function () { var v = parseInt(this.value, 10); if (v >= 3) { st.d = Math.min(90, v); draw(); } });
+    $("cd").addEventListener("blur", function () { st.d = clamp(parseInt(this.value, 10)); draw(); });
+    document.querySelector(".cur").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { st.c = b.getAttribute("data-c"); draw(); } });
+    draw();
+
+    $("f").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = function (id) { return $(id).value.trim(); };
+      var body = "Package: " + $("pkg").textContent.replace("Your pick: ", "") + "\n\nName: " + v("n") + "\nBusiness: " + v("b") + "\nWebsite: " + v("w") + "\nAd link: " + v("l") + "\nPreferred start date: " + v("d") + "\n\nWhat I'd like to promote:\n" + v("m") + "\n";
+      location.href = "mailto:contact@watchstream.app?subject=" + encodeURIComponent("Advertising enquiry: " + v("b")) + "&body=" + encodeURIComponent(body);
+    });
+
+    var els = document.querySelectorAll(".rv");
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: 0.15 });
+      Array.prototype.forEach.call(els, function (el) { io.observe(el); });
+    } else Array.prototype.forEach.call(els, function (el) { el.classList.add("in"); });
+  })();
   </script>
 </body>
 </html>
