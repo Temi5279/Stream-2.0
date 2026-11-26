@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "quicktokengen",
+    "name": "QuickTokenGen",
+    "image": "Picsart_26-10-29_06-47-08-346.jpg",
+    "link": "https://quicktokengen.dev/?utm_source=watchstream&utm_medium=display&utm_campaign=quicktokengen",
+    "cta": "Open Tool",
+    "slots": ["banner", "pre"],
+    "skipAfter": 5,
+    "duration": 15
+  }
+]

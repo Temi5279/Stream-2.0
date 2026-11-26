@@ -83,6 +83,7 @@
   </main>
 
   <script src="app.js"></script>
+  <script src="ads.js"></script>
   <script>
   Stream.guardOnline(function () { Stream.whenUser(function () {
     if (Stream.isKids()) {
@@ -136,6 +137,7 @@
         .forEach(function (g) {
           addRow(g === "Horror" ? "For horror fans" : "Popular in " + g, all.filter(function (m) { return m.genre === g; }).slice(0, 15));
         });
+      StreamAds.addBanner(rows, Stream.isKids());
     });
   }); });
   </script>

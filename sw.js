@@ -1,6 +1,6 @@
 const DL = "stream-downloads"; // downloaded films live here and survive updates
-const VERSION = "stream-v29";
-const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
+const VERSION = "stream-v31";
+const SHELL = ["./", "live/", "discover/", "profile/", "profiles/", "settings/", "downloads/", "style.css", "pwa.js", "app.js", "player.js", "ads.js", "watch/", "movie/", "manifest.json", "icons/icon-192.png", "icons/icon-512.png"];
 
 // Pages that need the internet. Offline they show a plain "No internet connection" page.
 // Downloaded films are played from the saved copy, including seeking

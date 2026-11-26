@@ -384,6 +384,7 @@ html.tv .top .logo { display: none; }
 html.tv .card { flex-basis: 220px; }
 html.tv .chan { flex-basis: 210px; min-height: 170px; }
 html.tv :focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+html.tv .tv-focused { outline: 4px solid #fff; outline-offset: 4px; z-index: 2; }
 
 /* ---------- Older browsers (many TVs): fallbacks for aspect-ratio ---------- */
 @supports not (aspect-ratio: 1) {
@@ -673,4 +674,3 @@ html.kids .offline svg { stroke: #ffd166; }
   border-color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
 }
-

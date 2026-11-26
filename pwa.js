@@ -13,11 +13,15 @@
     if (q === "1") localStorage.setItem("stream-tv", "1");
     if (q === "0") localStorage.removeItem("stream-tv");
     var onTV = localStorage.getItem("stream-tv") === "1" ||
-      /SmartTV|SMART-TV|Tizen|Web0S|webOS|NetCast|BRAVIA|AFT[A-Z]|GoogleTV|Android.*TV|CrKey|HbbTV|Roku|VIDAA/i.test(navigator.userAgent);
+      /SmartTV|SMART-TV|Tizen|Web0S|webOS|NetCast|BRAVIA|AFT[A-Z]|GoogleTV|Android.*TV|CrKey|HbbTV|Roku|VIDAA|Leanback/i.test(navigator.userAgent);
     if (onTV) {
       document.documentElement.classList.add("tv");
       Array.prototype.forEach.call(document.querySelectorAll('.nav a[href$="downloads/"]'), function (a) { var li = a.parentNode; if (li && li.parentNode) li.parentNode.removeChild(li); });
-      if (here) { var s = document.createElement("script"); s.src = new URL("tvnav.js", here).href; document.body.appendChild(s); }
+      if (here) {
+        var s = document.createElement("script");
+        s.src = new URL("tvnav.js", here).href; s.async = false; s.onload = function () { window.dispatchEvent(new Event("stream:tv-ready")); };
+        document.head.appendChild(s);
+      }
     }
   } catch (e) {}
 })();

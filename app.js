@@ -289,7 +289,11 @@
   };
   // Downloads are not offered on TV browsers
   Object.defineProperty(dl, "ok", { get: function () {
-    return "caches" in window && "serviceWorker" in navigator && !document.documentElement.classList.contains("tv");
+    var installed = false;
+    try {
+      installed = !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+    } catch (e) {}
+    return installed && "caches" in window && "serviceWorker" in navigator && !document.documentElement.classList.contains("tv");
   } });
   // Fallback for browsers without background downloads: works while stream stays open
   function page(c, m, url, meta) {
