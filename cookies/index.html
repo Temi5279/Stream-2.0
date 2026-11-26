@@ -19,7 +19,7 @@
   <main class="doc">
     <article class="glass">
       <h1>Cookie Policy</h1>
-      <p class="meta">Last updated: November 14, 2026</p>
+      <p class="meta">Last updated: November 26, 2026</p>
       <p>Cookies are small files stored on your device. Similar technologies, such as browser storage, do the same job. This page explains what stream uses and why.</p>
 
       <h2>1. What we use</h2>
@@ -29,6 +29,7 @@
           <tr><td>Firebase sign-in data (browser storage)</td><td>Keeps you signed in</td><td>Essential</td><td>Until you sign out or clear data</td></tr>
           <tr><td>stream-progress (local storage)</td><td>Remembers how far you got in each film</td><td>Essential</td><td>Until you clear browser data</td></tr>
           <tr><td>Offline cache (service worker)</td><td>Loads the app faster and keeps pages available</td><td>Essential</td><td>Until we publish an update or you clear data</td></tr>
+          <tr><td>stream-ad-last (local storage)</td><td>Limits how often a pre-roll ad is shown</td><td>Essential</td><td>Until cleared; cooldown lasts 10 minutes</td></tr>
           <tr><td>_ga, _ga_ (Google Analytics, planned)</td><td>Counts visitors and pages viewed</td><td>Analytics</td><td>Up to 2 years</td></tr>
         </tbody>
       </table></div>
@@ -40,7 +41,7 @@
       <p>We plan to switch on Google Analytics. Where the law requires, we will ask for your consent before analytics cookies are set. You can also use Google’s opt-out add-on at tools.google.com/dlpage/gaoptout.</p>
 
       <h2>4. Advertising</h2>
-      <p>stream does not currently use advertising cookies. If we add ads, we will update this page and ask for consent where required.</p>
+      <p>stream shows a non-personalized sponsored image card on Home and a skippable pre-roll before some films. These ads do not set advertising cookies. A timestamp stored in local storage as <code>stream-ad-last</code> limits pre-rolls to one every 10 minutes and remains until you clear it. If analytics is enabled for your visit, ad impression and click events may be measured as described in our <a href="../privacy/">Privacy Policy</a>.</p>
 
       <h2>5. Managing cookies</h2>
       <p>You can delete or block cookies and site data in your browser settings. If you clear site data for stream, you will be signed out and your watch progress will be removed. Blocking essential storage may stop stream from working properly.</p>
