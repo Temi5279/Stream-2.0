@@ -25,14 +25,15 @@
   }
 
   function direction(key, code) {
-    if (key === "ArrowLeft" || code === 37 || code === 21) return "left";
-    if (key === "ArrowRight" || code === 39 || code === 22) return "right";
-    if (key === "ArrowUp" || code === 38 || code === 19) return "up";
-    if (key === "ArrowDown" || code === 40 || code === 20) return "down";
+    if (key === "ArrowLeft" || key === "Left" || code === 37 || code === 21) return "left";
+    if (key === "ArrowRight" || key === "Right" || code === 39 || code === 22) return "right";
+    if (key === "ArrowUp" || key === "Up" || code === 38 || code === 19) return "up";
+    if (key === "ArrowDown" || key === "Down" || code === 40 || code === 20) return "down";
     return "";
   }
 
   function nextElement(dir, elements) {
+    if (!elements.length) return null;
     var current = focused && elements.indexOf(focused) > -1 ? focused :
       (elements.indexOf(document.activeElement) > -1 ? document.activeElement :
         document.querySelector('.nav a[aria-current="page"]'));
