@@ -41,6 +41,7 @@
   </main>
 
   <script src="../app.js"></script>
+  <script src="../ads.js"></script>
   <script>
   Stream.guardOnline(function () { Stream.movies().then(function (all) {
     var shown = 60, lastKey = "", more = document.getElementById("more"), genre = "All", q = document.getElementById("q"), grid = document.getElementById("grid"),
@@ -53,6 +54,7 @@
       });
       var key = t + "|" + genre; if (key !== lastKey) { shown = 60; lastKey = key; }
       grid.innerHTML = ""; list.slice(0, shown).forEach(function (m) { grid.appendChild(Stream.card(m)); });
+      if (!t && genre === "All" && window.StreamAds && !Stream.isKids()) StreamAds.placeNative("discover", [{ c: grid, i: 6 }, { c: grid, i: 19 }]);
       more.hidden = list.length <= shown;
       none.hidden = list.length > 0;
     }
