@@ -34,8 +34,8 @@
     "start": "2026-11-01",
     "end": "2026-12-31",
     "where": ["home", "discover"]
-  }
-{
+  },
+  {
     "type": "banner",
     "id": "example-card-3",
     "name": "The Keyframe Awards",
