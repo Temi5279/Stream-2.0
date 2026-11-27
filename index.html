@@ -137,7 +137,12 @@
         .forEach(function (g) {
           addRow(g === "Horror" ? "For horror fans" : "Popular in " + g, all.filter(function (m) { return m.genre === g; }).slice(0, 15));
         });
-      StreamAds.addBanner(rows, Stream.isKids());
+
+      // Poster-style ads inside the film rows (never on kids profiles)
+      if (window.StreamAds && !Stream.isKids()) {
+        var rowEls = document.querySelectorAll("#rows .cards");
+        StreamAds.placeNative("home", [{ c: rowEls[0], i: 2 }, { c: rowEls[2], i: 3 }]);
+      }
     });
   }); });
   </script>
