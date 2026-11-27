@@ -35,4 +35,17 @@
     "end": "2026-12-31",
     "where": ["home", "discover"]
   }
+{
+    "type": "banner",
+    "id": "example-card-3",
+    "name": "The Keyframe Awards",
+    "headline": "vote for all your faves at the keyframe awards",
+    "cta": "Advertise",
+    "color1": "#1d3fd8",
+    "color2": "#7b2ff7",
+    "link": "https://vote.keyframe-awards.com",
+    "start": "2026-11-01",
+    "end": "2026-12-31",
+    "where": ["home", "discover"]
+  }
 ]
