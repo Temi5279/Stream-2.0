@@ -20,15 +20,13 @@
   <script>
   (function () {
     var id = new URLSearchParams(location.search).get("id"), curFilm = null;
-    var mountEl = document.getElementById("p");
-    var pl = Player.mount(mountEl, {
+    var pl = Player.mount(document.getElementById("p"), {
       full: true, fullscreenOnPlay: true, keys: true,
       back: "../movie/?id=" + encodeURIComponent(id || ""),
       onProgress: function (t, d) { Stream.save(id, t, d); },
       report: function () { Stream.reportDialog(curFilm ? curFilm.title : "this film", "Film: " + (curFilm ? curFilm.title : "") + "\nID: " + id); }
     });
     if (!id) { pl.say("No movie selected."); return; }
-    StreamAds.attach(pl, mountEl, { kids: Stream.isKids() });
 
     Stream.movies().then(function (all) {
       var m = all.filter(function (x) { return x.id === id; })[0];
@@ -50,26 +48,28 @@
         var play = document.createElement("a"); play.className = "btn sm"; play.textContent = "Play now"; play.href = Stream.watchUrl(nxt.id);
         var cl = document.createElement("button"); cl.type = "button"; cl.className = "btn sm ghost"; cl.textContent = "Close"; cl.onclick = function () { if (box.parentNode) box.parentNode.removeChild(box); };
         row.appendChild(play); row.appendChild(cl); info.appendChild(s1); info.appendChild(b); info.appendChild(row); box.appendChild(info);
-        mountEl.appendChild(box);
+        document.getElementById("p").appendChild(box);
       });
       pl.poster(Stream.thumb(id));
       var s = Stream.progress()[id], at = s && s.t > 5 && s.t < s.d - 30 ? s.t : 0;
       pl.setStart(at ? "Resume from " + Player.fmt(at) : "Tap to play");
+      if (window.StreamAds) StreamAds.attach(pl, document.getElementById("p"), { kids: Stream.isKids(), startAt: at });
 
       var base = "https://archive.org/download/" + encodeURIComponent(id) + "/";
       return Stream.dl.has(id).then(function (has) {
-        if (has) { pl.load(Stream.dl.url(id), at); return; }
-        if (m.file) { pl.load(base + m.file.split("/").map(encodeURIComponent).join("/"), at); return; }
+      if (has) { pl.load(Stream.dl.url(id), at); return; }
+      if (m.file) { pl.load(base + m.file.split("/").map(encodeURIComponent).join("/"), at); return; }
 
-        return fetch("https://archive.org/metadata/" + encodeURIComponent(id)).then(function (r) { return r.json(); }).then(function (meta) {
-          var vids = (meta.files || []).filter(function (f) {
-            return /\.(mp4|m4v|webm)$/i.test(f.name) && +f.size > 15e6 && !/sample|trailer/i.test(f.name);
-          }).sort(function (a, b) {
-            return (a.source === "derivative" ? 0 : 1) - (b.source === "derivative" ? 0 : 1) || +a.size - +b.size;
-          });
-          if (!vids.length) { pl.say("This film has no playable file yet."); return; }
-          pl.load(base + vids[0].name.split("/").map(encodeURIComponent).join("/"), at);
+      // No file listed in movies.json: ask the Internet Archive and pick the smallest normal video
+      return fetch("https://archive.org/metadata/" + encodeURIComponent(id)).then(function (r) { return r.json(); }).then(function (meta) {
+        var vids = (meta.files || []).filter(function (f) {
+          return /\.(mp4|m4v|webm)$/i.test(f.name) && +f.size > 15e6 && !/sample|trailer/i.test(f.name);
+        }).sort(function (a, b) {
+          return (a.source === "derivative" ? 0 : 1) - (b.source === "derivative" ? 0 : 1) || +a.size - +b.size;
         });
+        if (!vids.length) { pl.say("This film has no playable file yet."); return; }
+        pl.load(base + vids[0].name.split("/").map(encodeURIComponent).join("/"), at);
+      });
       });
     }).catch(function () { pl.say("Could not load this film. Check your connection."); });
   })();
