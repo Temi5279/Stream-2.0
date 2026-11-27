@@ -1,12 +1,38 @@
 [
   {
-    "id": "quicktokengen",
-    "name": "QuickTokenGen",
-    "image": "Picsart_26-10-29_06-47-08-346.jpg",
-    "link": "https://quicktokengen.dev/?utm_source=watchstream&utm_medium=display&utm_campaign=quicktokengen",
-    "cta": "Open Tool",
-    "slots": ["banner", "pre"],
-    "skipAfter": 5,
-    "duration": 15
+    "id": "example-video",
+    "name": "Example advertiser",
+    "demo": true,
+    "demoSeconds": 8,
+    "slots": ["pre", "mid"],
+    "start": "2026-11-01",
+    "end": "2026-12-31",
+    "skipAfter": 5
+  },
+  {
+    "type": "banner",
+    "id": "example-card-1",
+    "name": "Ada's Bakery",
+    "headline": "Fresh bread every morning",
+    "cta": "Order now",
+    "color1": "#ff5d8f",
+    "color2": "#ffb703",
+    "link": "https://watchstream.app/advertise/",
+    "start": "2026-11-01",
+    "end": "2026-12-31",
+    "where": ["home", "discover"]
+  },
+  {
+    "type": "banner",
+    "id": "example-card-2",
+    "name": "Your business",
+    "headline": "This spot could be yours",
+    "cta": "Advertise",
+    "color1": "#1d3fd8",
+    "color2": "#7b2ff7",
+    "link": "https://watchstream.app/advertise/",
+    "start": "2026-11-01",
+    "end": "2026-12-31",
+    "where": ["home", "discover"]
   }
 ]
