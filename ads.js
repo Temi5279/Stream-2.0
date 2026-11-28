@@ -15,21 +15,21 @@
 
   var css = document.createElement("style");
   css.textContent =
-    ".adlayer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9;background:#000;color:#fff;display:grid;place-items:center}" +
-    ".adlayer video{width:100%;height:100%;object-fit:contain;background:#000}" +
-    ".ad-demo{width:100%;height:100%;display:grid;place-content:center;justify-items:center;text-align:center;gap:10px;padding:24px;background:linear-gradient(120deg,#1d3fd8,#7b2ff7,#ff5d8f,#1d3fd8);background-size:300% 300%;animation:adbg 6s linear infinite}" +
-    ".ad-demo b{font-size:clamp(1.4rem,5vw,2.4rem)}.ad-demo span{opacity:.9}" +
+    ".sxl{position:absolute;top:0;right:0;bottom:0;left:0;z-index:9;background:#000;color:#fff;display:grid;place-items:center}" +
+    ".sxl video{width:100%;height:100%;object-fit:contain;background:#000}" +
+    ".sx-demo{width:100%;height:100%;display:grid;place-content:center;justify-items:center;text-align:center;gap:10px;padding:24px;background:linear-gradient(120deg,#1d3fd8,#7b2ff7,#ff5d8f,#1d3fd8);background-size:300% 300%;animation:adbg 6s linear infinite}" +
+    ".sx-demo b{font-size:clamp(1.4rem,5vw,2.4rem)}.sx-demo span{opacity:.9}" +
     "@keyframes adbg{to{background-position:300% 50%}}" +
-    ".ad-top{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:14px;right:14px;display:flex;gap:10px;align-items:center}" +
-    ".ad-tag{font-size:.75rem;font-weight:800;padding:3px 9px;border-radius:6px;background:#ffd166;color:#2a1250}.ad-name{font-size:.85rem;opacity:.9}" +
-    ".ad-bot{position:absolute;left:14px;right:14px;bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;gap:10px;align-items:center}" +
-    ".ad-visit{padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;font-weight:700;font-size:.9rem}" +
-    ".ad-skip{padding:10px 18px;border-radius:999px;font:inherit;font-weight:700;color:#fff;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.6);cursor:pointer}.ad-skip:disabled{opacity:.7;cursor:default}" +
-    ".ad-bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25)}.ad-bar i{display:block;height:100%;width:0;background:#ffd166}" +
+    ".sx-top{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:14px;right:14px;display:flex;gap:10px;align-items:center}" +
+    ".sx-tag{font-size:.75rem;font-weight:800;padding:3px 9px;border-radius:6px;background:#ffd166;color:#2a1250}.sx-name{font-size:.85rem;opacity:.9}" +
+    ".sx-bot{position:absolute;left:14px;right:14px;bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;gap:10px;align-items:center}" +
+    ".sx-visit{padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;font-weight:700;font-size:.9rem}" +
+    ".sx-skip{padding:10px 18px;border-radius:999px;font:inherit;font-weight:700;color:#fff;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.6);cursor:pointer}.sx-skip:disabled{opacity:.7;cursor:default}" +
+    ".sx-bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25)}.sx-bar i{display:block;height:100%;width:0;background:#ffd166}" +
     /* poster-style ad card */
     ".adcard{text-decoration:none;color:#fff}.adcard::after{display:none}" +
     ".adcard .pg{background:#ffd166;color:#2a1250;border:0;font-weight:800}" +
-    ".adcard .ad-head{position:absolute;z-index:1;left:15px;right:13px;top:46px;font-size:.8rem;line-height:1.3;font-weight:600;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
+    ".adcard .sx-head{position:absolute;z-index:1;left:15px;right:13px;top:46px;font-size:.8rem;line-height:1.3;font-weight:600;text-shadow:0 2px 8px rgba(0,0,0,.6)}" +
     ".adcard .py{opacity:1;font-weight:700;letter-spacing:.04em}" +
     ".adcard .sp{position:absolute;z-index:1;right:12px;bottom:11px;font-size:.55rem;letter-spacing:.12em;opacity:.85}" +
     ".adcard.img{background-image:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0) 55%),var(--thumb);background-blend-mode:normal}";
@@ -65,7 +65,7 @@
     if (ad.image) a.style.setProperty("--thumb", "url(" + new URL(ad.image, ROOT).href + ")");
     function add(tag, cls, txt) { var e = document.createElement(tag); e.className = cls; e.textContent = txt; a.appendChild(e); }
     add("span", "pg", "AD");
-    if (ad.headline) add("span", "ad-head", ad.headline);
+    if (ad.headline) add("span", "sx-head", ad.headline);
     add("span", "pt", ad.name || "");
     add("small", "py", (ad.cta || "Learn more") + (/[›>]$/.test(ad.cta || "") ? "" : " ›"));
     add("span", "sp", "SPONSORED");
@@ -95,12 +95,12 @@
 
   // ---------- video ads ----------
   function playAd(root, ad, slot, done) {
-    var layer = document.createElement("div"); layer.className = "adlayer";
+    var layer = document.createElement("div"); layer.className = "sxl";
     var skipAfter = ad.skipAfter == null ? 5 : +ad.skipAfter, video = null, t0 = Date.now(), finished = false, tick, guard;
-    layer.innerHTML = '<div class="ad-top"><span class="ad-tag">Ad · Sponsored</span><span class="ad-name"></span></div>' +
-      '<div class="ad-bot"><a class="ad-visit" target="_blank" rel="noopener">Visit site ↗</a><button type="button" class="ad-skip" disabled></button></div><div class="ad-bar"><i></i></div>';
-    layer.querySelector(".ad-name").textContent = ad.name || "";
-    var visit = layer.querySelector(".ad-visit"), skip = layer.querySelector(".ad-skip"), bar = layer.querySelector(".ad-bar i");
+    layer.innerHTML = '<div class="sx-top"><span class="sx-tag">Ad · Sponsored</span><span class="sx-name"></span></div>' +
+      '<div class="sx-bot"><a class="sx-visit" target="_blank" rel="noopener">Visit site ↗</a><button type="button" class="sx-skip" disabled></button></div><div class="sx-bar"><i></i></div>';
+    layer.querySelector(".sx-name").textContent = ad.name || "";
+    var visit = layer.querySelector(".sx-visit"), skip = layer.querySelector(".sx-skip"), bar = layer.querySelector(".sx-bar i");
     var link = ad.link || (ad.demo ? new URL("advertise/", ROOT).href : "");
     if (link) { visit.href = link; visit.addEventListener("click", function () { track("ad_click", ad, slot); }); } else visit.style.display = "none";
 
@@ -117,7 +117,7 @@
 
     var demoLen = (ad.demoSeconds || 8) * 1000;
     if (ad.demo) {
-      var d = document.createElement("div"); d.className = "ad-demo";
+      var d = document.createElement("div"); d.className = "sx-demo";
       d.innerHTML = "<b>Your business could be here</b><span>Advertise on stream from just 3 days</span>";
       layer.insertBefore(d, layer.firstChild); track("ad_impression", ad, slot);
     } else {
@@ -130,6 +130,11 @@
       guard = setTimeout(finish, 9000);   // never leave a viewer stuck on a broken ad
     }
     root.appendChild(layer);
+    setTimeout(function () {
+      if (finished) return;
+      var cs = window.getComputedStyle(layer);
+      if (layer.offsetHeight < 20 || cs.display === "none" || cs.visibility === "hidden") finish();
+    }, 400);
     if (video) { var pr = video.play(); if (pr && pr.catch) pr.catch(function () {}); }
 
     tick = setInterval(function () {
@@ -145,11 +150,15 @@
     placeNative: placeNative,
     attach: function (pl, root, o) {
       o = o || {};
-      if (o.kids || !pl || !root) return;
+      if (o.kids) { if (/[?&]addebug=1/.test(location.search) && window.Stream && Stream.toast) Stream.toast("Kids profile: no ads"); return; }
+      if (!pl || !root) return;
       var test = isTest(), v = pl.video, bypass = false, usedPre = false, shownMid = false;
       v.addEventListener("play", function () { if (active > 0) v.pause(); });   // nothing plays underneath an ad
       getAds().then(function (list) {
         var pre = pickAd(list, "pre"), mid = pickAd(list, "mid");
+        if ((test || /[?&]addebug=1/.test(location.search)) && window.Stream && Stream.toast) {
+          Stream.toast("Ads: " + (list || []).length + " loaded. Start ad: " + (pre ? pre.id : "none") + ". Middle ad: " + (mid ? mid.id : "none") + (recent() && !test ? ". Start ad paused (one was shown in the last 10 minutes)" : ""));
+        }
         if (pre && (test || !recent())) {
           // The first tap on Play runs the ad, then the film starts
           root.addEventListener("click", function (e) {
